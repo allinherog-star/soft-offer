@@ -16,7 +16,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2 } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface FunctionTreeProps {
   nodes: FunctionNode[];
@@ -37,6 +54,17 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const [nodeToDelete, setNodeToDelete] = useState<{ id: string; name: string; type: string } | null>(null);
   const [addConfirmDialogOpen, setAddConfirmDialogOpen] = useState(false);
   const [pendingAddParentId, setPendingAddParentId] = useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -154,6 +182,62 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     setEditingName(newNode.name);
   };
 
+  // 处理拖拽结束事件
+  const handleDragEnd = (event: DragEndEvent, parentId?: string) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const getNodeList = (): FunctionNode[] => {
+        if (!parentId) {
+          return nodes;
+        }
+        
+        const findParentNode = (nodeList: FunctionNode[]): FunctionNode | null => {
+          for (const node of nodeList) {
+            if (node.id === parentId) return node;
+            if (node.children) {
+              const found = findParentNode(node.children);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        
+        const parentNode = findParentNode(nodes);
+        return parentNode?.children || [];
+      };
+
+      const nodeList = getNodeList();
+      const oldIndex = nodeList.findIndex((node) => node.id === active.id);
+      const newIndex = nodeList.findIndex((node) => node.id === over.id);
+
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const sortedNodes = arrayMove(nodeList, oldIndex, newIndex);
+        
+        if (!parentId) {
+          // 顶级节点排序
+          onNodesChange(sortedNodes);
+        } else {
+          // 子节点排序
+          const updateChildren = (nodeList: FunctionNode[]): boolean => {
+            for (const node of nodeList) {
+              if (node.id === parentId) {
+                node.children = sortedNodes;
+                return true;
+              }
+              if (node.children && updateChildren(node.children)) {
+                return true;
+              }
+            }
+            return false;
+          };
+          updateChildren(nodes);
+          onNodesChange([...nodes]);
+        }
+      }
+    }
+  };
+
   const openDeleteDialog = (id: string, name: string, type: string) => {
     setNodeToDelete({ id, name, type });
     setDeleteDialogOpen(true);
@@ -181,7 +265,36 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     setNodeToDelete(null);
   };
 
-  const renderNode = (node: FunctionNode, level: number = 0) => {
+  // 可排序的树节点组件
+  const SortableTreeNode = ({ node, level }: { node: FunctionNode; level: number }) => {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+    } = useSortable({ id: node.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+    };
+
+    return (
+      <div ref={setNodeRef} style={style}>
+        {renderNodeContent(node, level, attributes, listeners)}
+      </div>
+    );
+  };
+
+  const renderNodeContent = (
+    node: FunctionNode, 
+    level: number, 
+    dragAttributes?: any, 
+    dragListeners?: any
+  ) => {
     const isExpanded = expandedIds.has(node.id);
     const hasChildren = node.children && node.children.length > 0;
     const isSelected = selectedNode?.id === node.id;
@@ -216,6 +329,15 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
           }`}
           style={{ paddingLeft: `${level * 20 + 8}px` }}
         >
+          {/* 拖拽句柄 */}
+          <div 
+            {...dragAttributes} 
+            {...dragListeners}
+            className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="h-3 w-3 text-gray-400" />
+          </div>
+
           <button
             onClick={() => toggleExpand(node.id)}
             className="p-0.5 hover:bg-gray-200 rounded"
@@ -320,12 +442,30 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         </div>
 
         {isExpanded && hasChildren && (
-          <div>
-            {node.children!.map(child => renderNode(child, level + 1))}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => handleDragEnd(event, node.id)}
+          >
+            <SortableContext
+              items={node.children!.map(child => child.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div>
+                {node.children!.map(child => (
+                  <SortableTreeNode key={child.id} node={child} level={level + 1} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
     );
+  };
+
+  // 渲染节点函数（用于顶级节点）
+  const renderNode = (node: FunctionNode, level: number = 0) => {
+    return <SortableTreeNode key={node.id} node={node} level={level} />;
   };
 
   return (
@@ -354,9 +494,20 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         {/* 树内容区域 - 可滚动 */}
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
-            <div className="p-2">
-              {nodes.map(node => renderNode(node))}
-            </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event)}
+            >
+              <SortableContext
+                items={nodes.map(node => node.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="p-2">
+                  {nodes.map(node => renderNode(node))}
+                </div>
+              </SortableContext>
+            </DndContext>
             <ScrollBar />
           </ScrollArea>
         </div>
