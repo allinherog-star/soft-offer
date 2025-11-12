@@ -149,3 +149,4 @@ export function formatDays(days: number): string {
   return `${days.toFixed(1)}天`;
 }
 
+

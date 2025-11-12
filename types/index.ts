@@ -93,3 +93,4 @@ export interface GlobalConfig {
   impactFactors: ImpactFactor[];
 }
 
+

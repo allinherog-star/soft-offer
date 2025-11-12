@@ -122,3 +122,4 @@ export const DEFAULT_CONFIG: GlobalConfig = {
   impactFactors: DEFAULT_IMPACT_FACTORS
 };
 
+

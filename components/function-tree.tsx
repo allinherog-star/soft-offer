@@ -117,6 +117,23 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
     const isSelected = selectedNode?.id === node.id;
     const isEditing = editingId === node.id;
 
+    // 确定节点类型标签
+    let nodeTypeLabel = '';
+    let nodeTypeColor = '';
+    if (level === 0) {
+      // 一级节点
+      nodeTypeLabel = '模块';
+      nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
+    } else if (hasChildren) {
+      // 非一级节点且有子节点
+      nodeTypeLabel = '子模块';
+      nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
+    } else {
+      // 叶子节点
+      nodeTypeLabel = '菜单';
+      nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
+    }
+
     return (
       <div key={node.id}>
         <div
@@ -170,9 +187,12 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
             <>
               <span
                 onClick={() => onSelectNode(node)}
-                className="flex-1 text-sm cursor-pointer select-none truncate"
+                className="flex-1 text-sm cursor-pointer select-none flex items-center gap-2"
               >
-                {node.name}
+                <span className="truncate">{node.name}</span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap ${nodeTypeColor}`}>
+                  {nodeTypeLabel}
+                </span>
               </span>
               <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
                 <Button
