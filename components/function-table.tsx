@@ -51,14 +51,14 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     <div className="flex flex-col h-full bg-white">
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs">
             <thead className="sticky top-0 bg-gray-50 border-b z-10">
               <tr>
-                <th className="px-4 py-2 text-left font-medium text-gray-700 w-[300px]">功能</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-700 w-[120px]">复杂度</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-700 w-[120px]">优先级</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-700 w-[80px]">重点</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-700 flex-1 min-w-[200px]">备注</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[280px]">功能</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[100px]">复杂度</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[100px]">优先级</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[60px]">重点</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs flex-1 min-w-[180px]">备注</th>
               </tr>
             </thead>
             <tbody>
@@ -69,61 +69,61 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                     selectedNode?.id === node.id ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <td className="px-4 py-2" style={{ paddingLeft: `${node.level * 20 + 16}px` }}>
-                    <span className="text-sm">{node.name}</span>
+                  <td className="px-2 py-1" style={{ paddingLeft: `${node.level * 16 + 8}px` }}>
+                    <span className="text-xs">{node.name}</span>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1">
                     <Select
                       value={node.complexity || ''}
                       onValueChange={(value) => updateNode(node.id, { complexity: value as Complexity })}
                     >
-                      <SelectTrigger className="h-8 w-full">
-                        <SelectValue placeholder="选择复杂度" />
+                      <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
+                        <SelectValue placeholder="选择" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="min-w-[70px]">
                         {COMPLEXITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option}>
+                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
                             {option}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1">
                     <Select
                       value={node.priority || ''}
                       onValueChange={(value) => updateNode(node.id, { priority: value as Priority })}
                     >
-                      <SelectTrigger className="h-8 w-full">
-                        <SelectValue placeholder="选择优先级" />
+                      <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
+                        <SelectValue placeholder="选择" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="min-w-[70px]">
                         {PRIORITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option}>
+                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
                             {option}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1">
                     <div className="flex items-center justify-center">
                       <button
                         onClick={() => updateNode(node.id, { isImportant: !node.isImportant })}
-                        className={`p-1 rounded hover:bg-gray-200 ${
+                        className={`p-0.5 rounded hover:bg-gray-200 ${
                           node.isImportant ? 'text-yellow-500' : 'text-gray-300'
                         }`}
                       >
-                        <Star className="h-4 w-4" fill={node.isImportant ? 'currentColor' : 'none'} />
+                        <Star className="h-3 w-3" fill={node.isImportant ? 'currentColor' : 'none'} />
                       </button>
                     </div>
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1">
                     <Input
                       value={node.remark}
                       onChange={(e) => updateNode(node.id, { remark: e.target.value })}
-                      placeholder="备注信息"
-                      className="h-8"
+                      placeholder="备注"
+                      className="h-6 text-xs min-h-6 max-h-6"
                     />
                   </td>
                 </tr>
@@ -131,7 +131,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
             </tbody>
           </table>
           {flatNodes.length === 0 && (
-            <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-32 text-gray-400 text-xs">
               暂无功能，请在左侧添加功能节点
             </div>
           )}
