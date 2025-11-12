@@ -119,7 +119,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                       variant="outline"
                       role="combobox"
                       aria-expanded={industryOpen}
-                      className="h-6 w-32 justify-between text-sm font-normal"
+                      className="h-6 w-32 justify-between text-xs font-normal"
                     >
                       <div className="flex items-center gap-1.5 truncate">
                         {projectInfo.industry ? (
@@ -132,7 +132,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                           <Building2 className="h-3 w-3 text-gray-500 shrink-0" />
                         )}
                         <span className="truncate">
-                          {projectInfo.industry || "请选择行业"}
+                          {projectInfo.industry || "行业应用"}
                         </span>
                       </div>
                       <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />

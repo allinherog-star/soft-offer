@@ -85,7 +85,7 @@ export default function Home() {
       {/* 主内容区域 */}
       <div className="flex-1 flex overflow-hidden">
         {/* 左侧功能树 */}
-        <div className="w-[300px] flex-shrink-0">
+        <div className="w-[300px] flex-shrink-0 h-full overflow-hidden">
           <FunctionTree
             nodes={functionNodes}
             selectedNode={selectedNode}

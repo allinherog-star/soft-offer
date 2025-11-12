@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { FunctionNode } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   AlertDialog,
@@ -116,9 +116,14 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
 
   // 实际执行添加节点
   const performAddNode = (parentId?: string) => {
+    // 确定新节点的默认名称
+    // 顶级节点（无父节点）：模块名称
+    // 非顶级节点（有父节点）：菜单名称
+    const defaultName = parentId ? '菜单名称' : '模块名称';
+    
     const newNode: FunctionNode = {
       id: `node-${Date.now()}-${Math.random()}`,
-      name: '新模块',
+      name: defaultName,
       isImportant: false,
       remark: '',
       parentId
@@ -200,23 +205,8 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     }
 
     // 确定添加按钮的提示文本
-    let addButtonTitle = '';
-    if (level === 0) {
-      // 在模块节点
-      if (hasChildren) {
-        // 有孩子节点：提示添加子模块
-        addButtonTitle = '添加子模块';
-      } else {
-        // 没有孩子节点：提示添加菜单
-        addButtonTitle = '添加菜单';
-      }
-    } else if (hasChildren) {
-      // 在子模块下添加
-      addButtonTitle = '添加子模块';
-    } else {
-      // 在叶子节点（菜单）下添加
-      addButtonTitle = '添加菜单';
-    }
+    // 所有非顶级节点下添加的都是菜单
+    const addButtonTitle = '添加菜单';
 
     return (
       <div key={node.id}>
@@ -341,29 +331,35 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   return (
     <TooltipProvider>
       <div className="flex flex-col h-full bg-white border-r">
-        <ScrollArea className="flex-1">
-          <div className="p-2">
-            <div className="mb-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    onClick={() => tryAddNode()} 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full h-7 text-xs"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    添加模块
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>添加顶级模块</p>
-                </TooltipContent>
-              </Tooltip>
+        {/* 添加需求按钮 - 固定在顶部 */}
+        <div className="p-2 border-b">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={() => tryAddNode()} 
+                size="sm" 
+                variant="outline" 
+                className="w-full h-7 text-xs"
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                添加需求
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>添加顶级模块</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        
+        {/* 树内容区域 - 可滚动 */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="p-2">
+              {nodes.map(node => renderNode(node))}
             </div>
-            {nodes.map(node => renderNode(node))}
-          </div>
-        </ScrollArea>
+            <ScrollBar />
+          </ScrollArea>
+        </div>
         
         {/* 撤销前进按钮 - 悬浮在底部中间 */}
         <div className="border-t bg-white py-1.5 flex items-center justify-center gap-1">

@@ -407,7 +407,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
               <tr>
                 <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[280px]">
                   <div className="flex items-center gap-2">
-                    <span>菜单模块</span>
+                    <span>需求清单</span>
                     <button
                       onClick={toggleAllMenus}
                       className="p-0.5 hover:bg-gray-300 rounded text-gray-600"
