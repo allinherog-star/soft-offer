@@ -5,19 +5,38 @@ import { FunctionNode } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2 } from 'lucide-react';
 
 interface FunctionTreeProps {
   nodes: FunctionNode[];
   selectedNode: FunctionNode | null;
   onNodesChange: (nodes: FunctionNode[]) => void;
   onSelectNode: (node: FunctionNode | null) => void;
+  onUndo: () => void;
+  onRedo: () => void;
+  historyIndex: number;
+  historyLength: number;
 }
 
-export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode }: FunctionTreeProps) {
+export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode, onUndo, onRedo, historyIndex, historyLength }: FunctionTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [nodeToDelete, setNodeToDelete] = useState<{ id: string; name: string; type: string } | null>(null);
+  const [addConfirmDialogOpen, setAddConfirmDialogOpen] = useState(false);
+  const [pendingAddParentId, setPendingAddParentId] = useState<string | null>(null);
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -60,10 +79,46 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
     return false;
   };
 
-  const addNode = (parentId?: string) => {
+  // 检查节点是否有功能按钮
+  const hasButtons = (nodeId: string): boolean => {
+    const findNode = (nodeList: FunctionNode[]): FunctionNode | null => {
+      for (const node of nodeList) {
+        if (node.id === nodeId) return node;
+        if (node.children) {
+          const found = findNode(node.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    const node = findNode(nodes);
+    return node ? !!(node.buttons && node.buttons.length > 0) : false;
+  };
+
+  // 尝试添加节点（可能需要确认）
+  const tryAddNode = (parentId?: string) => {
+    if (parentId && hasButtons(parentId)) {
+      // 如果父节点已有功能，需要二次确认
+      setPendingAddParentId(parentId);
+      setAddConfirmDialogOpen(true);
+    } else {
+      // 直接添加
+      performAddNode(parentId);
+    }
+  };
+
+  // 确认添加节点
+  const confirmAddNode = () => {
+    performAddNode(pendingAddParentId || undefined);
+    setAddConfirmDialogOpen(false);
+    setPendingAddParentId(null);
+  };
+
+  // 实际执行添加节点
+  const performAddNode = (parentId?: string) => {
     const newNode: FunctionNode = {
       id: `node-${Date.now()}-${Math.random()}`,
-      name: '新功能',
+      name: '新模块',
       isImportant: false,
       remark: '',
       parentId
@@ -94,10 +149,17 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
     setEditingName(newNode.name);
   };
 
-  const deleteNode = (id: string) => {
+  const openDeleteDialog = (id: string, name: string, type: string) => {
+    setNodeToDelete({ id, name, type });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!nodeToDelete) return;
+    
     const removeNode = (nodeList: FunctionNode[]): FunctionNode[] => {
       return nodeList.filter(node => {
-        if (node.id === id) return false;
+        if (node.id === nodeToDelete.id) return false;
         if (node.children) {
           node.children = removeNode(node.children);
         }
@@ -106,9 +168,12 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
     };
     
     onNodesChange(removeNode(nodes));
-    if (selectedNode?.id === id) {
+    if (selectedNode?.id === nodeToDelete.id) {
       onSelectNode(null);
     }
+    
+    setDeleteDialogOpen(false);
+    setNodeToDelete(null);
   };
 
   const renderNode = (node: FunctionNode, level: number = 0) => {
@@ -132,6 +197,25 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
       // 叶子节点
       nodeTypeLabel = '菜单';
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
+    }
+
+    // 确定添加按钮的提示文本
+    let addButtonTitle = '';
+    if (level === 0) {
+      // 在模块节点
+      if (hasChildren) {
+        // 有孩子节点：提示添加子模块
+        addButtonTitle = '添加子模块';
+      } else {
+        // 没有孩子节点：提示添加菜单
+        addButtonTitle = '添加菜单';
+      }
+    } else if (hasChildren) {
+      // 在子模块下添加
+      addButtonTitle = '添加子模块';
+    } else {
+      // 在叶子节点（菜单）下添加
+      addButtonTitle = '添加菜单';
     }
 
     return (
@@ -195,30 +279,51 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
                 </span>
               </span>
               <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
-                <Button
-                  onClick={() => startEdit(node)}
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
-                <Button
-                  onClick={() => addNode(node.id)}
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0"
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-                <Button
-                  onClick={() => deleteNode(node.id)}
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0 text-red-600"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => startEdit(node)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>编辑名称</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => tryAddNode(node.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{addButtonTitle}</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={() => openDeleteDialog(node.id, node.name, nodeTypeLabel)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-red-600"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>删除{nodeTypeLabel}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             </>
           )}
@@ -234,19 +339,106 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode 
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border-r">
-      <ScrollArea className="flex-1">
-        <div className="p-2">
-          <div className="mb-2">
-            <Button onClick={() => addNode()} size="sm" variant="outline" className="w-full">
-              <Plus className="h-4 w-4 mr-1" />
-              添加功能
-            </Button>
+    <TooltipProvider>
+      <div className="flex flex-col h-full bg-white border-r">
+        <ScrollArea className="flex-1">
+          <div className="p-2">
+            <div className="mb-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={() => tryAddNode()} 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    添加模块
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>添加顶级模块</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            {nodes.map(node => renderNode(node))}
           </div>
-          {nodes.map(node => renderNode(node))}
+        </ScrollArea>
+        
+        {/* 撤销前进按钮 - 悬浮在底部中间 */}
+        <div className="border-t bg-white py-1.5 flex items-center justify-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={onUndo}
+                size="sm" 
+                variant="ghost" 
+                className="h-6 w-6 p-0"
+                disabled={historyIndex <= 0}
+              >
+                <Undo2 className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>撤销</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={onRedo}
+                size="sm" 
+                variant="ghost" 
+                className="h-6 w-6 p-0"
+                disabled={historyIndex >= historyLength - 1}
+              >
+                <Redo2 className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>前进</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
-      </ScrollArea>
-    </div>
+      </div>
+
+      {/* 删除确认对话框 */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定要删除{nodeToDelete?.type}「{nodeToDelete?.name}」吗？
+              {nodeToDelete && '此操作将同时删除其下所有子节点。'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 添加菜单确认对话框 */}
+      <AlertDialog open={addConfirmDialogOpen} onOpenChange={setAddConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认添加菜单</AlertDialogTitle>
+            <AlertDialogDescription>
+              当前菜单下已有功能按钮，添加子菜单后将变为子模块。是否继续？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingAddParentId(null)}>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmAddNode}>
+              继续添加
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </TooltipProvider>
   );
 }
 

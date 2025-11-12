@@ -31,6 +31,37 @@ export default function Home() {
   });
   const [costSettingsOpen, setCostSettingsOpen] = useState(false);
 
+  // 历史记录管理
+  const [history, setHistory] = useState<FunctionNode[][]>([[]]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  // 保存到历史记录
+  const saveToHistory = (newNodes: FunctionNode[]) => {
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(JSON.parse(JSON.stringify(newNodes)));
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+    setFunctionNodes(newNodes);
+  };
+
+  // 撤销
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setFunctionNodes(JSON.parse(JSON.stringify(history[newIndex])));
+    }
+  };
+
+  // 前进
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setFunctionNodes(JSON.parse(JSON.stringify(history[newIndex])));
+    }
+  };
+
   // 自动计算估价
   useEffect(() => {
     const newEstimate = calculateEstimate(
@@ -58,8 +89,12 @@ export default function Home() {
           <FunctionTree
             nodes={functionNodes}
             selectedNode={selectedNode}
-            onNodesChange={setFunctionNodes}
+            onNodesChange={saveToHistory}
             onSelectNode={setSelectedNode}
+            onUndo={undo}
+            onRedo={redo}
+            historyIndex={historyIndex}
+            historyLength={history.length}
           />
         </div>
 
@@ -68,7 +103,7 @@ export default function Home() {
           <FunctionTable
             nodes={functionNodes}
             selectedNode={selectedNode}
-            onNodesChange={setFunctionNodes}
+            onNodesChange={saveToHistory}
           />
         </div>
 

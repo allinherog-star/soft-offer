@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "软件估价系统",
-  description: "专业的软件项目估价和成本核算系统",
+  title: "软件成本测算系统",
+  description: "专业的软件项目成本测算和工期评估系统",
 };
 
 export default function RootLayout({

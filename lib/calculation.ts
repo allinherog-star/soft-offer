@@ -31,17 +31,32 @@ function getWorkDays(complexity: Complexity | undefined, config: GlobalConfig): 
   return config.workDurationConfigs[complexity] || 0;
 }
 
-// 递归收集所有叶子节点（有复杂度的节点）
-function collectLeafNodes(node: FunctionNode): FunctionNode[] {
+// 递归收集所有叶子节点（有复杂度的节点）和按钮功能
+function collectLeafNodes(node: FunctionNode): Array<{complexity?: Complexity}> {
+  const items: Array<{complexity?: Complexity}> = [];
+  
+  // 收集节点本身（如果是叶子节点且有复杂度）
   if (node.complexity && (!node.children || node.children.length === 0)) {
-    return [node];
+    items.push(node);
   }
   
+  // 收集子节点
   if (node.children && node.children.length > 0) {
-    return node.children.flatMap(child => collectLeafNodes(child));
+    node.children.forEach(child => {
+      items.push(...collectLeafNodes(child));
+    });
   }
   
-  return [];
+  // 收集按钮功能
+  if (node.buttons && node.buttons.length > 0) {
+    node.buttons.forEach(button => {
+      if (button.complexity) {
+        items.push(button);
+      }
+    });
+  }
+  
+  return items;
 }
 
 // 根据平台确定需要的角色

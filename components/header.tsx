@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PLATFORM_OPTIONS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
+import { Calculator } from 'lucide-react';
 
 interface HeaderProps {
   projectInfo: ProjectInfo;
@@ -23,10 +24,18 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
   };
 
   return (
-    <div className="border-b bg-white px-6 py-4">
+    <div className="border-b bg-white px-2 py-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-8 flex-1">
-          <h1 className="text-xl font-bold text-gray-900">软件估价系统</h1>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
+              <Calculator className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-sm font-semibold text-gray-900">软件成本测算系统</h1>
+              <p className="text-[10px] text-gray-400">科学评估 · 精准测算 · 高效决策</p>
+            </div>
+          </div>
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">

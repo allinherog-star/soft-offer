@@ -26,6 +26,16 @@ export interface ProjectInfo {
   platforms: Platform[];
 }
 
+// 按钮功能
+export interface ButtonFunction {
+  id: string;
+  name: string;
+  complexity?: Complexity;
+  priority?: Priority;
+  isImportant: boolean;
+  remark: string;
+}
+
 // 功能节点
 export interface FunctionNode {
   id: string;
@@ -36,6 +46,7 @@ export interface FunctionNode {
   remark: string;
   children?: FunctionNode[];
   parentId?: string;
+  buttons?: ButtonFunction[];  // 菜单节点可以包含按钮功能
 }
 
 // 人力单位成本（按月薪，3档）
