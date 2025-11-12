@@ -350,9 +350,9 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                     onClick={() => tryAddNode()} 
                     size="sm" 
                     variant="outline" 
-                    className="w-full"
+                    className="w-full h-7 text-xs"
                   >
-                    <Plus className="h-4 w-4 mr-1" />
+                    <Plus className="h-3 w-3 mr-1" />
                     添加模块
                   </Button>
                 </TooltipTrigger>

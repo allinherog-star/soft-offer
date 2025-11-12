@@ -114,6 +114,31 @@ export const PRIORITY_OPTIONS = ['低', '中', '高', '极高'] as const;
 // 平台选项
 export const PLATFORM_OPTIONS = ['PC端', 'Web端', 'H5页面', 'Android端', 'IOS端', '小程序'] as const;
 
+// 行业选项
+export const INDUSTRY_OPTIONS = [
+  { label: '互联网', icon: 'Globe' },
+  { label: '金融', icon: 'BadgeDollarSign' },
+  { label: '电商', icon: 'ShoppingCart' },
+  { label: '教育', icon: 'GraduationCap' },
+  { label: '医疗健康', icon: 'Heart' },
+  { label: '制造业', icon: 'Factory' },
+  { label: '零售', icon: 'Store' },
+  { label: '物流', icon: 'Truck' },
+  { label: '房地产', icon: 'Home' },
+  { label: '能源', icon: 'Zap' },
+  { label: '政府', icon: 'Landmark' },
+  { label: '通信', icon: 'Radio' },
+  { label: '媒体', icon: 'Tv' },
+  { label: '旅游', icon: 'Plane' },
+  { label: '餐饮', icon: 'UtensilsCrossed' },
+  { label: '企业服务', icon: 'Briefcase' },
+  { label: '游戏', icon: 'Gamepad2' },
+  { label: '社交', icon: 'Users' },
+  { label: '汽车', icon: 'Car' },
+  { label: '农业', icon: 'Sprout' },
+  { label: '其他', icon: 'MoreHorizontal' }
+] as const;
+
 // 默认全局配置
 export const DEFAULT_CONFIG: GlobalConfig = {
   roleCosts: DEFAULT_ROLE_COSTS,

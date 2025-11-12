@@ -22,6 +22,7 @@ export type TeamRole =
 // 项目基础信息
 export interface ProjectInfo {
   name: string;
+  description?: string;
   industry: string;
   platforms: Platform[];
 }
