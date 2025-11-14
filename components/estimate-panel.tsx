@@ -112,16 +112,30 @@ export function EstimatePanel({
   return (
     <div className="flex flex-col h-full bg-white border-l">
       <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
+        <div>
           {/* 人力投入 */}
-          <div>
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h3 className="text-sm font-semibold text-gray-800">人力投入</h3>
+          <div className="bg-white">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-blue-100">
+              <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+                <span className="w-0.5 h-4 bg-blue-500 rounded-full"></span>
+                人力投入
+              </h3>
+            </div>
+            
+            {/* 表头 */}
+            <div className="flex items-center gap-1.5 py-1.5 px-2 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                <span className="text-[10px] font-medium text-gray-600">岗位</span>
+              </div>
+              <div className="text-[10px] font-medium text-gray-600 w-11 text-right">人力</div>
+              <div className="text-[10px] font-medium text-gray-600 w-24 text-right pr-6">月薪</div>
+              <div className="text-[10px] font-medium text-gray-600 w-14 text-right">人力成本</div>
+              <div className="w-5"></div>
             </div>
             
             {/* 岗位列表 */}
-            <div className="space-y-1">
-              {estimate.teamWorkloads.map((workload) => {
+            <div className="space-y-0">
+              {estimate.teamWorkloads.map((workload, index) => {
                 const monthlySalary = getSalary(workload.role);
                 const marketSalary = getMarketSalary(workload.role);
                 const cost = (workload.workDays / 22) * monthlySalary;
@@ -130,28 +144,29 @@ export function EstimatePanel({
                 return (
                   <div 
                     key={workload.role} 
-                    className="group flex items-center gap-2 py-1.5 px-2 rounded hover:bg-gray-50 transition-colors"
+                    className={`group flex items-center gap-1.5 py-1.5 px-2 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                   >
                     {/* 岗位名称 */}
-                    <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                    <div className="flex items-center gap-1 flex-1 min-w-0">
                       {getRoleIcon(workload.role as TeamRole)}
-                      <span className="text-xs text-gray-700 truncate">{workload.role}</span>
+                      <span className="text-[11px] text-gray-700 truncate">{workload.role}</span>
                     </div>
                     
                     {/* 工作天数 */}
-                    <div className="text-xs text-gray-900 font-medium w-12 text-right">
-                      {workload.workDays.toFixed(1)}天
+                    <div className="text-[11px] text-gray-900 font-medium w-11 text-right">
+                      {workload.workDays.toFixed(1)}
+                      <span className="text-[9px] text-gray-500 ml-0.5">天</span>
                     </div>
                     
-                    {/* 月薪 */}
-                    <div className="w-16 text-right">
+                    {/* 月薪（包含编辑图标） */}
+                    <div className="w-24 flex items-center justify-end gap-0.5">
                       {isEditing ? (
                         <div className="flex items-center gap-0.5">
                           <Input
                             type="number"
                             value={editSalary}
                             onChange={(e) => setEditSalary(e.target.value)}
-                            className="h-6 w-12 text-xs text-right px-1"
+                            className="h-5 w-14 text-[11px] text-right px-1"
                             autoFocus
                             step="0.1"
                             onKeyDown={(e) => {
@@ -159,45 +174,44 @@ export function EstimatePanel({
                               if (e.key === 'Escape') setEditingRole(null);
                             }}
                           />
-                          <span className="text-xs text-gray-500">万</span>
+                          <span className="text-[10px] text-gray-500 w-4">万</span>
+                          <button
+                            onClick={() => saveEditSalary(workload.role)}
+                            className="p-0.5 hover:bg-green-100 rounded"
+                            title="保存"
+                          >
+                            <Check className="h-3 w-3 text-green-600" />
+                          </button>
                         </div>
                       ) : (
-                        <span className="text-xs text-orange-600 font-semibold">
-                          {(marketSalary / 10).toFixed(1)}万
-                        </span>
+                        <div className="flex items-center gap-0.5">
+                          <span className="text-[11px] text-orange-600 font-semibold text-right w-16">
+                            {(marketSalary / 10).toFixed(1)}<span className="text-[9px] text-gray-500 ml-0.5">万</span>
+                          </span>
+                          <button
+                            onClick={() => startEditSalary(workload.role)}
+                            className="p-0.5 hover:bg-blue-100 rounded transition-colors"
+                            title="编辑月薪"
+                          >
+                            <Pencil className="h-3 w-3 text-gray-400" />
+                          </button>
+                        </div>
                       )}
                     </div>
                     
                     {/* 成本 */}
-                    <div className="text-xs text-gray-600 w-16 text-right">
-                      {(cost / 10000).toFixed(1)}万
+                    <div className="text-[11px] text-gray-700 font-medium w-14 text-right">
+                      {(cost / 10000).toFixed(1)}<span className="text-[9px] text-gray-500 ml-0.5">万</span>
                     </div>
                     
-                    {/* 操作按钮 */}
-                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {isEditing ? (
-                        <button
-                          onClick={() => saveEditSalary(workload.role)}
-                          className="p-0.5 hover:bg-green-100 rounded"
-                          title="保存"
-                        >
-                          <Check className="h-3 w-3 text-green-600" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => startEditSalary(workload.role)}
-                          className="p-0.5 hover:bg-gray-200 rounded"
-                          title="编辑"
-                        >
-                          <Pencil className="h-3 w-3 text-gray-400" />
-                        </button>
-                      )}
+                    {/* 删除按钮 */}
+                    <div className="w-5 flex items-center justify-center">
                       <button
                         onClick={() => deleteRole(workload.role)}
-                        className="p-0.5 hover:bg-red-100 rounded"
-                        title="删除"
+                        className="p-0.5 hover:bg-red-100 rounded transition-colors"
+                        title="删除该岗位"
                       >
-                        <Trash2 className="h-3 w-3 text-gray-400" />
+                        <Trash2 className="h-3 w-3 text-gray-400 hover:text-red-600" />
                       </button>
                     </div>
                   </div>
