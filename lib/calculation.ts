@@ -8,21 +8,13 @@ import {
   Complexity
 } from '@/types';
 
-// 获取选中档位的月薪
+// 获取角色的月薪（转换为元）
 function getSalary(config: GlobalConfig, role: TeamRole): number {
   const roleCost = config.roleCosts.find(r => r.role === role);
   if (!roleCost) return 0;
   
-  switch (roleCost.selectedLevel) {
-    case 'low':
-      return roleCost.salaryLow;
-    case 'mid':
-      return roleCost.salaryMid;
-    case 'high':
-      return roleCost.salaryHigh;
-    default:
-      return roleCost.salaryMid;
-  }
+  // salary是千单位，需要乘以1000转换为元
+  return (roleCost.salary || 0) * 1000;
 }
 
 // 获取某个节点的复杂度对应的工期

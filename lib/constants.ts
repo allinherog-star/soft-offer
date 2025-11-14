@@ -1,69 +1,96 @@
-import { GlobalConfig, RoleCost, TeamRole } from '@/types';
+import { GlobalConfig, RoleCost, TeamRole, WorkExperience } from '@/types';
+
+// 角色基础薪资（用于计算推荐月薪，调整为产生30k、35k、40k、80k等整数）
+const ROLE_BASE_SALARY: Record<TeamRole, number> = {
+  '产品经理': 19200,  // 二线中厂6年 -> 30k
+  '项目经理': 25600,  // 二线中厂6年 -> 40k
+  '架构师': 35600,    // 一线大厂10年 -> 80k
+  '平面设计师': 18300, // 三线小厂4年 -> 22k
+  '后端开发工程师': 22400, // 二线中厂6年 -> 35k
+  '前端开发工程师': 22400, // 二线中厂6年 -> 35k
+  '移动端IOS开发工程师': 22400, // 二线中厂6年 -> 35k
+  '移动端Android开发工程师': 22400, // 二线中厂6年 -> 35k
+  '小程序开发工程师': 16700 // 三线小厂4年 -> 20k
+};
+
+// 工作经验系数
+const EXPERIENCE_MULTIPLIER: Record<WorkExperience, number> = {
+  '一线大厂': 1.5,
+  '二线中厂': 1.2,
+  '三线小厂': 1.0,
+  '新手上路': 0.7
+};
+
+// 根据角色、经验和年限计算推荐月薪（返回千单位的整数）
+export function calculateRecommendedSalary(
+  role: TeamRole,
+  experience: WorkExperience,
+  workYears: number
+): number {
+  const baseSalary = ROLE_BASE_SALARY[role];
+  const experienceMultiplier = EXPERIENCE_MULTIPLIER[experience];
+  const yearBonus = Math.min(workYears * 0.05, 0.5); // 每年加5%，最多50%
+  
+  // 返回千单位的整数
+  return Math.round((baseSalary * experienceMultiplier * (1 + yearBonus)) / 1000);
+}
 
 // 默认人力成本配置（月薪）
+// 工作年限根据经验自动匹配：新手上路(2年)、三线小厂(4年)、二线中厂(6年)、一线大厂(10年)
 export const DEFAULT_ROLE_COSTS: RoleCost[] = [
   {
     role: '产品经理',
-    salaryLow: 15000,
-    salaryMid: 20000,
-    salaryHigh: 30000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('产品经理', '一线大厂', 10)
   },
   {
     role: '项目经理',
-    salaryLow: 18000,
-    salaryMid: 25000,
-    salaryHigh: 35000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('项目经理', '一线大厂', 10)
   },
   {
     role: '架构师',
-    salaryLow: 25000,
-    salaryMid: 35000,
-    salaryHigh: 50000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('架构师', '一线大厂', 10)
   },
   {
     role: '平面设计师',
-    salaryLow: 12000,
-    salaryMid: 18000,
-    salaryHigh: 25000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('平面设计师', '一线大厂', 10)
   },
   {
     role: '后端开发工程师',
-    salaryLow: 15000,
-    salaryMid: 22000,
-    salaryHigh: 32000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('后端开发工程师', '一线大厂', 10)
   },
   {
     role: '前端开发工程师',
-    salaryLow: 15000,
-    salaryMid: 22000,
-    salaryHigh: 32000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('前端开发工程师', '一线大厂', 10)
   },
   {
     role: '移动端IOS开发工程师',
-    salaryLow: 16000,
-    salaryMid: 23000,
-    salaryHigh: 33000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('移动端IOS开发工程师', '一线大厂', 10)
   },
   {
     role: '移动端Android开发工程师',
-    salaryLow: 16000,
-    salaryMid: 23000,
-    salaryHigh: 33000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('移动端Android开发工程师', '一线大厂', 10)
   },
   {
     role: '小程序开发工程师',
-    salaryLow: 14000,
-    salaryMid: 20000,
-    salaryHigh: 28000,
-    selectedLevel: 'mid'
+    experience: '一线大厂',
+    workYears: 10,
+    salary: calculateRecommendedSalary('小程序开发工程师', '一线大厂', 10)
   }
 ];
 

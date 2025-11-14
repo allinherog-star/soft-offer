@@ -39,16 +39,8 @@ export function EstimatePanel({
     const roleCost = config.roleCosts.find(r => r.role === role);
     if (!roleCost) return 0;
     
-    switch (roleCost.selectedLevel) {
-      case 'low':
-        return roleCost.salaryLow;
-      case 'mid':
-        return roleCost.salaryMid;
-      case 'high':
-        return roleCost.salaryHigh;
-      default:
-        return roleCost.salaryMid;
-    }
+    // salary是千单位，需要乘以1000转换为元
+    return (roleCost.salary || 0) * 1000;
   };
 
   return (

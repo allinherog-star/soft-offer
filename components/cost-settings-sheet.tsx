@@ -1,19 +1,17 @@
 'use client';
 
-import { GlobalConfig, TeamRole } from '@/types';
+import { useState } from 'react';
+import { GlobalConfig, TeamRole, WorkExperience } from '@/types';
+import { DEFAULT_ROLE_COSTS, calculateRecommendedSalary } from '@/lib/constants';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
 } from '@/components/ui/sheet';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface CostSettingsSheetProps {
   open: boolean;
@@ -23,26 +21,75 @@ interface CostSettingsSheetProps {
 }
 
 export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }: CostSettingsSheetProps) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [tempRoleCost, setTempRoleCost] = useState<any>(null);
+  const [editingDuration, setEditingDuration] = useState<string | null>(null); // 正在编辑的复杂度
+  const [editingRatio, setEditingRatio] = useState<string | null>(null); // 正在编辑的岗位
   
-  const handleSalaryChange = (role: TeamRole, level: 'salaryLow' | 'salaryMid' | 'salaryHigh', value: string) => {
-    const numValue = parseFloat(value) || 0;
-    const newRoleCosts = config.roleCosts.map(rc => 
-      rc.role === role ? { ...rc, [level]: numValue } : rc
-    );
+  const handleRoleSelect = (index: number, role: TeamRole) => {
+    const defaultRole = DEFAULT_ROLE_COSTS.find(rc => rc.role === role);
+    if (defaultRole) {
+      const newRoleCosts = [...config.roleCosts];
+      newRoleCosts[index] = { ...defaultRole };
     onConfigChange({
       ...config,
       roleCosts: newRoleCosts
     });
+    }
   };
 
-  const handleLevelChange = (role: TeamRole, level: 'low' | 'mid' | 'high') => {
-    const newRoleCosts = config.roleCosts.map(rc => 
-      rc.role === role ? { ...rc, selectedLevel: level } : rc
-    );
+  const startEditing = (index: number) => {
+    setEditingIndex(index);
+    setTempRoleCost({ ...config.roleCosts[index] });
+  };
+
+  const cancelEditing = () => {
+    setEditingIndex(null);
+    setTempRoleCost(null);
+  };
+
+  const saveEditing = () => {
+    if (editingIndex !== null && tempRoleCost) {
+      const newRoleCosts = [...config.roleCosts];
+      newRoleCosts[editingIndex] = tempRoleCost;
     onConfigChange({
       ...config,
       roleCosts: newRoleCosts
     });
+      setEditingIndex(null);
+      setTempRoleCost(null);
+    }
+  };
+
+  // 根据工作经验获取默认年限
+  const getDefaultYears = (experience: WorkExperience): number => {
+    switch (experience) {
+      case '新手上路': return 2;      // 3年以内，取中间值
+      case '三线小厂': return 4;      // 3~5年，取中间值
+      case '二线中厂': return 6;      // 5~8年，取中间值
+      case '一线大厂': return 10;     // 8年以上
+      default: return 3;
+    }
+  };
+
+  const handleTempChange = (field: string, value: any) => {
+    const updated = { ...tempRoleCost, [field]: value };
+    
+    // 如果修改了经验，自动更新年限
+    if (field === 'experience') {
+      updated.workYears = getDefaultYears(value as WorkExperience);
+    }
+    
+    // 如果修改了角色或经验，自动更新推荐月薪
+    if (field === 'role' || field === 'experience') {
+      updated.salary = calculateRecommendedSalary(
+        updated.role,
+        updated.experience,
+        updated.workYears
+      );
+    }
+    
+    setTempRoleCost(updated);
   };
 
   const handleWorkDurationChange = (complexity: '低' | '中' | '高' | '极高', value: string) => {
@@ -67,136 +114,429 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
     });
   };
 
+  const allRoles: TeamRole[] = [
+    '产品经理', '项目经理', '架构师', '平面设计师',
+    '后端开发工程师', '前端开发工程师', 
+    '移动端IOS开发工程师', '移动端Android开发工程师', '小程序开发工程师'
+  ];
+
+  const experienceOptions: WorkExperience[] = ['一线大厂', '二线中厂', '三线小厂', '新手上路'];
+
+  // 工作经验图标映射
+  const getExperienceIcon = (experience: WorkExperience) => {
+    switch (experience) {
+      case '一线大厂':
+        return <Trophy className="h-3.5 w-3.5 text-amber-500" />;
+      case '二线中厂':
+        return <Medal className="h-3.5 w-3.5 text-gray-500" />;
+      case '三线小厂':
+        return <Award className="h-3.5 w-3.5 text-blue-500" />;
+      case '新手上路':
+        return <Star className="h-3.5 w-3.5 text-green-500" />;
+      default:
+        return <Award className="h-3.5 w-3.5 text-gray-400" />;
+    }
+  };
+
+  // 角色图标映射
+  const getRoleIcon = (role: TeamRole) => {
+    switch (role) {
+      case '产品经理':
+        return <User className="h-4 w-4 text-blue-500" />;
+      case '项目经理':
+        return <Users className="h-4 w-4 text-purple-500" />;
+      case '架构师':
+        return <Laptop className="h-4 w-4 text-orange-500" />;
+      case '平面设计师':
+        return <Palette className="h-4 w-4 text-pink-500" />;
+      case '后端开发工程师':
+        return <Code className="h-4 w-4 text-green-500" />;
+      case '前端开发工程师':
+        return <Code className="h-4 w-4 text-cyan-500" />;
+      case '移动端IOS开发工程师':
+        return <Smartphone className="h-4 w-4 text-gray-700" />;
+      case '移动端Android开发工程师':
+        return <TabletSmartphone className="h-4 w-4 text-green-600" />;
+      case '小程序开发工程师':
+        return <Smartphone className="h-4 w-4 text-blue-600" />;
+      default:
+        return <User className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  // 根据工作经验获取颜色样式
+  const getSalaryColorByExperience = (experience: WorkExperience) => {
+    switch (experience) {
+      case '一线大厂':
+        return 'text-amber-600 font-semibold'; // 金色
+      case '二线中厂':
+        return 'text-orange-600 font-medium'; // 橙色
+      case '三线小厂':
+        return 'text-blue-600 font-medium'; // 蓝色
+      case '新手上路':
+        return 'text-green-600'; // 绿色
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  // 功能复杂度图标映射
+  const getComplexityIcon = (complexity: string) => {
+    switch (complexity) {
+      case '低':
+        return <CircleDot className="h-3.5 w-3.5 text-green-500" />;
+      case '中':
+        return <Circle className="h-3.5 w-3.5 text-blue-500" />;
+      case '高':
+        return <TrendingUpIcon className="h-3.5 w-3.5 text-orange-500" />;
+      case '极高':
+        return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
+      default:
+        return <Circle className="h-3.5 w-3.5 text-gray-400" />;
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[600px] sm:w-[700px] sm:max-w-[700px]">
-        <SheetHeader>
-          <SheetTitle>单位成本配置</SheetTitle>
-          <SheetDescription>
-            配置团队人力成本和工期单位成本
-          </SheetDescription>
-        </SheetHeader>
-        
-        <ScrollArea className="h-[calc(100vh-120px)] mt-6">
-          <div className="space-y-6 pr-4">
-            {/* 人力单位成本 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">人力单位成本（月薪）</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {config.roleCosts.map((roleCost) => (
-                  <div key={roleCost.role} className="space-y-3 p-3 border rounded-lg">
-                    <div className="flex items-center justify-between">
-                      <Label className="font-medium">{roleCost.role}</Label>
+      <SheetContent side="right" className="w-[700px] sm:w-[800px] sm:max-w-[800px] p-0">
+        <ScrollArea className="h-full">
+          <div className="space-y-0">
+            {/* 人力成本分组 */}
+            <div className="border-b bg-white">
+              <div className="bg-gradient-to-r from-blue-50 to-white border-b border-blue-100 px-6 py-4">
+                <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <span className="w-1 h-5 bg-blue-500 rounded-full"></span>
+                  人力成本
+                </h2>
+              </div>
+              <div className="px-3 py-3">
+                <div className="border rounded-lg overflow-hidden shadow-sm">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 border-b">
+                      <th className="text-left py-2 px-3 font-medium text-gray-700 w-[260px]">人员岗位</th>
+                      <th className="text-left py-2 px-3 font-medium text-gray-700 w-[160px]">工作经验</th>
+                      <th className="text-right py-2 px-3 font-medium text-gray-700 w-[120px]">市场参考月薪</th>
+                      <th className="text-right py-2 px-3 font-medium text-gray-700 w-[120px]">期望月薪</th>
+                      <th className="text-center py-2 px-3 font-medium text-gray-700 w-[70px]">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {config.roleCosts.map((roleCost, index) => {
+                      const isEditing = editingIndex === index;
+                      const displayData = isEditing ? tempRoleCost : roleCost;
+                      
+                      // 安全检查：确保所有必需字段都存在
+                      if (!displayData || !displayData.role) {
+                        return null;
+                      }
+                      
+                      // 计算市场推荐月薪
+                      const recommendedSalary = calculateRecommendedSalary(
+                        displayData.role,
+                        displayData.experience || '二线中厂',
+                        displayData.workYears ?? 3
+                      );
+                      
+                      return (
+                        <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
+                          {/* 人员岗位 */}
+                          <td className="py-1.5 px-3">
+                            {isEditing ? (
+                              <Select
+                                value={displayData.role}
+                                onValueChange={(value: TeamRole) => handleTempChange('role', value)}
+                              >
+                                <SelectTrigger className="w-full h-8 border-gray-300 text-sm">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {allRoles.map((role) => (
+                                    <SelectItem key={role} value={role}>
+                                      {role}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <span className="text-gray-700 text-sm flex items-center gap-2">
+                                {getRoleIcon(displayData.role)}
+                                {displayData.role}
+                              </span>
+                            )}
+                          </td>
+                          
+                          {/* 工作经验（含年限） */}
+                          <td className="py-1.5 px-3">
+                            {isEditing ? (
                       <Select
-                        value={roleCost.selectedLevel}
-                        onValueChange={(value: 'low' | 'mid' | 'high') => handleLevelChange(roleCost.role, value)}
+                                value={displayData.experience || '二线中厂'}
+                                onValueChange={(value: WorkExperience) => handleTempChange('experience', value)}
                       >
-                        <SelectTrigger className="w-[120px] h-8">
+                                <SelectTrigger className="w-full h-8 border-gray-300 text-sm">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="low">低档</SelectItem>
-                          <SelectItem value="mid">中档</SelectItem>
-                          <SelectItem value="high">高档</SelectItem>
+                                  {experienceOptions.map((exp) => (
+                                    <SelectItem key={exp} value={exp}>
+                                      <span className="flex items-center gap-2">
+                                        {getExperienceIcon(exp)}
+                                        {exp}
+                                      </span>
+                                    </SelectItem>
+                                  ))}
                         </SelectContent>
                       </Select>
+                            ) : (
+                              <span className="text-gray-600 text-sm flex items-center gap-1.5">
+                                {getExperienceIcon(displayData.experience || '二线中厂')}
+                                <span>
+                                  {displayData.experience || '二线中厂'}
+                                  <span className="text-gray-400 ml-1 text-xs">({displayData.workYears ?? 3}年)</span>
+                                </span>
+                              </span>
+                            )}
+                          </td>
+                          
+                          {/* 市场参考月薪（不可编辑，千单位） */}
+                          <td className="py-1.5 px-3">
+                            <span className={`text-sm flex justify-end ${getSalaryColorByExperience(displayData.experience || '二线中厂')}`}>
+                              {recommendedSalary}k
+                            </span>
+                          </td>
+                          
+                          {/* 期望月薪（可编辑，千单位） */}
+                          <td className="py-1.5 px-3">
+                            {isEditing ? (
+                        <Input
+                          type="number"
+                                value={displayData.salary ?? 0}
+                                onChange={(e) => handleTempChange('salary', parseFloat(e.target.value) || 0)}
+                                className="h-8 text-right border-gray-300 text-sm"
+                              />
+                            ) : (
+                              <span className={`text-sm flex justify-end ${getSalaryColorByExperience(displayData.experience || '二线中厂')}`}>
+                                {(displayData.salary ?? 0)}k
+                              </span>
+                            )}
+                          </td>
+                          
+                          {/* 操作 */}
+                          <td className="py-1.5 px-3">
+                            {isEditing ? (
+                              <div className="flex items-center justify-center gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  onClick={saveEditing}
+                                >
+                                  <Check className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={cancelEditing}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                                  onClick={() => startEditing(index)}
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                      </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                      </div>
+                <p className="text-xs text-gray-500 mt-2 px-1">
+                  * 根据工作经验和年限自动参考市场月薪（单位：千元）
+                </p>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="space-y-1">
-                        <Label className="text-xs text-gray-500">低档</Label>
-                        <Input
-                          type="number"
-                          value={roleCost.salaryLow}
-                          onChange={(e) => handleSalaryChange(roleCost.role, 'salaryLow', e.target.value)}
-                          className="h-8"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-gray-500">中档</Label>
-                        <Input
-                          type="number"
-                          value={roleCost.salaryMid}
-                          onChange={(e) => handleSalaryChange(roleCost.role, 'salaryMid', e.target.value)}
-                          className="h-8"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs text-gray-500">高档</Label>
-                        <Input
-                          type="number"
-                          value={roleCost.salaryHigh}
-                          onChange={(e) => handleSalaryChange(roleCost.role, 'salaryHigh', e.target.value)}
-                          className="h-8"
-                        />
-                      </div>
+
+            {/* 工期成本分组 */}
+            <div className="bg-white">
+              <div className="bg-gradient-to-r from-green-50 to-white border-b border-green-100 px-6 py-4">
+                <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <span className="w-1 h-5 bg-green-500 rounded-full"></span>
+                  工期成本
+                </h2>
+              </div>
+              <div className="px-3 py-3">
+                <div className="grid grid-cols-2 gap-3">
+                  {/* 左侧：基准工期 */}
+                  <div>
+                    <div className="mb-2 px-1">
+                      <h3 className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
+                        <span className="w-0.5 h-3 bg-green-500 rounded-full"></span>
+                        基准工期
+                      </h3>
+                    </div>
+                    <div className="border rounded-lg overflow-hidden shadow-sm">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-gray-50 border-b">
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">功能复杂度</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">天数</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(['低', '中', '高', '极高'] as const).map((complexity) => (
+                            <tr key={complexity} className="border-b last:border-b-0 hover:bg-gray-50">
+                              <td className="py-2 px-2">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  {getComplexityIcon(complexity)}
+                                  <span className="text-gray-700">{complexity}</span>
+                                </div>
+                              </td>
+                              <td className="py-2 px-2">
+                                {editingDuration === complexity ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Input
+                                      type="number"
+                                      value={config.workDurationConfigs[complexity]}
+                                      onChange={(e) => handleWorkDurationChange(complexity, e.target.value)}
+                                      className="h-7 w-16 text-center border-gray-300 text-sm"
+                                      step="0.5"
+                                      min="0.5"
+                                      autoFocus
+                                    />
+                                    <span className="text-gray-500 text-xs">天</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span className="text-gray-700 text-sm">{config.workDurationConfigs[complexity]}</span>
+                                    <span className="text-gray-500 text-xs">天</span>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="py-2 px-2">
+                                <div className="flex items-center justify-center">
+                                  {editingDuration === complexity ? (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                      onClick={() => setEditingDuration(null)}
+                                    >
+                                      <Check className="h-3.5 w-3.5" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                                      onClick={() => setEditingDuration(complexity)}
+                                    >
+                                      <Pencil className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
 
-            <Separator />
-
-            {/* 工期单位成本 */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">工期单位成本（天数）</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600">
-                    基准工期配置（后端开发工程师为基准）
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {Object.entries(config.workDurationConfigs).map(([complexity, days]) => (
-                      <div key={complexity} className="space-y-1">
-                        <Label className="text-sm">{complexity}</Label>
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            value={days}
-                            onChange={(e) => handleWorkDurationChange(complexity as any, e.target.value)}
-                            className="h-8"
-                            step="0.5"
-                            min="0.5"
-                          />
-                          <span className="text-sm text-gray-500">天</span>
-                        </div>
-                      </div>
-                    ))}
+                  {/* 右侧：岗位工期比例 */}
+                  <div>
+                    <div className="mb-2 px-1">
+                      <h3 className="text-xs font-medium text-gray-600 flex items-center gap-1.5">
+                        <span className="w-0.5 h-3 bg-green-500 rounded-full"></span>
+                        岗位工期比例
+                      </h3>
+                    </div>
+                    <div className="border rounded-lg overflow-hidden shadow-sm">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-gray-50 border-b">
+                            <th className="text-left py-2 px-2 font-medium text-gray-700">岗位</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">比例</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(config.roleRatios).map(([role, ratio]) => (
+                            <tr key={role} className="border-b last:border-b-0 hover:bg-gray-50">
+                              <td className="py-1.5 px-2 text-gray-700 text-xs">
+                                <span className="flex items-center gap-1.5">
+                                  {getRoleIcon(role as TeamRole)}
+                                  {role}
+                                </span>
+                              </td>
+                              <td className="py-1.5 px-2">
+                                {editingRatio === role ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <Input
+                                      type="number"
+                                      value={ratio}
+                                      onChange={(e) => handleRoleRatioChange(role as TeamRole, e.target.value)}
+                                      className="h-6 w-16 text-center border-gray-300 text-xs"
+                                      step="0.1"
+                                      min="0"
+                                      max="2"
+                                      autoFocus
+                                    />
+                                    <span className="text-gray-500 text-xs">: 1</span>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <span className="text-blue-600 text-xs font-medium">{ratio}</span>
+                                    <span className="text-gray-500 text-xs">: 1</span>
+                                  </div>
+                                )}
+                              </td>
+                              <td className="py-1.5 px-2">
+                                <div className="flex items-center justify-center">
+                                  {editingRatio === role ? (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                      onClick={() => setEditingRatio(null)}
+                                    >
+                                      <Check className="h-3.5 w-3.5" />
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                                      onClick={() => setEditingRatio(role)}
+                                    >
+                                      <Pencil className="h-3 w-3" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-
-                <Separator />
-
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600">
-                    角色工期比例（相对后端开发工程师）
-                  </p>
-                  <div className="space-y-2">
-                    {Object.entries(config.roleRatios).map(([role, ratio]) => (
-                      <div key={role} className="flex items-center justify-between">
-                        <Label className="text-sm">{role}</Label>
-                        <div className="flex items-center gap-2 w-[180px]">
-                          <Input
-                            type="number"
-                            value={ratio}
-                            onChange={(e) => handleRoleRatioChange(role as TeamRole, e.target.value)}
-                            className="h-8"
-                            step="0.1"
-                            min="0"
-                            max="2"
-                          />
-                          <span className="text-sm text-gray-500 whitespace-nowrap">: 1</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <p className="text-xs text-gray-500 mt-2 px-1">
+                  * 以后端开发工程师工期为基准，其他岗位根据标准比例换算
+                </p>
+              </div>
+            </div>
           </div>
         </ScrollArea>
       </SheetContent>

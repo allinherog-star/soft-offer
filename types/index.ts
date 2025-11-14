@@ -50,13 +50,15 @@ export interface FunctionNode {
   buttons?: ButtonFunction[];  // 菜单节点可以包含按钮功能
 }
 
-// 人力单位成本（按月薪，3档）
+// 工作经验类型
+export type WorkExperience = '一线大厂' | '二线中厂' | '三线小厂' | '新手上路';
+
+// 人力单位成本
 export interface RoleCost {
   role: TeamRole;
-  salaryLow: number;    // 低档月薪
-  salaryMid: number;    // 中档月薪
-  salaryHigh: number;   // 高档月薪
-  selectedLevel: 'low' | 'mid' | 'high';  // 当前选择的档位
+  experience: WorkExperience;  // 工作经验
+  workYears: number;           // 工作年限
+  salary: number;              // 月薪（根据经验和年限自动推荐）
 }
 
 // 工期单位成本配置
