@@ -94,7 +94,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                       if (e.key === 'Escape') setIsEditingName(false);
                     }}
                     className="h-6 w-full text-sm"
-                    placeholder="项目名称"
+                    placeholder="名称"
                     autoFocus
                   />
                 ) : (
@@ -103,7 +103,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                     className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group h-6"
                   >
                     <span className="text-sm font-medium text-gray-900 truncate flex-1">
-                      {projectInfo.name || '项目名称'}
+                      {projectInfo.name || '名称'}
                     </span>
                     <Edit2 className="h-3 w-3 text-gray-300 group-hover:text-gray-500 shrink-0" />
                   </div>
@@ -206,7 +206,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                     if (e.key === 'Escape') setIsEditingDescription(false);
                   }}
                   className="h-5 w-full text-xs"
-                  placeholder="项目描述"
+                  placeholder="描述"
                   autoFocus
                 />
               ) : (
@@ -215,7 +215,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                   className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group h-5"
                 >
                   <span className="text-xs text-gray-500 truncate flex-1">
-                    {projectInfo.description || '项目描述'}
+                    {projectInfo.description || '描述'}
                   </span>
                   <Edit2 className="h-2.5 w-2.5 text-gray-300 group-hover:text-gray-500 shrink-0" />
                 </div>

@@ -157,11 +157,12 @@ export default function Home() {
                   <Users2 className="h-5 w-5 text-purple-600" />
                 </div>
                 <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4">总人力</div>
+                  <div className="text-xs text-gray-500 h-4 leading-4">总人力</div>
                   <div className="text-xl font-bold text-purple-600 mt-1">
                     {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
                     <span className="text-sm font-normal ml-0.5">人天</span>
                   </div>
+                  <div className="h-[18px]"></div>
                 </div>
               </div>
 
@@ -173,12 +174,12 @@ export default function Home() {
                   <Clock className="h-5 w-5 text-blue-600" />
                 </div>
                 <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4">总工期</div>
+                  <div className="text-xs text-gray-500 h-4 leading-4">总工期</div>
                   <div className="text-xl font-bold text-blue-600 mt-1">
                     {(estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7).toFixed(1)}
                     <span className="text-sm font-normal ml-0.5">天</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs text-gray-500 mt-0.5 h-[18px] leading-[18px]">
                     预计 {(() => {
                       const totalDays = estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7;
                       const deliveryDate = new Date();
@@ -219,7 +220,7 @@ export default function Home() {
                       value={discount.toString()}
                       onValueChange={(value) => setDiscount(parseFloat(value))}
                     >
-                      <SelectTrigger className="h-7 w-24 text-xs">
+                      <SelectTrigger className="h-7 w-36 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -242,7 +243,10 @@ export default function Home() {
                             <SelectItem key={option.value} value={option.value.toString()} className="text-xs">
                               <div className="flex items-center gap-2">
                                 {icon}
-                                <span>{option.label}</span>
+                                <div className="flex flex-col">
+                                  <span>{option.label}</span>
+                                  <span className="text-[10px] text-gray-400">{option.description}</span>
+                                </div>
                               </div>
                             </SelectItem>
                           );

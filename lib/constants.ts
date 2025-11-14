@@ -124,12 +124,12 @@ export const DEFAULT_IMPACT_FACTORS = [
 
 // 折扣选项
 export const DISCOUNT_OPTIONS = [
-  { label: '无折扣', value: 1 },
-  { label: '9.5折', value: 0.95 },
-  { label: '9折', value: 0.9 },
-  { label: '8.5折', value: 0.85 },
-  { label: '8折', value: 0.8 },
-  { label: '7折', value: 0.7 }
+  { label: '无折扣', value: 1, description: '标准报价' },
+  { label: '9.5折', value: 0.95, description: '首次合作客户' },
+  { label: '9折', value: 0.9, description: '合作1-2次' },
+  { label: '8.5折', value: 0.85, description: '合作3-5次' },
+  { label: '8折', value: 0.8, description: '长期合作客户' },
+  { label: '7折', value: 0.7, description: '战略合作伙伴' }
 ];
 
 // 复杂度选项
