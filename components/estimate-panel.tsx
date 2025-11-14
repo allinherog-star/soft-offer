@@ -57,11 +57,15 @@ export function EstimatePanel({
 
   const startEditSalary = (role: string) => {
     setEditingRole(role);
-    setEditSalary(getMarketSalary(role).toString());
+    // 将千单位转换为万单位显示
+    const salaryInK = getMarketSalary(role);
+    setEditSalary((salaryInK / 10).toFixed(1));
   };
 
   const saveEditSalary = (role: string) => {
-    const newSalary = parseFloat(editSalary) || 0;
+    // 将万单位转换回千单位存储
+    const salaryInWan = parseFloat(editSalary) || 0;
+    const newSalary = salaryInWan * 10;
     const newRoleCosts = config.roleCosts.map(rc => 
       rc.role === role ? { ...rc, salary: newSalary } : rc
     );
@@ -140,22 +144,26 @@ export function EstimatePanel({
                     </div>
                     
                     {/* 月薪 */}
-                    <div className="w-14 text-right">
+                    <div className="w-16 text-right">
                       {isEditing ? (
-                        <Input
-                          type="number"
-                          value={editSalary}
-                          onChange={(e) => setEditSalary(e.target.value)}
-                          className="h-6 w-14 text-xs text-right px-1"
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') saveEditSalary(workload.role);
-                            if (e.key === 'Escape') setEditingRole(null);
-                          }}
-                        />
+                        <div className="flex items-center gap-0.5">
+                          <Input
+                            type="number"
+                            value={editSalary}
+                            onChange={(e) => setEditSalary(e.target.value)}
+                            className="h-6 w-12 text-xs text-right px-1"
+                            autoFocus
+                            step="0.1"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') saveEditSalary(workload.role);
+                              if (e.key === 'Escape') setEditingRole(null);
+                            }}
+                          />
+                          <span className="text-xs text-gray-500">万</span>
+                        </div>
                       ) : (
                         <span className="text-xs text-orange-600 font-semibold">
-                          {marketSalary}k
+                          {(marketSalary / 10).toFixed(1)}万
                         </span>
                       )}
                     </div>

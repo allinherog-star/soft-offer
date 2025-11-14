@@ -33,7 +33,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   
   // 复制查询文本到剪贴板并打开 DeepSeek
   const handleQuerySalary = async () => {
-    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考月薪（单位：千元），并整理成表格形式：
+    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考月薪（单位：万元），并整理成表格形式：
 
 岗位列表：
 1. 产品经理
@@ -212,8 +212,8 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
 
   // 根据薪资获取颜色样式（素雅风格）
   const getSalaryColorBySalary = (salary: number) => {
-    if (salary > 40) {
-      return 'text-orange-600 font-semibold'; // 大于40k突出显示
+    if (salary > 4) {
+      return 'text-orange-600 font-semibold'; // 大于4万突出显示
     }
     return 'text-gray-700'; // 其他统一素雅颜色
   };
@@ -317,7 +317,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                             {/* 市场参考月薪 */}
                             <td className="py-1.5 px-3">
                               <span className={`text-sm flex justify-end ${getSalaryColorBySalary(recommendedSalary)}`}>
-                                {recommendedSalary}k
+                                {(recommendedSalary / 10).toFixed(1)}万
                               </span>
                             </td>
                           </tr>
@@ -328,7 +328,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                 </table>
                       </div>
                 <p className="text-xs text-gray-500 mt-2 px-1">
-                  * 展示各岗位不同工作经验对应的市场参考月薪（单位：千元）
+                  * 展示各岗位不同工作经验对应的市场参考月薪（单位：万元）
                 </p>
                       </div>
                     </div>
