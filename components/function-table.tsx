@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { COMPLEXITY_OPTIONS, PRIORITY_OPTIONS } from '@/lib/constants';
-import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp } from 'lucide-react';
+import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2 } from 'lucide-react';
 
 interface FunctionTableProps {
   nodes: FunctionNode[];
@@ -302,6 +302,64 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     onNodesChange([...nodes]);
   };
 
+  // 批量为所有需求节点添加标准功能
+  const batchAddStandardButtons = () => {
+    const standardButtons = [
+      { name: '新增', isImportant: false, remark: '', complexity: '低', priority: '低' },
+      { name: '编辑', isImportant: false, remark: '', complexity: '低', priority: '低' },
+      { name: '删除', isImportant: false, remark: '', complexity: '低', priority: '低' },
+      { name: '查询', isImportant: false, remark: '', complexity: '低', priority: '低' },
+    ];
+
+    const processNode = (nodeList: FunctionNode[]): void => {
+      nodeList.forEach(node => {
+        const hasChildren = node.children && node.children.length > 0;
+        const isMenuNode = !hasChildren; // 叶子节点是需求节点
+        
+        if (isMenuNode) {
+          if (!node.buttons) node.buttons = [];
+          
+          // 获取已存在的功能名称
+          const existingNames = new Set(node.buttons.map(b => b.name));
+          
+          // 只添加不存在的标准功能
+          standardButtons.forEach((btnTemplate, index) => {
+            if (!existingNames.has(btnTemplate.name)) {
+              const newButton: ButtonFunction = {
+                id: `btn-${Date.now()}-${Math.random()}-${index}`,
+                name: btnTemplate.name,
+                complexity: btnTemplate.complexity as any,
+                priority: btnTemplate.priority as any,
+                isImportant: btnTemplate.isImportant,
+                remark: btnTemplate.remark
+              };
+              if (node.buttons) {
+                node.buttons.push(newButton);
+              }
+            }
+          });
+          
+          // 排序按钮
+          if (node.buttons) {
+            node.buttons = sortButtons(node.buttons);
+          }
+          
+          // 自动展开
+          setExpandedMenus(prev => new Set(prev).add(node.id));
+        }
+        
+        // 递归处理子节点
+        if (node.children) {
+          processNode(node.children);
+        }
+      });
+    };
+
+    processNode(nodes);
+    onNodesChange([...nodes]);
+    setIsAllExpanded(true);
+  };
+
   const addImportExportButtons = (nodeId: string) => {
     const importExportButtons = [
       { name: '导入', isImportant: false, remark: '' },
@@ -420,6 +478,13 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       ) : (
                         <ChevronsDown className="h-3 w-3" />
                       )}
+                    </button>
+                    <button
+                      onClick={batchAddStandardButtons}
+                      className="p-0.5 hover:bg-gray-300 rounded text-gray-600"
+                      title="批量添加标准功能（新增、编辑、删除、查询）"
+                    >
+                      <Wand2 className="h-3 w-3" />
                     </button>
                   </div>
                 </th>
