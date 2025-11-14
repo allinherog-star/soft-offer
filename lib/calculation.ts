@@ -23,7 +23,7 @@ function getWorkDays(complexity: Complexity | undefined, config: GlobalConfig): 
   return config.workDurationConfigs[complexity] || 0;
 }
 
-// 递归收集所有叶子节点（有复杂度的节点）和按钮功能
+// 递归收集所有叶子节点（有复杂度的节点）和按钮操作
 function collectLeafNodes(node: FunctionNode): Array<{complexity?: Complexity}> {
   const items: Array<{complexity?: Complexity}> = [];
   
@@ -39,7 +39,7 @@ function collectLeafNodes(node: FunctionNode): Array<{complexity?: Complexity}> 
     });
   }
   
-  // 收集按钮功能
+  // 收集按钮操作
   if (node.buttons && node.buttons.length > 0) {
     node.buttons.forEach(button => {
       if (button.complexity) {

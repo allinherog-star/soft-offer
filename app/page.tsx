@@ -10,7 +10,7 @@ import { CostSettingsSheet } from '@/components/cost-settings-sheet';
 import { calculateEstimate } from '@/lib/calculation';
 import { DEFAULT_CONFIG, DISCOUNT_OPTIONS } from '@/lib/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2 } from 'lucide-react';
+import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench } from 'lucide-react';
 
 export default function Home() {
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
@@ -259,13 +259,24 @@ export default function Home() {
 
               <div className="w-px h-12 bg-gray-300"></div>
 
-              {/* 折后价 */}
+              {/* 折后价 + 运维成本 */}
               <div className="flex items-start gap-3 bg-gradient-to-r from-red-50 to-orange-50 px-4 py-2 rounded-lg border-2 border-red-300 min-h-[60px]">
-                <div className="flex flex-col justify-start">
-                  <div className="text-xs text-gray-600 font-medium h-4">折后价</div>
-                  <div className="text-2xl font-bold text-red-600 mt-1">
-                    {(estimate.finalPrice / 10000).toFixed(1)}
-                    <span className="text-base font-normal ml-1">万</span>
+                <div className="flex flex-col justify-start gap-2">
+                  <div>
+                    <div className="text-xs text-gray-600 font-medium h-4">折后价</div>
+                    <div className="text-2xl font-bold text-red-600 mt-1">
+                      {(estimate.finalPrice / 10000).toFixed(1)}
+                      <span className="text-base font-normal ml-1">万</span>
+                    </div>
+                  </div>
+                  <div className="border-t border-red-200 pt-1.5">
+                    <div className="flex items-center gap-2">
+                      <Wrench className="h-3.5 w-3.5 text-gray-500" />
+                      <span className="text-xs text-gray-600">运维成本</span>
+                      <span className="text-sm font-semibold text-red-500">
+                        {(estimate.finalPrice * 0.1 / 10000).toFixed(1)}万/月
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

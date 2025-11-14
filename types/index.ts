@@ -27,7 +27,7 @@ export interface ProjectInfo {
   platforms: Platform[];
 }
 
-// 按钮功能
+// 按钮操作
 export interface ButtonFunction {
   id: string;
   name: string;
@@ -47,7 +47,7 @@ export interface FunctionNode {
   remark: string;
   children?: FunctionNode[];
   parentId?: string;
-  buttons?: ButtonFunction[];  // 需求节点可以包含按钮功能
+  buttons?: ButtonFunction[];  // 功能节点可以包含按钮操作
 }
 
 // 工作经验类型
