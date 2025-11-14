@@ -164,20 +164,12 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
     }
   };
 
-  // 根据工作经验获取颜色样式
-  const getSalaryColorByExperience = (experience: WorkExperience) => {
-    switch (experience) {
-      case '一线大厂':
-        return 'text-amber-600 font-semibold'; // 金色
-      case '二线中厂':
-        return 'text-orange-600 font-medium'; // 橙色
-      case '三线小厂':
-        return 'text-blue-600 font-medium'; // 蓝色
-      case '新手上路':
-        return 'text-green-600'; // 绿色
-      default:
-        return 'text-gray-600';
+  // 根据薪资获取颜色样式（素雅风格）
+  const getSalaryColorBySalary = (salary: number) => {
+    if (salary > 40) {
+      return 'text-orange-600 font-semibold'; // 大于40k突出显示
     }
+    return 'text-gray-700'; // 其他统一素雅颜色
   };
 
   // 功能复杂度图标映射
@@ -214,155 +206,62 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-gray-50 border-b">
-                      <th className="text-left py-2 px-3 font-medium text-gray-700 w-[260px]">人员岗位</th>
-                      <th className="text-left py-2 px-3 font-medium text-gray-700 w-[160px]">工作经验</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-700 w-[120px]">市场参考月薪</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-700 w-[120px]">期望月薪</th>
-                      <th className="text-center py-2 px-3 font-medium text-gray-700 w-[70px]">操作</th>
+                      <th className="text-left py-2 px-3 font-medium text-gray-700">人员岗位</th>
+                      <th className="text-left py-2 px-3 font-medium text-gray-700">工作经验</th>
+                      <th className="text-right py-2 px-3 font-medium text-gray-700">市场参考月薪</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {config.roleCosts.map((roleCost, index) => {
-                      const isEditing = editingIndex === index;
-                      const displayData = isEditing ? tempRoleCost : roleCost;
+                    {allRoles.map((role) => {
+                      const experiences: { exp: WorkExperience; years: number }[] = [
+                        { exp: '一线大厂', years: 10 },
+                        { exp: '二线中厂', years: 6 },
+                        { exp: '三线小厂', years: 4 },
+                        { exp: '新手上路', years: 2 }
+                      ];
                       
-                      // 安全检查：确保所有必需字段都存在
-                      if (!displayData || !displayData.role) {
-                        return null;
-                      }
-                      
-                      // 计算市场推荐月薪
-                      const recommendedSalary = calculateRecommendedSalary(
-                        displayData.role,
-                        displayData.experience || '二线中厂',
-                        displayData.workYears ?? 3
-                      );
-                      
-                      return (
-                        <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
-                          {/* 人员岗位 */}
-                          <td className="py-1.5 px-3">
-                            {isEditing ? (
-                              <Select
-                                value={displayData.role}
-                                onValueChange={(value: TeamRole) => handleTempChange('role', value)}
-                              >
-                                <SelectTrigger className="w-full h-8 border-gray-300 text-sm">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {allRoles.map((role) => (
-                                    <SelectItem key={role} value={role}>
-                                      {role}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <span className="text-gray-700 text-sm flex items-center gap-2">
-                                {getRoleIcon(displayData.role)}
-                                {displayData.role}
-                              </span>
+                      return experiences.map((item, expIndex) => {
+                        const recommendedSalary = calculateRecommendedSalary(role, item.exp, item.years);
+                        const isFirstRow = expIndex === 0;
+                        
+                        return (
+                          <tr key={`${role}-${item.exp}`} className="border-b last:border-b-0 hover:bg-gray-50">
+                            {/* 人员岗位 - 只在第一行显示 */}
+                            {isFirstRow && (
+                              <td className="py-1.5 px-3 align-top border-r" rowSpan={4}>
+                                <span className="text-gray-700 text-sm flex items-center gap-2">
+                                  {getRoleIcon(role)}
+                                  {role}
+                                </span>
+                              </td>
                             )}
-                          </td>
-                          
-                          {/* 工作经验（含年限） */}
-                          <td className="py-1.5 px-3">
-                            {isEditing ? (
-                      <Select
-                                value={displayData.experience || '二线中厂'}
-                                onValueChange={(value: WorkExperience) => handleTempChange('experience', value)}
-                      >
-                                <SelectTrigger className="w-full h-8 border-gray-300 text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                                  {experienceOptions.map((exp) => (
-                                    <SelectItem key={exp} value={exp}>
-                                      <span className="flex items-center gap-2">
-                                        {getExperienceIcon(exp)}
-                                        {exp}
-                                      </span>
-                                    </SelectItem>
-                                  ))}
-                        </SelectContent>
-                      </Select>
-                            ) : (
+                            
+                            {/* 工作经验 */}
+                            <td className="py-1.5 px-3">
                               <span className="text-gray-600 text-sm flex items-center gap-1.5">
-                                {getExperienceIcon(displayData.experience || '二线中厂')}
+                                {getExperienceIcon(item.exp)}
                                 <span>
-                                  {displayData.experience || '二线中厂'}
-                                  <span className="text-gray-400 ml-1 text-xs">({displayData.workYears ?? 3}年)</span>
+                                  {item.exp}
+                                  <span className="text-gray-400 ml-1 text-xs">({item.years}年)</span>
                                 </span>
                               </span>
-                            )}
-                          </td>
-                          
-                          {/* 市场参考月薪（不可编辑，千单位） */}
-                          <td className="py-1.5 px-3">
-                            <span className={`text-sm flex justify-end ${getSalaryColorByExperience(displayData.experience || '二线中厂')}`}>
-                              {recommendedSalary}k
-                            </span>
-                          </td>
-                          
-                          {/* 期望月薪（可编辑，千单位） */}
-                          <td className="py-1.5 px-3">
-                            {isEditing ? (
-                        <Input
-                          type="number"
-                                value={displayData.salary ?? 0}
-                                onChange={(e) => handleTempChange('salary', parseFloat(e.target.value) || 0)}
-                                className="h-8 text-right border-gray-300 text-sm"
-                              />
-                            ) : (
-                              <span className={`text-sm flex justify-end ${getSalaryColorByExperience(displayData.experience || '二线中厂')}`}>
-                                {(displayData.salary ?? 0)}k
+                            </td>
+                            
+                            {/* 市场参考月薪 */}
+                            <td className="py-1.5 px-3">
+                              <span className={`text-sm flex justify-end ${getSalaryColorBySalary(recommendedSalary)}`}>
+                                {recommendedSalary}k
                               </span>
-                            )}
-                          </td>
-                          
-                          {/* 操作 */}
-                          <td className="py-1.5 px-3">
-                            {isEditing ? (
-                              <div className="flex items-center justify-center gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                  onClick={saveEditing}
-                                >
-                                  <Check className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                  onClick={cancelEditing}
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex items-center justify-center">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                                  onClick={() => startEditing(index)}
-                                >
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Button>
-                      </div>
-                            )}
-                          </td>
-                        </tr>
-                      );
+                            </td>
+                          </tr>
+                        );
+                      });
                     })}
                   </tbody>
                 </table>
                       </div>
                 <p className="text-xs text-gray-500 mt-2 px-1">
-                  * 根据工作经验和年限自动参考市场月薪（单位：千元）
+                  * 展示各岗位不同工作经验对应的市场参考月薪（单位：千元）
                 </p>
                       </div>
                     </div>
@@ -389,8 +288,8 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="bg-gray-50 border-b">
-                            <th className="text-center py-2 px-2 font-medium text-gray-700">功能复杂度</th>
-                            <th className="text-center py-2 px-2 font-medium text-gray-700">天数</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">菜单功能复杂度</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">标准工期</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">操作</th>
                           </tr>
                         </thead>
