@@ -47,7 +47,7 @@ export interface FunctionNode {
   remark: string;
   children?: FunctionNode[];
   parentId?: string;
-  buttons?: ButtonFunction[];  // 菜单节点可以包含按钮功能
+  buttons?: ButtonFunction[];  // 需求节点可以包含按钮功能
 }
 
 // 工作经验类型

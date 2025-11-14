@@ -50,7 +50,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     setExpandedMenus(newExpanded);
   };
 
-  // 获取所有菜单类型节点的ID
+  // 获取所有需求类型节点的ID
   const getAllMenuIds = () => {
     const menuIds: string[] = [];
     const collectMenuIds = (nodeList: FunctionNode[]) => {
@@ -58,18 +58,18 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         const level = 0;
         const hasChildren = node.children && node.children.length > 0;
         const isLeaf = !hasChildren;
-        const nodeType = level === 0 ? '模块' : (isLeaf ? '菜单' : '子模块');
+        const nodeType = level === 0 ? '模块' : (isLeaf ? '需求' : '子模块');
         
         // 递归计算实际的nodeType
         const getNodeType = (n: FunctionNode, l: number): string => {
           const hasChild = n.children && n.children.length > 0;
           const isLeafNode = !hasChild;
-          return l === 0 ? '模块' : (isLeafNode ? '菜单' : '子模块');
+          return l === 0 ? '模块' : (isLeafNode ? '需求' : '子模块');
         };
         
         const realNodeType = getNodeType(node, 0);
         
-        if (realNodeType === '菜单') {
+        if (realNodeType === '需求') {
           menuIds.push(node.id);
         }
         
@@ -77,7 +77,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           const collectFromChildren = (children: FunctionNode[], currentLevel: number) => {
             children.forEach(child => {
               const childType = getNodeType(child, currentLevel);
-              if (childType === '菜单') {
+              if (childType === '需求') {
                 menuIds.push(child.id);
               }
               if (child.children) {
@@ -149,7 +149,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         nodeType = '子模块';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       } else {
-        nodeType = '菜单';
+        nodeType = '需求';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       }
       
@@ -224,6 +224,8 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     const newButton: ButtonFunction = {
       id: `btn-${Date.now()}-${Math.random()}`,
       name: '新功能',
+      complexity: '低',
+      priority: '低',
       isImportant: false,
       remark: ''
     };
@@ -424,12 +426,12 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                 <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[100px]">复杂度</th>
                 <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[100px]">优先级</th>
                 <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[60px]">重点</th>
-                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs flex-1 min-w-[180px]">备注</th>
+                <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs flex-1 min-w-[180px]">细节详细说明</th>
               </tr>
             </thead>
             <tbody>
               {flatNodes.map((node) => {
-                const isMenu = node.nodeType === '菜单';
+                const isMenu = node.nodeType === '需求';
                 const hasButtons = node.buttons && node.buttons.length > 0;
                 const isExpanded = expandedMenus.has(node.id);
                 
@@ -550,7 +552,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                     <Input
                       value={node.remark}
                       onChange={(e) => updateNode(node.id, { remark: e.target.value })}
-                      placeholder="备注"
+                      placeholder="细节详细说明"
                       className="h-6 text-xs min-h-6 max-h-6"
                     />
                   </td>
@@ -660,7 +662,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       <Input
                         value={button.remark}
                         onChange={(e) => updateButton(node.id, button.id, { remark: e.target.value })}
-                        placeholder="备注"
+                        placeholder="细节详细说明"
                         className="h-6 text-xs min-h-6 max-h-6"
                       />
                     </td>

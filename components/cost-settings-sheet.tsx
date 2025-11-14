@@ -6,12 +6,14 @@ import { DEFAULT_ROLE_COSTS, calculateRecommendedSalary } from '@/lib/constants'
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle } from 'lucide-react';
+import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Toast } from '@/components/ui/toast';
 
 interface CostSettingsSheetProps {
   open: boolean;
@@ -25,6 +27,50 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   const [tempRoleCost, setTempRoleCost] = useState<any>(null);
   const [editingDuration, setEditingDuration] = useState<string | null>(null); // 正在编辑的复杂度
   const [editingRatio, setEditingRatio] = useState<string | null>(null); // 正在编辑的岗位
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  
+  // 复制查询文本到剪贴板并打开 DeepSeek
+  const handleQuerySalary = async () => {
+    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考月薪（单位：千元），并整理成表格形式：
+
+岗位列表：
+1. 产品经理
+2. 项目经理
+3. 架构师
+4. 平面设计师
+5. 后端开发工程师
+6. 前端开发工程师
+7. 移动端IOS开发工程师
+8. 移动端Android开发工程师
+9. 小程序开发工程师
+
+工作经验级别：
+- 一线大厂（10年）
+- 二线中厂（6年）
+- 三线小厂（4年）
+- 新手上路（2年）`;
+
+    try {
+      await navigator.clipboard.writeText(queryText);
+      
+      // 显示成功toast
+      setToastMessage('问题已复制到剪贴板，3秒后将自动打开 DeepSeek，请粘贴查询');
+      setToastType('success');
+      setShowToast(true);
+      
+      // 延迟3秒跳转，让用户看完toast提示
+      setTimeout(() => {
+        window.open('https://chat.deepseek.com', '_blank');
+      }, 3000);
+    } catch (err) {
+      console.error('复制失败:', err);
+      setToastMessage('复制失败，请手动复制问题内容');
+      setToastType('error');
+      setShowToast(true);
+    }
+  };
   
   const handleRoleSelect = (index: number, role: TeamRole) => {
     const defaultRole = DEFAULT_ROLE_COSTS.find(rc => rc.role === role);
@@ -189,9 +235,19 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[700px] sm:w-[800px] sm:max-w-[800px] p-0">
-        <ScrollArea className="h-full">
+    <>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() => setShowToast(false)}
+        />
+      )}
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent side="right" className="w-[700px] sm:w-[800px] sm:max-w-[800px] p-0">
+          <SheetTitle className="sr-only">单位成本配置</SheetTitle>
+          <ScrollArea className="h-full">
           <div className="space-y-0">
             {/* 人力成本分组 */}
             <div className="border-b bg-white">
@@ -208,7 +264,18 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                     <tr className="bg-gray-50 border-b">
                       <th className="text-left py-2 px-3 font-medium text-gray-700">人员岗位</th>
                       <th className="text-left py-2 px-3 font-medium text-gray-700">工作经验</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-700">市场参考月薪</th>
+                      <th className="text-right py-2 px-3 font-medium text-gray-700">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <span>市场参考月薪</span>
+                          <button
+                            onClick={handleQuerySalary}
+                            className="text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
+                            title="在 DeepSeek 中查询市场薪资（自动复制问题）"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -288,7 +355,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="bg-gray-50 border-b">
-                            <th className="text-center py-2 px-2 font-medium text-gray-700">菜单功能复杂度</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">需求功能复杂度</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700">标准工期</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">操作</th>
                           </tr>
@@ -440,6 +507,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
         </ScrollArea>
       </SheetContent>
     </Sheet>
+    </>
   );
 }
 

@@ -145,13 +145,15 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   // 实际执行添加节点
   const performAddNode = (parentId?: string) => {
     // 确定新节点的默认名称
-    // 顶级节点（无父节点）：模块名称
-    // 非顶级节点（有父节点）：菜单名称
-    const defaultName = parentId ? '菜单名称' : '模块名称';
+    // 顶级节点（无父节点）：需求模块
+    // 非顶级节点（有父节点）：需求名称
+    const defaultName = parentId ? '需求名称' : '需求模块';
     
     const newNode: FunctionNode = {
       id: `node-${Date.now()}-${Math.random()}`,
       name: defaultName,
+      complexity: '低',
+      priority: '低',
       isImportant: false,
       remark: '',
       parentId
@@ -313,13 +315,13 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     } else {
       // 叶子节点
-      nodeTypeLabel = '菜单';
+      nodeTypeLabel = '需求';
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     }
 
     // 确定添加按钮的提示文本
-    // 所有非顶级节点下添加的都是菜单
-    const addButtonTitle = '添加菜单';
+    // 所有非顶级节点下添加的都是需求
+    const addButtonTitle = '添加需求';
 
     return (
       <div key={node.id}>
@@ -568,13 +570,13 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* 添加菜单确认对话框 */}
+      {/* 添加需求确认对话框 */}
       <AlertDialog open={addConfirmDialogOpen} onOpenChange={setAddConfirmDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认添加菜单</AlertDialogTitle>
+            <AlertDialogTitle>确认添加需求</AlertDialogTitle>
             <AlertDialogDescription>
-              当前菜单下已有功能按钮，添加子菜单后将变为子模块。是否继续？
+              当前需求下已有功能按钮，添加子需求后将变为子模块。是否继续？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
