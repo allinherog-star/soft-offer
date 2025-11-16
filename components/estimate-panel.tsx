@@ -488,7 +488,7 @@ export function EstimatePanel({
             <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
               <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">硬件</div>
               <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">标准规格</div>
-              <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0 text-right">云厂商</div>
+              <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0 text-right">云厂商成本</div>
               <div className="text-xs font-medium text-gray-600 w-14 flex-shrink-0 text-center">需要</div>
               <div className="text-xs font-medium text-gray-600 flex-1 min-w-0 overflow-hidden">备注</div>
             </div>
@@ -690,8 +690,8 @@ export function EstimatePanel({
                       )}
                     </div>
                     
-                    {/* 单价（元/年） */}
-                    <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0 min-w-0">
+                    {/* 云厂商成本（元/年） */}
+                    <div className="w-20 flex items-center justify-end gap-0.5 flex-shrink-0 min-w-0">
                       {isEditingUnitPrice ? (
                         <div className="flex items-center gap-0.5">
                           <Input
