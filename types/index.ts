@@ -108,7 +108,7 @@ export type StorageSpec = '40GB' | '100GB' | '500GB' | '1T' | '按需';
 export type BandwidthSpec = '1Mbps' | '2Mbps' | '3Mbps' | '5Mbps';
 
 // 域名规格
-export type DomainSpec = '备案' | '免备案';
+export type DomainSpec = '国内备案' | '免备案';
 
 // 流量规格（流媒体、直播、CDN共用）
 export type TrafficSpec = '100GB' | '300GB' | '500GB' | '1T' | '∞';

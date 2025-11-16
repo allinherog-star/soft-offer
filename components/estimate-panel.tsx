@@ -206,13 +206,13 @@ export function EstimatePanel({
     setEditingCountRole(null);
   };
 
-  // 获取岗位的工作经验
+  // 获取人力岗位的人力水平
   const getRoleExperience = (role: string): WorkExperience => {
     const roleCost = config.roleCosts.find(rc => rc.role === role);
     return roleCost?.experience || '二线中厂';
   };
 
-  // 简化经验显示文字
+  // 简化人力水平显示文字
   const getExperienceShortText = (experience: WorkExperience): string => {
     const map: Record<WorkExperience, string> = {
       '一线大厂': '一线',
@@ -223,7 +223,7 @@ export function EstimatePanel({
     return map[experience] || experience;
   };
 
-  // 获取经验对应的图标
+  // 获取人力水平对应的图标
   const getExperienceIcon = (experience: WorkExperience) => {
     switch (experience) {
       case '一线大厂':
@@ -239,11 +239,11 @@ export function EstimatePanel({
     }
   };
 
-  // 更新岗位的工作经验（并自动更新标准月薪）
+  // 更新人力岗位的人力水平（并自动更新标准月薪）
   const updateRoleExperience = (role: string, experience: WorkExperience) => {
     const newRoleCosts = config.roleCosts.map(rc => {
       if (rc.role === role) {
-        // 根据新经验和现有工作年限计算新标准月薪
+        // 根据新人力水平和现有工作年限计算新标准月薪
         const newSalary = calculateRecommendedSalary(rc.role as any, experience, rc.workYears);
         return { ...rc, experience, salary: newSalary };
       }
@@ -297,16 +297,16 @@ export function EstimatePanel({
             {/* 表头 */}
             <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
               <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
-                <span className="text-xs font-medium text-gray-600 truncate">岗位</span>
+                <span className="text-xs font-medium text-gray-600 truncate">人力岗位</span>
               </div>
-              <div className="text-xs font-medium text-gray-600 w-20 text-center flex-shrink-0">经验</div>
+              <div className="text-xs font-medium text-gray-600 w-20 text-center flex-shrink-0">人力水平</div>
               <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">人力</div>
               <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">人数</div>
               <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">工期</div>
               <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">标准月薪</div>
             </div>
             
-            {/* 岗位列表 */}
+            {/* 人力岗位列表 */}
             <div className="space-y-0">
               {estimate.teamWorkloads.map((workload, index) => {
                 const marketSalary = getMarketSalary(workload.role);
@@ -320,13 +320,13 @@ export function EstimatePanel({
                     key={workload.role} 
                     className={`group flex items-center gap-2 py-1.5 px-3 hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0 min-w-0 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
                   >
-                    {/* 岗位名称 */}
+                    {/* 人力岗位名称 */}
                     <div className="flex items-center gap-0.5 flex-1 min-w-0 overflow-hidden">
                       {getRoleIcon(workload.role as TeamRole)}
                       <span className="text-xs text-gray-700 truncate">{workload.role}</span>
                     </div>
                     
-                    {/* 工作经验 */}
+                    {/* 人力水平 */}
                     <div className="w-20 flex items-center justify-center flex-shrink-0">
                       {editingExperienceRole === workload.role ? (
                         <Select 
@@ -368,7 +368,7 @@ export function EstimatePanel({
                           <button
                             onClick={() => setEditingExperienceRole(workload.role)}
                             className="p-0.5 hover:bg-blue-100 rounded transition-colors opacity-0 group-hover:opacity-100"
-                            title="编辑经验"
+                            title="编辑人力水平"
                           >
                             <Pencil className="h-2.5 w-2.5 text-gray-400" />
                           </button>
@@ -382,7 +382,7 @@ export function EstimatePanel({
                       <span className="text-[10px] text-gray-500 ml-0.5">天</span>
                     </div>
                     
-                    {/* 岗位人数 */}
+                    {/* 人力岗位人数 */}
                     <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0">
                       {isEditingCount ? (
                         <div className="flex items-center gap-0.5">
@@ -487,9 +487,9 @@ export function EstimatePanel({
             {/* 表头 */}
             <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
               <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">硬件</div>
-              <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">规格</div>
-              <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0 text-right">单价</div>
-              <div className="text-xs font-medium text-gray-600 w-14 flex-shrink-0 text-center">数量</div>
+              <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">标准规格</div>
+              <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0 text-right">云厂商</div>
+              <div className="text-xs font-medium text-gray-600 w-14 flex-shrink-0 text-center">需要</div>
               <div className="text-xs font-medium text-gray-600 flex-1 min-w-0 overflow-hidden">备注</div>
             </div>
             
@@ -510,11 +510,11 @@ export function EstimatePanel({
                       <span className="text-xs text-gray-700 truncate flex-1 min-w-0">{item.type}</span>
                     </div>
                     
-                    {/* 规格（所有硬件类型可编辑） */}
-                    <div className="w-16 flex items-center justify-between gap-0.5 flex-shrink-0 min-w-0">
+                    {/* 标准规格（所有硬件类型可编辑） */}
+                    <div className="w-20 flex items-center justify-between gap-0.5 flex-shrink-0 min-w-0">
                       {editingHardwareSpec === item.id ? (
                         <Select
-                          value={item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '备案' : '100GB')}
+                          value={item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '国内备案' : '100GB')}
                           onValueChange={(value) => {
                             // 根据类型获取对应的价格表
                             let unitPrice = 0;
@@ -553,53 +553,132 @@ export function EstimatePanel({
                           <SelectContent className="w-auto min-w-fit">
                             {item.type === '服务器' && (
                               <>
-                                <SelectItem value="2C4G" className="text-xs h-6 py-0.5 pl-3 pr-8">2C4G</SelectItem>
-                                <SelectItem value="4C8G" className="text-xs h-6 py-0.5 pl-3 pr-8">4C8G</SelectItem>
-                                <SelectItem value="8C16G" className="text-xs h-6 py-0.5 pl-3 pr-8">8C16G</SelectItem>
-                                <SelectItem value="16C32G" className="text-xs h-6 py-0.5 pl-3 pr-8">16C32G</SelectItem>
-                                <SelectItem value="24C48G" className="text-xs h-6 py-0.5 pl-3 pr-8">24C48G</SelectItem>
-                                <SelectItem value="32C64G" className="text-xs h-6 py-0.5 pl-3 pr-8">32C64G</SelectItem>
+                                <SelectItem value="2C4G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>2C4G</span>
+                                </SelectItem>
+                                <SelectItem value="4C8G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>4C8G</span>
+                                </SelectItem>
+                                <SelectItem value="8C16G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>8C16G</span>
+                                </SelectItem>
+                                <SelectItem value="16C32G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>16C32G</span>
+                                </SelectItem>
+                                <SelectItem value="24C48G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>24C48G</span>
+                                </SelectItem>
+                                <SelectItem value="32C64G" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Server className="h-3 w-3 text-blue-500" />
+                                  <span>32C64G</span>
+                                </SelectItem>
                               </>
                             )}
                             {item.type === '存储' && (
                               <>
-                                <SelectItem value="40GB" className="text-xs h-6 py-0.5 pl-3 pr-8">40GB</SelectItem>
-                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">100GB</SelectItem>
-                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">500GB</SelectItem>
-                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">1T</SelectItem>
-                                <SelectItem value="按需" className="text-xs h-6 py-0.5 pl-3 pr-8">按需</SelectItem>
+                                <SelectItem value="40GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <HardDrive className="h-3 w-3 text-orange-500" />
+                                  <span>40GB</span>
+                                </SelectItem>
+                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <HardDrive className="h-3 w-3 text-orange-500" />
+                                  <span>100GB</span>
+                                </SelectItem>
+                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <HardDrive className="h-3 w-3 text-orange-500" />
+                                  <span>500GB</span>
+                                </SelectItem>
+                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <HardDrive className="h-3 w-3 text-orange-500" />
+                                  <span>1T</span>
+                                </SelectItem>
+                                <SelectItem value="按需" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <HardDrive className="h-3 w-3 text-orange-500" />
+                                  <span>按需</span>
+                                </SelectItem>
                               </>
                             )}
                             {item.type === '带宽' && (
                               <>
-                                <SelectItem value="1Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">1Mbps</SelectItem>
-                                <SelectItem value="2Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">2Mbps</SelectItem>
-                                <SelectItem value="3Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">3Mbps</SelectItem>
-                                <SelectItem value="5Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">5Mbps</SelectItem>
+                                <SelectItem value="1Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Network className="h-3 w-3 text-green-500" />
+                                  <span>1Mbps</span>
+                                </SelectItem>
+                                <SelectItem value="2Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Network className="h-3 w-3 text-green-500" />
+                                  <span>2Mbps</span>
+                                </SelectItem>
+                                <SelectItem value="3Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Network className="h-3 w-3 text-green-500" />
+                                  <span>3Mbps</span>
+                                </SelectItem>
+                                <SelectItem value="5Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <Network className="h-3 w-3 text-green-500" />
+                                  <span>5Mbps</span>
+                                </SelectItem>
                               </>
                             )}
                             {item.type === '域名' && (
                               <>
-                                <SelectItem value="备案" className="text-xs h-6 py-0.5 pl-3 pr-8">备案</SelectItem>
-                                <SelectItem value="免备案" className="text-xs h-6 py-0.5 pl-3 pr-8">免备案</SelectItem>
+                                <SelectItem value="国内备案" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <FileText className="h-3 w-3 text-indigo-500" />
+                                  <span>国内备案</span>
+                                </SelectItem>
+                                <SelectItem value="免备案" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  <FileText className="h-3 w-3 text-indigo-500" />
+                                  <span>免备案</span>
+                                </SelectItem>
                               </>
                             )}
                             {(item.type === '流媒体' || item.type === '直播' || item.type === 'CDN') && (
                               <>
-                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">100GB</SelectItem>
-                                <SelectItem value="300GB" className="text-xs h-6 py-0.5 pl-3 pr-8">300GB</SelectItem>
-                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">500GB</SelectItem>
-                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">1T</SelectItem>
-                                <SelectItem value="∞" className="text-xs h-6 py-0.5 pl-3 pr-8">∞</SelectItem>
+                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  {item.type === '流媒体' && <Video className="h-3 w-3 text-pink-500" />}
+                                  {item.type === '直播' && <Radio className="h-3 w-3 text-red-500" />}
+                                  {item.type === 'CDN' && <Globe className="h-3 w-3 text-cyan-500" />}
+                                  <span>100GB</span>
+                                </SelectItem>
+                                <SelectItem value="300GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  {item.type === '流媒体' && <Video className="h-3 w-3 text-pink-500" />}
+                                  {item.type === '直播' && <Radio className="h-3 w-3 text-red-500" />}
+                                  {item.type === 'CDN' && <Globe className="h-3 w-3 text-cyan-500" />}
+                                  <span>300GB</span>
+                                </SelectItem>
+                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  {item.type === '流媒体' && <Video className="h-3 w-3 text-pink-500" />}
+                                  {item.type === '直播' && <Radio className="h-3 w-3 text-red-500" />}
+                                  {item.type === 'CDN' && <Globe className="h-3 w-3 text-cyan-500" />}
+                                  <span>500GB</span>
+                                </SelectItem>
+                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  {item.type === '流媒体' && <Video className="h-3 w-3 text-pink-500" />}
+                                  {item.type === '直播' && <Radio className="h-3 w-3 text-red-500" />}
+                                  {item.type === 'CDN' && <Globe className="h-3 w-3 text-cyan-500" />}
+                                  <span>1T</span>
+                                </SelectItem>
+                                <SelectItem value="∞" className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                  {item.type === '流媒体' && <Video className="h-3 w-3 text-pink-500" />}
+                                  {item.type === '直播' && <Radio className="h-3 w-3 text-red-500" />}
+                                  {item.type === 'CDN' && <Globe className="h-3 w-3 text-cyan-500" />}
+                                  <span>∞</span>
+                                </SelectItem>
                               </>
                             )}
                           </SelectContent>
                         </Select>
                       ) : (
                         <div className="flex items-center justify-between w-full gap-0.5">
-                          <span className="text-xs text-gray-700 truncate flex-1 min-w-0">
-                            {item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '备案' : '100GB')}
-                          </span>
+                          <div className="flex items-center gap-1 flex-1 min-w-0">
+                            {getHardwareIcon(item.type)}
+                            <span className="text-xs text-gray-700 truncate flex-1 min-w-0">
+                              {item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '国内备案' : '100GB')}
+                            </span>
+                          </div>
                           <button
                             onClick={() => setEditingHardwareSpec(item.id)}
                             className="p-0.5 hover:bg-green-100 rounded transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"

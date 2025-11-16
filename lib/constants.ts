@@ -195,7 +195,7 @@ export const BANDWIDTH_SPEC_PRICES: Record<string, number> = {
 
 // 域名规格单价配置（元/年）
 export const DOMAIN_SPEC_PRICES: Record<string, number> = {
-  '备案': 60,      // 需要备案的.cn域名等，约5元/月
+  '国内备案': 60,      // 需要备案的.cn域名等，约5元/月
   '免备案': 100    // 免备案域名（如.com国外），约8元/月
 };
 
@@ -211,13 +211,13 @@ export const TRAFFIC_SPEC_PRICES: Record<string, number> = {
 // 默认硬件配置（参考阿里云，单价单位：元/年）
 export const DEFAULT_HARDWARE_CONFIG = {
   items: [
-    { id: '1', type: '服务器' as const, spec: '4C8G' as const, quantity: 3, unitPrice: 4800, remark: '', price: 14400 },    // 4C8G服务器，约400元/月
-    { id: '2', type: '存储' as const, spec: '40GB' as const, quantity: 1, unitPrice: 480, remark: '', price: 480 },         // 40GB SSD，约40元/月
-    { id: '3', type: '带宽' as const, spec: '1Mbps' as const, quantity: 1, unitPrice: 360, remark: '', price: 360 },        // 1Mbps固定带宽，约30元/月
-    { id: '4', type: '流媒体' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },       // 100GB流媒体，约100元/月
-    { id: '5', type: '直播' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },         // 100GB直播，约100元/月
-    { id: '6', type: 'CDN' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },          // 100GB CDN，约100元/月
-    { id: '7', type: '域名' as const, spec: '备案' as const, quantity: 0, unitPrice: 60, remark: '', price: 0 }             // 备案域名，约5元/月
+    { id: '1', type: '域名' as const, spec: '国内备案' as const, quantity: 1, unitPrice: 60, remark: '', price: 60 },             // 国内备案域名，约5元/月
+    { id: '2', type: '服务器' as const, spec: '4C8G' as const, quantity: 3, unitPrice: 4800, remark: '', price: 14400 },    // 4C8G服务器，约400元/月
+    { id: '3', type: '存储' as const, spec: '40GB' as const, quantity: 1, unitPrice: 480, remark: '', price: 480 },         // 40GB SSD，约40元/月
+    { id: '4', type: '带宽' as const, spec: '1Mbps' as const, quantity: 1, unitPrice: 360, remark: '', price: 360 },        // 1Mbps固定带宽，约30元/月
+    { id: '5', type: '流媒体' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },       // 100GB流媒体，约100元/月
+    { id: '6', type: '直播' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },         // 100GB直播，约100元/月
+    { id: '7', type: 'CDN' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 }           // 100GB CDN，约100元/月
   ]
 };
 
