@@ -64,7 +64,8 @@ function getRequiredRoles(platforms: Platform[]): TeamRole[] {
     switch (platform) {
       case 'PC端':
       case 'Web端':
-      case 'H5页面':
+      case 'H5':
+      case '后台':
         roles.add('前端开发工程师');
         roles.add('后端开发工程师');
         break;

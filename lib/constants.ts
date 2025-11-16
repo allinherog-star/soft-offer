@@ -139,7 +139,7 @@ export const COMPLEXITY_OPTIONS = ['低', '中', '高', '极高'] as const;
 export const PRIORITY_OPTIONS = ['低', '中', '高', '极高'] as const;
 
 // 平台选项
-export const PLATFORM_OPTIONS = ['PC端', 'Web端', 'H5页面', 'Android端', 'IOS端', '小程序'] as const;
+export const PLATFORM_OPTIONS = ['PC端', 'Web端', 'H5', 'Android端', 'IOS端', '小程序', '后台'] as const;
 
 // 行业选项
 export const INDUSTRY_OPTIONS = [

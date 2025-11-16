@@ -5,7 +5,7 @@ export type Complexity = '低' | '中' | '高' | '极高';
 export type Priority = '低' | '中' | '高' | '极高';
 
 // 用户端类型
-export type Platform = 'PC端' | 'Web端' | 'H5页面' | 'Android端' | 'IOS端' | '小程序';
+export type Platform = 'PC端' | 'Web端' | 'H5' | 'Android端' | 'IOS端' | '小程序' | '后台';
 
 // 团队角色
 export type TeamRole = 
