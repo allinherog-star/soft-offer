@@ -10,7 +10,7 @@ import { CostSettingsSheet } from '@/components/cost-settings-sheet';
 import { calculateEstimate } from '@/lib/calculation';
 import { DEFAULT_CONFIG, DISCOUNT_OPTIONS } from '@/lib/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench } from 'lucide-react';
+import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server } from 'lucide-react';
 
 export default function Home() {
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
@@ -32,10 +32,21 @@ export default function Home() {
     finalPrice: 0
   });
   const [costSettingsOpen, setCostSettingsOpen] = useState(false);
+  const [roleCounts, setRoleCounts] = useState<Record<string, number>>({});
 
   // 历史记录管理
   const [history, setHistory] = useState<FunctionNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
+
+  // 计算实际总工期（考虑岗位数量，取30%）
+  const calculateActualTotalDays = () => {
+    const totalDays = estimate.teamWorkloads.reduce((sum, workload) => {
+      const count = roleCounts[workload.role] || 1;
+      const actualDays = workload.workDays / count;
+      return sum + actualDays;
+    }, 0);
+    return totalDays * 0.3; // 总工期为工期总和的30%
+  };
 
   // 保存到历史记录
   const saveToHistory = (newNodes: FunctionNode[]) => {
@@ -110,13 +121,15 @@ export default function Home() {
         </div>
 
         {/* 右侧估价面板 */}
-        <div className="w-[350px] flex-shrink-0">
+        <div className="w-[400px] flex-shrink-0 h-full overflow-hidden">
           <EstimatePanel
             estimate={estimate}
             config={config}
             discount={discount}
             onDiscountChange={setDiscount}
             onConfigChange={setConfig}
+            roleCounts={roleCounts}
+            onRoleCountsChange={setRoleCounts}
           />
         </div>
       </div>
@@ -176,16 +189,16 @@ export default function Home() {
                 <div className="min-h-[60px] flex flex-col justify-start">
                   <div className="text-xs text-gray-500 h-4 leading-4">总工期</div>
                   <div className="text-xl font-bold text-blue-600 mt-1">
-                    {(estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7).toFixed(1)}
+                    {calculateActualTotalDays().toFixed(1)}
                     <span className="text-sm font-normal ml-0.5">天</span>
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5 h-[18px] leading-[18px]">
                     预计 {(() => {
-                      const totalDays = estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7;
+                      const totalDays = calculateActualTotalDays();
                       const deliveryDate = new Date();
                       deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
                       return deliveryDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
-                    })()} 可用
+                    })()}
                   </div>
                 </div>
               </div>
@@ -259,9 +272,9 @@ export default function Home() {
 
               <div className="w-px h-12 bg-gray-300"></div>
 
-              {/* 折后价 + 运维成本 */}
+              {/* 折后价 + 运维成本 + 硬件费用 */}
               <div className="flex items-start gap-3 bg-gradient-to-r from-red-50 to-orange-50 px-4 py-2 rounded-lg border-2 border-red-300 min-h-[60px]">
-                <div className="flex flex-col justify-start gap-2">
+                <div className="flex flex-col justify-start gap-1.5">
                   <div>
                     <div className="text-xs text-gray-600 font-medium h-4">折后价</div>
                     <div className="text-2xl font-bold text-red-600 mt-1">
@@ -269,12 +282,23 @@ export default function Home() {
                       <span className="text-base font-normal ml-1">万</span>
                     </div>
                   </div>
-                  <div className="border-t border-red-200 pt-1.5">
+                  <div className="border-t border-red-200 pt-1">
                     <div className="flex items-center gap-2">
-                      <Wrench className="h-3.5 w-3.5 text-gray-500" />
-                      <span className="text-xs text-gray-600">运维成本</span>
-                      <span className="text-sm font-semibold text-red-500">
+                      <Wrench className="h-3 w-3 text-gray-500" />
+                      <span className="text-[10px] text-gray-600">运维成本</span>
+                      <span className="text-xs font-semibold text-red-500">
                         {(estimate.finalPrice * 0.1 / 10000).toFixed(1)}万/月
+                      </span>
+                    </div>
+                  </div>
+                  <div className="pt-0.5">
+                    <div className="flex items-center gap-2">
+                      <Server className="h-3 w-3 text-gray-500" />
+                      <span className="text-[10px] text-gray-600">硬件成本</span>
+                      <span className="text-xs font-semibold text-green-600">
+                        {config.hardwareConfig 
+                          ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 1000).toFixed(1)
+                          : '0.0'}k/年
                       </span>
                     </div>
                   </div>

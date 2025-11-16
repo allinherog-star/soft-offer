@@ -71,8 +71,9 @@ export interface WorkDurationConfig {
 // 团队成员工作量
 export interface TeamWorkload {
   role: TeamRole;
-  workDays: number;  // 工作天数
+  workDays: number;  // 工作天数（总人力）
   ratio: number;     // 相对后端的比例
+  count?: number;    // 岗位数量（人数）
 }
 
 // 影响系数
@@ -94,6 +95,43 @@ export interface EstimateResult {
   finalPrice: number;          // 最终报价
 }
 
+// 硬件类型
+export type HardwareType = '服务器' | '存储' | '带宽' | '流媒体' | '直播' | 'CDN' | '域名';
+
+// 服务器规格
+export type ServerSpec = '2C4G' | '4C8G' | '8C16G' | '16C32G' | '24C48G' | '32C64G';
+
+// 存储规格
+export type StorageSpec = '40GB' | '100GB' | '500GB' | '1T' | '按需';
+
+// 带宽规格
+export type BandwidthSpec = '1Mbps' | '2Mbps' | '3Mbps' | '5Mbps';
+
+// 域名规格
+export type DomainSpec = '备案' | '免备案';
+
+// 流量规格（流媒体、直播、CDN共用）
+export type TrafficSpec = '100GB' | '300GB' | '500GB' | '1T' | '∞';
+
+// 硬件规格（联合类型）
+export type HardwareSpec = ServerSpec | StorageSpec | BandwidthSpec | DomainSpec | TrafficSpec;
+
+// 硬件项配置
+export interface HardwareItem {
+  id: string;
+  type: HardwareType;
+  spec?: HardwareSpec;   // 规格（服务器/存储/带宽使用）
+  quantity: number;      // 数量（台数或数值）
+  unitPrice: number;     // 单价（元/年）
+  remark: string;        // 备注
+  price: number;         // 年费（元/年）= 单价 × 数量
+}
+
+// 硬件投入配置
+export interface HardwareConfig {
+  items: HardwareItem[];
+}
+
 // 全局配置
 export interface GlobalConfig {
   roleCosts: RoleCost[];
@@ -105,6 +143,7 @@ export interface GlobalConfig {
   };
   roleRatios: Record<TeamRole, number>;
   impactFactors: ImpactFactor[];
+  hardwareConfig?: HardwareConfig;
 }
 
 
