@@ -259,18 +259,15 @@ export function EstimatePanel({
               <div className="text-[10px] font-medium text-gray-600 w-10 text-right flex-shrink-0">数量</div>
               <div className="text-[10px] font-medium text-gray-600 w-10 text-right flex-shrink-0">工期</div>
               <div className="text-[10px] font-medium text-gray-600 w-20 text-right pr-5 flex-shrink-0">月薪</div>
-              <div className="text-[10px] font-medium text-gray-600 w-12 text-right flex-shrink-0">成本</div>
               <div className="w-4 flex-shrink-0"></div>
             </div>
             
             {/* 岗位列表 */}
             <div className="space-y-0">
               {estimate.teamWorkloads.map((workload, index) => {
-                const monthlySalary = getSalary(workload.role);
                 const marketSalary = getMarketSalary(workload.role);
                 const roleCount = getRoleCount(workload.role);
                 const actualWorkDays = workload.workDays / roleCount; // 实际工期 = 总人力 / 人数
-                const cost = (workload.workDays / 22) * monthlySalary; // 成本基于总人力
                 const isEditing = editingRole === workload.role;
                 const isEditingCount = editingCountRole === workload.role;
                 
@@ -377,11 +374,6 @@ export function EstimatePanel({
                           </button>
                         </div>
                       )}
-                    </div>
-                    
-                    {/* 成本 */}
-                    <div className="text-[10px] text-gray-700 font-medium w-12 text-right flex-shrink-0">
-                      {(cost / 10000).toFixed(1)}<span className="text-[8px] text-gray-500 ml-0.5">万</span>
                     </div>
                     
                     {/* 删除按钮 */}
