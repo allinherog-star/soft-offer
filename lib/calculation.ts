@@ -8,7 +8,7 @@ import {
   Complexity
 } from '@/types';
 
-// 获取角色的月薪（转换为元）
+// 获取角色的标准月薪（转换为元）
 function getSalary(config: GlobalConfig, role: TeamRole): number {
   const roleCost = config.roleCosts.find(r => r.role === role);
   if (!roleCost) return 0;
@@ -57,7 +57,7 @@ function getRequiredRoles(platforms: Platform[]): TeamRole[] {
     '产品经理',
     '项目经理',
     '架构师',
-    '平面设计师'
+    '美工师'
   ]);
 
   platforms.forEach(platform => {
@@ -69,11 +69,11 @@ function getRequiredRoles(platforms: Platform[]): TeamRole[] {
         roles.add('后端开发工程师');
         break;
       case 'Android端':
-        roles.add('移动端Android开发工程师');
+        roles.add('Android开发工程师');
         roles.add('后端开发工程师');
         break;
       case 'IOS端':
-        roles.add('移动端IOS开发工程师');
+        roles.add('IOS开发工程师');
         roles.add('后端开发工程师');
         break;
       case '小程序':

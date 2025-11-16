@@ -12,11 +12,11 @@ export type TeamRole =
   | '产品经理'
   | '项目经理'
   | '架构师'
-  | '平面设计师'
+  | '美工师'
   | '后端开发工程师'
   | '前端开发工程师'
-  | '移动端IOS开发工程师'
-  | '移动端Android开发工程师'
+  | 'IOS开发工程师'
+  | 'Android开发工程师'
   | '小程序开发工程师';
 
 // 项目基础信息
@@ -58,7 +58,7 @@ export interface RoleCost {
   role: TeamRole;
   experience: WorkExperience;  // 工作经验
   workYears: number;           // 工作年限
-  salary: number;              // 月薪（根据经验和年限自动推荐）
+  salary: number;              // 标准月薪（根据经验和年限自动推荐）
 }
 
 // 工期单位成本配置

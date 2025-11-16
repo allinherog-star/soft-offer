@@ -239,11 +239,11 @@ export function EstimatePanel({
     }
   };
 
-  // 更新岗位的工作经验（并自动更新月薪）
+  // 更新岗位的工作经验（并自动更新标准月薪）
   const updateRoleExperience = (role: string, experience: WorkExperience) => {
     const newRoleCosts = config.roleCosts.map(rc => {
       if (rc.role === role) {
-        // 根据新经验和现有工作年限计算新月薪
+        // 根据新经验和现有工作年限计算新标准月薪
         const newSalary = calculateRecommendedSalary(rc.role as any, experience, rc.workYears);
         return { ...rc, experience, salary: newSalary };
       }
@@ -264,15 +264,15 @@ export function EstimatePanel({
         return <Users className="h-4 w-4 text-purple-500" />;
       case '架构师':
         return <Laptop className="h-4 w-4 text-orange-500" />;
-      case '平面设计师':
+      case '美工师':
         return <Palette className="h-4 w-4 text-pink-500" />;
       case '后端开发工程师':
         return <Code className="h-4 w-4 text-green-500" />;
       case '前端开发工程师':
         return <Code className="h-4 w-4 text-cyan-500" />;
-      case '移动端IOS开发工程师':
+      case 'IOS开发工程师':
         return <Smartphone className="h-4 w-4 text-gray-700" />;
-      case '移动端Android开发工程师':
+      case 'Android开发工程师':
         return <TabletSmartphone className="h-4 w-4 text-green-600" />;
       case '小程序开发工程师':
         return <Smartphone className="h-4 w-4 text-blue-600" />;
@@ -301,9 +301,9 @@ export function EstimatePanel({
               </div>
               <div className="text-xs font-medium text-gray-600 w-20 text-center flex-shrink-0">经验</div>
               <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">人力</div>
-              <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">数量</div>
+              <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">人数</div>
               <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">工期</div>
-              <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">月薪</div>
+              <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">标准月薪</div>
             </div>
             
             {/* 岗位列表 */}
@@ -340,20 +340,20 @@ export function EstimatePanel({
                           <SelectTrigger className="h-5 w-full text-[10px] px-1 py-0">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="min-w-[120px]">
-                            <SelectItem value="一线大厂" className="text-xs h-7 py-1 px-3">
+                          <SelectContent className="w-auto min-w-fit">
+                            <SelectItem value="一线大厂" className="text-xs h-7 py-1 pl-3 pr-8">
                               <Trophy className="h-3.5 w-3.5 text-amber-500" />
                               <span>一线大厂</span>
                             </SelectItem>
-                            <SelectItem value="二线中厂" className="text-xs h-7 py-1 px-3">
+                            <SelectItem value="二线中厂" className="text-xs h-7 py-1 pl-3 pr-8">
                               <Medal className="h-3.5 w-3.5 text-gray-500" />
                               <span>二线中厂</span>
                             </SelectItem>
-                            <SelectItem value="三线小厂" className="text-xs h-7 py-1 px-3">
+                            <SelectItem value="三线小厂" className="text-xs h-7 py-1 pl-3 pr-8">
                               <Award className="h-3.5 w-3.5 text-blue-500" />
                               <span>三线小厂</span>
                             </SelectItem>
-                            <SelectItem value="新手上路" className="text-xs h-7 py-1 px-3">
+                            <SelectItem value="新手上路" className="text-xs h-7 py-1 pl-3 pr-8">
                               <Star className="h-3.5 w-3.5 text-green-500" />
                               <span>新手上路</span>
                             </SelectItem>
@@ -382,7 +382,7 @@ export function EstimatePanel({
                       <span className="text-[10px] text-gray-500 ml-0.5">天</span>
                     </div>
                     
-                    {/* 岗位数量 */}
+                    {/* 岗位人数 */}
                     <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0">
                       {isEditingCount ? (
                         <div className="flex items-center gap-0.5">
@@ -429,7 +429,7 @@ export function EstimatePanel({
                       <span className="text-[10px] text-gray-500 ml-0.5">天</span>
                     </div>
                     
-                    {/* 月薪（包含编辑图标） */}
+                    {/* 标准月薪（包含编辑图标） */}
                     <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0">
                       {isEditing ? (
                         <div className="flex items-center gap-0.5">
@@ -462,7 +462,7 @@ export function EstimatePanel({
                           <button
                             onClick={() => startEditSalary(workload.role)}
                             className="p-0.5 hover:bg-blue-100 rounded transition-colors"
-                            title="编辑月薪"
+                            title="编辑标准月薪"
                           >
                             <Pencil className="h-2 w-2 text-gray-400" />
                           </button>
@@ -550,47 +550,47 @@ export function EstimatePanel({
                           <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="min-w-[100px]">
+                          <SelectContent className="w-auto min-w-fit">
                             {item.type === '服务器' && (
                               <>
-                                <SelectItem value="2C4G" className="text-xs h-6 py-0.5 px-2">2C4G</SelectItem>
-                                <SelectItem value="4C8G" className="text-xs h-6 py-0.5 px-2">4C8G</SelectItem>
-                                <SelectItem value="8C16G" className="text-xs h-6 py-0.5 px-2">8C16G</SelectItem>
-                                <SelectItem value="16C32G" className="text-xs h-6 py-0.5 px-2">16C32G</SelectItem>
-                                <SelectItem value="24C48G" className="text-xs h-6 py-0.5 px-2">24C48G</SelectItem>
-                                <SelectItem value="32C64G" className="text-xs h-6 py-0.5 px-2">32C64G</SelectItem>
+                                <SelectItem value="2C4G" className="text-xs h-6 py-0.5 pl-3 pr-8">2C4G</SelectItem>
+                                <SelectItem value="4C8G" className="text-xs h-6 py-0.5 pl-3 pr-8">4C8G</SelectItem>
+                                <SelectItem value="8C16G" className="text-xs h-6 py-0.5 pl-3 pr-8">8C16G</SelectItem>
+                                <SelectItem value="16C32G" className="text-xs h-6 py-0.5 pl-3 pr-8">16C32G</SelectItem>
+                                <SelectItem value="24C48G" className="text-xs h-6 py-0.5 pl-3 pr-8">24C48G</SelectItem>
+                                <SelectItem value="32C64G" className="text-xs h-6 py-0.5 pl-3 pr-8">32C64G</SelectItem>
                               </>
                             )}
                             {item.type === '存储' && (
                               <>
-                                <SelectItem value="40GB" className="text-xs h-6 py-0.5 px-2">40GB</SelectItem>
-                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 px-2">100GB</SelectItem>
-                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 px-2">500GB</SelectItem>
-                                <SelectItem value="1T" className="text-xs h-6 py-0.5 px-2">1T</SelectItem>
-                                <SelectItem value="按需" className="text-xs h-6 py-0.5 px-2">按需</SelectItem>
+                                <SelectItem value="40GB" className="text-xs h-6 py-0.5 pl-3 pr-8">40GB</SelectItem>
+                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">100GB</SelectItem>
+                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">500GB</SelectItem>
+                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">1T</SelectItem>
+                                <SelectItem value="按需" className="text-xs h-6 py-0.5 pl-3 pr-8">按需</SelectItem>
                               </>
                             )}
                             {item.type === '带宽' && (
                               <>
-                                <SelectItem value="1Mbps" className="text-xs h-6 py-0.5 px-2">1Mbps</SelectItem>
-                                <SelectItem value="2Mbps" className="text-xs h-6 py-0.5 px-2">2Mbps</SelectItem>
-                                <SelectItem value="3Mbps" className="text-xs h-6 py-0.5 px-2">3Mbps</SelectItem>
-                                <SelectItem value="5Mbps" className="text-xs h-6 py-0.5 px-2">5Mbps</SelectItem>
+                                <SelectItem value="1Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">1Mbps</SelectItem>
+                                <SelectItem value="2Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">2Mbps</SelectItem>
+                                <SelectItem value="3Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">3Mbps</SelectItem>
+                                <SelectItem value="5Mbps" className="text-xs h-6 py-0.5 pl-3 pr-8">5Mbps</SelectItem>
                               </>
                             )}
                             {item.type === '域名' && (
                               <>
-                                <SelectItem value="备案" className="text-xs h-6 py-0.5 px-2">备案</SelectItem>
-                                <SelectItem value="免备案" className="text-xs h-6 py-0.5 px-2">免备案</SelectItem>
+                                <SelectItem value="备案" className="text-xs h-6 py-0.5 pl-3 pr-8">备案</SelectItem>
+                                <SelectItem value="免备案" className="text-xs h-6 py-0.5 pl-3 pr-8">免备案</SelectItem>
                               </>
                             )}
                             {(item.type === '流媒体' || item.type === '直播' || item.type === 'CDN') && (
                               <>
-                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 px-2">100GB</SelectItem>
-                                <SelectItem value="300GB" className="text-xs h-6 py-0.5 px-2">300GB</SelectItem>
-                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 px-2">500GB</SelectItem>
-                                <SelectItem value="1T" className="text-xs h-6 py-0.5 px-2">1T</SelectItem>
-                                <SelectItem value="∞" className="text-xs h-6 py-0.5 px-2">∞</SelectItem>
+                                <SelectItem value="100GB" className="text-xs h-6 py-0.5 pl-3 pr-8">100GB</SelectItem>
+                                <SelectItem value="300GB" className="text-xs h-6 py-0.5 pl-3 pr-8">300GB</SelectItem>
+                                <SelectItem value="500GB" className="text-xs h-6 py-0.5 pl-3 pr-8">500GB</SelectItem>
+                                <SelectItem value="1T" className="text-xs h-6 py-0.5 pl-3 pr-8">1T</SelectItem>
+                                <SelectItem value="∞" className="text-xs h-6 py-0.5 pl-3 pr-8">∞</SelectItem>
                               </>
                             )}
                           </SelectContent>

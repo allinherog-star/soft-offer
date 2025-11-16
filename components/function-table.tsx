@@ -644,9 +644,9 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
                         <SelectValue placeholder="选择" />
                       </SelectTrigger>
-                      <SelectContent className="min-w-[70px]">
+                      <SelectContent className="w-auto min-w-fit">
                         {COMPLEXITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
+                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
                             {option}
                           </SelectItem>
                         ))}
@@ -661,9 +661,9 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
                         <SelectValue placeholder="选择" />
                       </SelectTrigger>
-                      <SelectContent className="min-w-[70px]">
+                      <SelectContent className="w-auto min-w-fit">
                         {PRIORITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
+                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
                             {option}
                           </SelectItem>
                         ))}
@@ -754,9 +754,9 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                         <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
                           <SelectValue placeholder="选择" />
                         </SelectTrigger>
-                        <SelectContent className="min-w-[70px]">
+                        <SelectContent className="w-auto min-w-fit">
                           {COMPLEXITY_OPTIONS.map((option) => (
-                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
+                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
                               {option}
                             </SelectItem>
                           ))}
@@ -771,9 +771,9 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                         <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
                           <SelectValue placeholder="选择" />
                         </SelectTrigger>
-                        <SelectContent className="min-w-[70px]">
+                        <SelectContent className="w-auto min-w-fit">
                           {PRIORITY_OPTIONS.map((option) => (
-                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 px-2">
+                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
                               {option}
                             </SelectItem>
                           ))}

@@ -33,17 +33,17 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   
   // 复制查询文本到剪贴板并打开 DeepSeek
   const handleQuerySalary = async () => {
-    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考月薪（单位：万元），并整理成表格形式：
+    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考标准月薪（单位：万元），并整理成表格形式：
 
 岗位列表：
 1. 产品经理
 2. 项目经理
 3. 架构师
-4. 平面设计师
+4. 美工师
 5. 后端开发工程师
 6. 前端开发工程师
-7. 移动端IOS开发工程师
-8. 移动端Android开发工程师
+7. IOS开发工程师
+8. Android开发工程师
 9. 小程序开发工程师
 
 工作经验级别：
@@ -126,7 +126,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
       updated.workYears = getDefaultYears(value as WorkExperience);
     }
     
-    // 如果修改了角色或经验，自动更新推荐月薪
+    // 如果修改了角色或经验，自动更新推荐标准月薪
     if (field === 'role' || field === 'experience') {
       updated.salary = calculateRecommendedSalary(
         updated.role,
@@ -161,9 +161,9 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   };
 
   const allRoles: TeamRole[] = [
-    '产品经理', '项目经理', '架构师', '平面设计师',
+    '产品经理', '项目经理', '架构师', '美工师',
     '后端开发工程师', '前端开发工程师', 
-    '移动端IOS开发工程师', '移动端Android开发工程师', '小程序开发工程师'
+    'IOS开发工程师', 'Android开发工程师', '小程序开发工程师'
   ];
 
   const experienceOptions: WorkExperience[] = ['一线大厂', '二线中厂', '三线小厂', '新手上路'];
@@ -193,15 +193,15 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
         return <Users className="h-4 w-4 text-purple-500" />;
       case '架构师':
         return <Laptop className="h-4 w-4 text-orange-500" />;
-      case '平面设计师':
+      case '美工师':
         return <Palette className="h-4 w-4 text-pink-500" />;
       case '后端开发工程师':
         return <Code className="h-4 w-4 text-green-500" />;
       case '前端开发工程师':
         return <Code className="h-4 w-4 text-cyan-500" />;
-      case '移动端IOS开发工程师':
+      case 'IOS开发工程师':
         return <Smartphone className="h-4 w-4 text-gray-700" />;
-      case '移动端Android开发工程师':
+      case 'Android开发工程师':
         return <TabletSmartphone className="h-4 w-4 text-green-600" />;
       case '小程序开发工程师':
         return <Smartphone className="h-4 w-4 text-blue-600" />;
@@ -266,7 +266,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                       <th className="text-left py-2 px-3 font-medium text-gray-700">工作经验</th>
                       <th className="text-right py-2 px-3 font-medium text-gray-700">
                         <div className="flex items-center justify-end gap-1.5">
-                          <span>市场参考月薪</span>
+                          <span>市场参考标准月薪</span>
                           <button
                             onClick={handleQuerySalary}
                             className="text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
@@ -314,7 +314,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                               </span>
                             </td>
                             
-                            {/* 市场参考月薪 */}
+                            {/* 市场参考标准月薪 */}
                             <td className="py-1.5 px-3">
                               <span className={`text-sm flex justify-end ${getSalaryColorBySalary(recommendedSalary)}`}>
                                 {(recommendedSalary / 10).toFixed(1)}万
@@ -328,7 +328,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                 </table>
                       </div>
                 <p className="text-xs text-gray-500 mt-2 px-1">
-                  * 展示各岗位不同工作经验对应的市场参考月薪（单位：万元）
+                  * 展示各岗位不同工作经验对应的市场参考标准月薪（单位：万元）
                 </p>
                       </div>
                     </div>

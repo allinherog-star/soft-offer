@@ -1,15 +1,15 @@
 import { GlobalConfig, RoleCost, TeamRole, WorkExperience } from '@/types';
 
-// 角色基础薪资（用于计算推荐月薪，调整为产生30k、35k、40k、80k等整数）
+// 角色基础薪资（用于计算推荐标准月薪，调整为产生30k、35k、40k、80k等整数）
 const ROLE_BASE_SALARY: Record<TeamRole, number> = {
   '产品经理': 19200,  // 二线中厂6年 -> 30k
   '项目经理': 25600,  // 二线中厂6年 -> 40k
   '架构师': 35600,    // 一线大厂10年 -> 80k
-  '平面设计师': 18300, // 三线小厂4年 -> 22k
+  '美工师': 18300, // 三线小厂4年 -> 22k
   '后端开发工程师': 22400, // 二线中厂6年 -> 35k
   '前端开发工程师': 22400, // 二线中厂6年 -> 35k
-  '移动端IOS开发工程师': 22400, // 二线中厂6年 -> 35k
-  '移动端Android开发工程师': 22400, // 二线中厂6年 -> 35k
+  'IOS开发工程师': 22400, // 二线中厂6年 -> 35k
+  'Android开发工程师': 22400, // 二线中厂6年 -> 35k
   '小程序开发工程师': 16700 // 三线小厂4年 -> 20k
 };
 
@@ -21,7 +21,7 @@ const EXPERIENCE_MULTIPLIER: Record<WorkExperience, number> = {
   '新手上路': 0.7
 };
 
-// 根据角色、经验和年限计算推荐月薪（返回千单位的整数）
+// 根据角色、经验和年限计算推荐标准月薪（返回千单位的整数）
 export function calculateRecommendedSalary(
   role: TeamRole,
   experience: WorkExperience,
@@ -35,7 +35,7 @@ export function calculateRecommendedSalary(
   return Math.round((baseSalary * experienceMultiplier * (1 + yearBonus)) / 1000);
 }
 
-// 默认人力成本配置（月薪）
+// 默认人力成本配置（标准月薪）
 // 工作年限根据经验自动匹配：新手上路(2年)、三线小厂(4年)、二线中厂(6年)、一线大厂(10年)
 export const DEFAULT_ROLE_COSTS: RoleCost[] = [
   {
@@ -57,10 +57,10 @@ export const DEFAULT_ROLE_COSTS: RoleCost[] = [
     salary: calculateRecommendedSalary('架构师', '一线大厂', 10)
   },
   {
-    role: '平面设计师',
+    role: '美工师',
     experience: '一线大厂',
     workYears: 10,
-    salary: calculateRecommendedSalary('平面设计师', '一线大厂', 10)
+    salary: calculateRecommendedSalary('美工师', '一线大厂', 10)
   },
   {
     role: '后端开发工程师',
@@ -75,16 +75,16 @@ export const DEFAULT_ROLE_COSTS: RoleCost[] = [
     salary: calculateRecommendedSalary('前端开发工程师', '一线大厂', 10)
   },
   {
-    role: '移动端IOS开发工程师',
+    role: 'IOS开发工程师',
     experience: '一线大厂',
     workYears: 10,
-    salary: calculateRecommendedSalary('移动端IOS开发工程师', '一线大厂', 10)
+    salary: calculateRecommendedSalary('IOS开发工程师', '一线大厂', 10)
   },
   {
-    role: '移动端Android开发工程师',
+    role: 'Android开发工程师',
     experience: '一线大厂',
     workYears: 10,
-    salary: calculateRecommendedSalary('移动端Android开发工程师', '一线大厂', 10)
+    salary: calculateRecommendedSalary('Android开发工程师', '一线大厂', 10)
   },
   {
     role: '小程序开发工程师',
@@ -107,11 +107,11 @@ export const DEFAULT_ROLE_RATIOS: Record<TeamRole, number> = {
   '产品经理': 0.2,
   '项目经理': 0.2,
   '架构师': 0.2,
-  '平面设计师': 0.5,
+  '美工师': 0.5,
   '后端开发工程师': 1.0,
   '前端开发工程师': 0.5,
-  '移动端IOS开发工程师': 0.5,
-  '移动端Android开发工程师': 0.5,
+  'IOS开发工程师': 0.5,
+  'Android开发工程师': 0.5,
   '小程序开发工程师': 0.5
 };
 
@@ -211,7 +211,7 @@ export const TRAFFIC_SPEC_PRICES: Record<string, number> = {
 // 默认硬件配置（参考阿里云，单价单位：元/年）
 export const DEFAULT_HARDWARE_CONFIG = {
   items: [
-    { id: '1', type: '服务器' as const, spec: '4C8G' as const, quantity: 1, unitPrice: 4800, remark: '', price: 4800 },     // 4C8G服务器，约400元/月
+    { id: '1', type: '服务器' as const, spec: '4C8G' as const, quantity: 3, unitPrice: 4800, remark: '', price: 14400 },    // 4C8G服务器，约400元/月
     { id: '2', type: '存储' as const, spec: '40GB' as const, quantity: 1, unitPrice: 480, remark: '', price: 480 },         // 40GB SSD，约40元/月
     { id: '3', type: '带宽' as const, spec: '1Mbps' as const, quantity: 1, unitPrice: 360, remark: '', price: 360 },        // 1Mbps固定带宽，约30元/月
     { id: '4', type: '流媒体' as const, spec: '100GB' as const, quantity: 0, unitPrice: 1200, remark: '', price: 0 },       // 100GB流媒体，约100元/月
