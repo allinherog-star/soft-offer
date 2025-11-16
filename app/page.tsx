@@ -120,9 +120,9 @@ export default function Home() {
           />
         </div>
 
-        {/* 右侧估价面板 */}
-        <div className="w-[400px] flex-shrink-0 h-full overflow-hidden">
-          <EstimatePanel
+          {/* 右侧估价面板 */}
+          <div className="w-[500px] flex-shrink-0 h-full overflow-hidden">
+            <EstimatePanel
             estimate={estimate}
             config={config}
             discount={discount}
@@ -287,7 +287,7 @@ export default function Home() {
                       <Wrench className="h-3 w-3 text-gray-500" />
                       <span className="text-[10px] text-gray-600">运维成本</span>
                       <span className="text-xs font-semibold text-red-500">
-                        {(estimate.finalPrice * 0.1 / 10000).toFixed(1)}万/月
+                        {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}万/月
                       </span>
                     </div>
                   </div>
@@ -295,10 +295,10 @@ export default function Home() {
                     <div className="flex items-center gap-2">
                       <Server className="h-3 w-3 text-gray-500" />
                       <span className="text-[10px] text-gray-600">硬件成本</span>
-                      <span className="text-xs font-semibold text-green-600">
+                      <span className="text-xs font-semibold text-red-500">
                         {config.hardwareConfig 
-                          ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 1000).toFixed(1)
-                          : '0.0'}k/年
+                          ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 12 / 10000).toFixed(2)
+                          : '0.00'}万/月
                       </span>
                     </div>
                   </div>
