@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { formatCurrency, formatDays } from '@/lib/calculation';
 import { DISCOUNT_OPTIONS, SERVER_SPEC_PRICES, STORAGE_SPEC_PRICES, BANDWIDTH_SPEC_PRICES, DOMAIN_SPEC_PRICES, TRAFFIC_SPEC_PRICES, calculateRecommendedSalary } from '@/lib/constants';
 import type { HardwareType, HardwareItem, ServerSpec, StorageSpec, BandwidthSpec, DomainSpec, TrafficSpec, WorkExperience } from '@/types';
-import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings, UsersRound, MessageSquare, Shield, Database, Layers } from 'lucide-react';
+import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings, UsersRound, MessageSquare, Shield, Database, Layers, Users2, UserPlus, Building2, TrendingUp, Clock, Headset, PhoneCall, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, Lock, CreditCard, ShieldCheck, FolderClock, HardDriveDownload, Timer, Box, Grid3x3, Boxes, Component } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface EstimatePanelProps {
@@ -278,6 +278,97 @@ export function EstimatePanel({
         return <Smartphone className="h-4 w-4 text-blue-600" />;
       default:
         return <User className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  // 影响系数选项图标
+  const getUserScaleIcon = (scale: UserScale) => {
+    switch (scale) {
+      case '10w+':
+        return <Users2 className="h-3 w-3" />;
+      case '100w+':
+        return <UserPlus className="h-3 w-3" />;
+      case '1000w+':
+        return <Building2 className="h-3 w-3" />;
+      case '1ww+':
+        return <TrendingUp className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getServiceLevelIcon = (level: ServiceLevel) => {
+    switch (level) {
+      case '标准':
+        return <CheckCircle2 className="h-3 w-3" />;
+      case '及时响应':
+        return <Clock className="h-3 w-3" />;
+      case '工作日坐席':
+        return <Headset className="h-3 w-3" />;
+      case '7*24':
+        return <PhoneCall className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getQualityLevelIcon = (level: QualityLevel) => {
+    switch (level) {
+      case '标准':
+        return <CheckCircle2 className="h-3 w-3" />;
+      case '高':
+        return <Star className="h-3 w-3" />;
+      case '很高':
+        return <AlertCircle className="h-3 w-3" />;
+      case '极高':
+        return <Sparkles className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getSecurityLevelIcon = (level: SecurityLevel) => {
+    switch (level) {
+      case '标准':
+        return <CheckCircle2 className="h-3 w-3" />;
+      case '权限控制':
+        return <Lock className="h-3 w-3" />;
+      case '金融支付':
+        return <CreditCard className="h-3 w-3" />;
+      case '安全盾':
+        return <ShieldCheck className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getDisasterRecoveryIcon = (level: DisasterRecoveryLevel) => {
+    switch (level) {
+      case '标准':
+        return <CheckCircle2 className="h-3 w-3" />;
+      case '定时备份':
+        return <FolderClock className="h-3 w-3" />;
+      case 'T1可恢复':
+        return <HardDriveDownload className="h-3 w-3" />;
+      case 'H1可恢复':
+        return <Timer className="h-3 w-3" />;
+      default:
+        return null;
+    }
+  };
+
+  const getFlexibilityLevelIcon = (level: FlexibilityLevel) => {
+    switch (level) {
+      case '标准':
+        return <Box className="h-3 w-3" />;
+      case '多系统':
+        return <Grid3x3 className="h-3 w-3" />;
+      case '微服务':
+        return <Boxes className="h-3 w-3" />;
+      case '组件化':
+        return <Component className="h-3 w-3" />;
+      default:
+        return null;
     }
   };
 
@@ -880,12 +971,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.userScale === scale
                           ? 'bg-blue-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getUserScaleIcon(scale)}
                       {scale}
                     </button>
                   ))}
@@ -913,12 +1005,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.serviceLevel === level
                           ? 'bg-green-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getServiceLevelIcon(level)}
                       {level}
                     </button>
                   ))}
@@ -946,12 +1039,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.qualityLevel === level
                           ? 'bg-amber-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getQualityLevelIcon(level)}
                       {level}
                     </button>
                   ))}
@@ -979,12 +1073,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.securityLevel === level
                           ? 'bg-red-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getSecurityLevelIcon(level)}
                       {level}
                     </button>
                   ))}
@@ -1012,12 +1107,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.disasterRecoveryLevel === level
                           ? 'bg-indigo-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getDisasterRecoveryIcon(level)}
                       {level}
                     </button>
                   ))}
@@ -1045,12 +1141,13 @@ export function EstimatePanel({
                           });
                         }
                       }}
-                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                      className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
                         config.impactFactorConfig?.flexibilityLevel === level
                           ? 'bg-cyan-500 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
+                      {getFlexibilityLevelIcon(level)}
                       {level}
                     </button>
                   ))}
