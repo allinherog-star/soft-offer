@@ -201,7 +201,7 @@ export function calculateEstimate(
     baseCost += monthlyCost;
   });
   
-  // 应用影响系数
+  // 应用整体系数
   let costAfterFactors = baseCost;
   config.impactFactors.forEach(factor => {
     costAfterFactors *= factor.value;

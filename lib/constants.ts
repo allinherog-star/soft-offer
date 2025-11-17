@@ -115,7 +115,7 @@ export const DEFAULT_ROLE_RATIOS: Record<TeamRole, number> = {
   '小程序开发工程师': 0.5
 };
 
-// 默认影响系数
+// 默认整体系数
 export const DEFAULT_IMPACT_FACTORS = [
   { name: '质量要求', value: 1.0 },
   { name: '灾备要求', value: 1.0 },
@@ -221,7 +221,7 @@ export const DEFAULT_HARDWARE_CONFIG = {
   ]
 };
 
-// 默认影响系数配置
+// 默认整体系数配置
 export const DEFAULT_IMPACT_FACTOR_CONFIG: ImpactFactorConfig = {
   userScale: '10w+',
   serviceLevel: '标准',

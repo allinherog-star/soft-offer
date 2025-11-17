@@ -281,7 +281,7 @@ export function EstimatePanel({
     }
   };
 
-  // 影响系数选项图标
+  // 整体系数选项图标
   const getUserScaleIcon = (scale: UserScale) => {
     switch (scale) {
       case '10w+':
@@ -960,12 +960,12 @@ export function EstimatePanel({
             </div>
           </div>
 
-          {/* 影响系数 */}
+          {/* 整体系数 */}
           <div className="bg-white mt-0">
             <div className="bg-gradient-to-r from-purple-50 to-violet-50 px-3 py-2 border-b border-purple-100">
               <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
                 <span className="w-0.5 h-4 bg-purple-500 rounded-full"></span>
-                影响系数
+                整体系数
               </h3>
             </div>
 

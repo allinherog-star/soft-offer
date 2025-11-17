@@ -76,7 +76,7 @@ export interface TeamWorkload {
   count?: number;    // 岗位数量（人数）
 }
 
-// 影响系数
+// 整体系数
 export interface ImpactFactor {
   name: string;
   value: number;
@@ -100,7 +100,7 @@ export type DisasterRecoveryLevel = '标准' | '定时备份' | 'T1可恢复' | 
 // 灵活等级类型
 export type FlexibilityLevel = '标准' | '多系统' | '微服务' | '组件化';
 
-// 影响系数配置
+// 整体系数配置
 export interface ImpactFactorConfig {
   userScale: UserScale;
   serviceLevel: ServiceLevel;
@@ -118,7 +118,7 @@ export interface EstimateResult {
   totalDays: number;           // 总工期（天）
   teamWorkloads: TeamWorkload[]; // 各角色工作量
   baseCost: number;            // 基础成本
-  impactFactors: ImpactFactor[]; // 影响系数
+  impactFactors: ImpactFactor[]; // 整体系数
   discount: Discount;          // 折扣
   finalPrice: number;          // 最终报价
 }
