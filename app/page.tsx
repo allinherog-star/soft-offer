@@ -38,14 +38,14 @@ export default function Home() {
   const [history, setHistory] = useState<FunctionNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  // 计算实际总工期（考虑岗位数量，取30%）
+  // 计算实际总工期（考虑岗位数量，取70%）
   const calculateActualTotalDays = () => {
     const totalDays = estimate.teamWorkloads.reduce((sum, workload) => {
       const count = roleCounts[workload.role] || 1;
       const actualDays = workload.workDays / count;
       return sum + actualDays;
     }, 0);
-    return totalDays * 0.3; // 总工期为工期总和的30%
+    return totalDays * 0.7; // 总工期为工期总和的70%
   };
 
   // 保存到历史记录

@@ -5,8 +5,70 @@ import {
   TeamRole, 
   Platform,
   TeamWorkload,
-  Complexity
+  Complexity,
+  UserScale,
+  ServiceLevel,
+  QualityLevel,
+  SecurityLevel,
+  DisasterRecoveryLevel,
+  FlexibilityLevel
 } from '@/types';
+
+// 根据档位获取倍数
+function getMultiplierByLevel(level: number): number {
+  switch (level) {
+    case 0: return 1.0;    // 第一档：基准
+    case 1: return 1.2;    // 第二档：1.2倍
+    case 2: return 1.5;    // 第三档：1.5倍
+    case 3: return 2.0;    // 第四档：2倍
+    default: return 1.0;
+  }
+}
+
+// 根据整体系数配置计算总的调整倍数
+function calculateImpactMultiplier(config: GlobalConfig): number {
+  if (!config.impactFactorConfig) return 1.0;
+  
+  const impactConfig = config.impactFactorConfig;
+  
+  // 用户规模档位
+  const userScaleLevels: UserScale[] = ['10w+', '100w+', '1000w+', '1ww+'];
+  const userScaleLevel = userScaleLevels.indexOf(impactConfig.userScale);
+  
+  // 服务等级档位
+  const serviceLevels: ServiceLevel[] = ['标准', '及时响应', '工作日坐席', '7*24'];
+  const serviceLevel = serviceLevels.indexOf(impactConfig.serviceLevel);
+  
+  // 质量等级档位
+  const qualityLevels: QualityLevel[] = ['标准', '高', '很高', '极高'];
+  const qualityLevel = qualityLevels.indexOf(impactConfig.qualityLevel);
+  
+  // 安全等级档位
+  const securityLevels: SecurityLevel[] = ['标准', '权限控制', '金融支付', '安全盾'];
+  const securityLevel = securityLevels.indexOf(impactConfig.securityLevel);
+  
+  // 灾备等级档位
+  const disasterRecoveryLevels: DisasterRecoveryLevel[] = ['标准', '定时备份', 'T1可恢复', 'H1可恢复'];
+  const disasterRecoveryLevel = disasterRecoveryLevels.indexOf(impactConfig.disasterRecoveryLevel);
+  
+  // 灵活等级档位
+  const flexibilityLevels: FlexibilityLevel[] = ['标准', '多系统', '微服务', '组件化'];
+  const flexibilityLevel = flexibilityLevels.indexOf(impactConfig.flexibilityLevel);
+  
+  // 计算所有维度的平均倍数
+  const multipliers = [
+    getMultiplierByLevel(userScaleLevel),
+    getMultiplierByLevel(serviceLevel),
+    getMultiplierByLevel(qualityLevel),
+    getMultiplierByLevel(securityLevel),
+    getMultiplierByLevel(disasterRecoveryLevel),
+    getMultiplierByLevel(flexibilityLevel)
+  ];
+  
+  // 返回平均倍数
+  const avgMultiplier = multipliers.reduce((sum, m) => sum + m, 0) / multipliers.length;
+  return avgMultiplier;
+}
 
 // 获取角色的标准月薪（转换为元）
 function getSalary(config: GlobalConfig, role: TeamRole): number {
@@ -156,13 +218,19 @@ export function calculateEstimate(
     backendTotalDays += getWorkDays(node.complexity, config);
   });
   
+  // 计算整体系数倍数
+  const impactMultiplier = calculateImpactMultiplier(config);
+  
+  // 应用整体系数倍数到后端总工期
+  const adjustedBackendTotalDays = backendTotalDays * impactMultiplier;
+  
   // 第一步：获取基础角色（不包含产品经理、项目经理、架构师、美工师）
   const baseRoles = getBaseRoles(platforms);
   
-  // 计算基础角色的工作量
+  // 计算基础角色的工作量（应用整体系数倍数）
   let baseTeamWorkloads: TeamWorkload[] = baseRoles.map(role => {
     const ratio = config.roleRatios[role] || 1;
-    const workDays = backendTotalDays * ratio;
+    const workDays = adjustedBackendTotalDays * ratio;
     return {
       role,
       workDays,
@@ -179,10 +247,10 @@ export function calculateEstimate(
   // 将所有角色合并并排序
   const allRoles = sortRolesByPriority([...baseRoles, ...additionalRoles]);
   
-  // 重新计算所有角色的工作量
+  // 重新计算所有角色的工作量（应用整体系数倍数）
   const teamWorkloads: TeamWorkload[] = allRoles.map(role => {
     const ratio = config.roleRatios[role] || 1;
-    const workDays = backendTotalDays * ratio;
+    const workDays = adjustedBackendTotalDays * ratio;
     return {
       role,
       workDays,
@@ -190,8 +258,8 @@ export function calculateEstimate(
     };
   });
   
-  // 计算总工期（取最长的）
-  const totalDays = Math.max(...teamWorkloads.map(w => w.workDays), 0);
+  // 计算总工期（所有工期的总和 * 70%）
+  const totalDays = teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7;
   
   // 计算基础成本
   let baseCost = 0;
