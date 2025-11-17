@@ -113,6 +113,33 @@ function getAdditionalRoles(totalManpower: number, platforms: Platform[]): TeamR
   return additionalRoles;
 }
 
+// 岗位排序优先级
+const ROLE_ORDER: TeamRole[] = [
+  '产品经理',
+  '项目经理',
+  '架构师',
+  '美工师',
+  '后端开发工程师',
+  '前端开发工程师',
+  'IOS开发工程师',
+  'Android开发工程师',
+  '小程序开发工程师'
+];
+
+// 对角色进行排序
+function sortRolesByPriority(roles: TeamRole[]): TeamRole[] {
+  return roles.sort((a, b) => {
+    const indexA = ROLE_ORDER.indexOf(a);
+    const indexB = ROLE_ORDER.indexOf(b);
+    
+    // 如果角色不在排序列表中，放到最后
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    
+    return indexA - indexB;
+  });
+}
+
 // 计算估价
 export function calculateEstimate(
   functionNodes: FunctionNode[],
@@ -149,8 +176,8 @@ export function calculateEstimate(
   // 第二步：根据总人力和平台判断是否需要添加额外角色
   const additionalRoles = getAdditionalRoles(baseTotalManpower, platforms);
   
-  // 将所有角色合并
-  const allRoles = [...baseRoles, ...additionalRoles];
+  // 将所有角色合并并排序
+  const allRoles = sortRolesByPriority([...baseRoles, ...additionalRoles]);
   
   // 重新计算所有角色的工作量
   const teamWorkloads: TeamWorkload[] = allRoles.map(role => {
