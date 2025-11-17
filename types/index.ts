@@ -1,8 +1,8 @@
 // 复杂度枚举
-export type Complexity = '低' | '中' | '高' | '极高';
+export type Complexity = '低' | '中' | '高' | '很高';
 
 // 优先级枚举
-export type Priority = '低' | '中' | '高' | '极高';
+export type Priority = '低' | '中' | '高' | '很高';
 
 // 用户端类型
 export type Platform = 'PC端' | 'Web端' | 'H5' | 'Android端' | 'IOS端' | '小程序' | '后台';
@@ -139,7 +139,7 @@ export interface GlobalConfig {
     低: number;
     中: number;
     高: number;
-    极高: number;
+    很高: number;
   };
   roleRatios: Record<TeamRole, number>;
   impactFactors: ImpactFactor[];

@@ -138,7 +138,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
     setTempRoleCost(updated);
   };
 
-  const handleWorkDurationChange = (complexity: '低' | '中' | '高' | '极高', value: string) => {
+  const handleWorkDurationChange = (complexity: '低' | '中' | '高' | '很高', value: string) => {
     const numValue = parseFloat(value) || 0;
     onConfigChange({
       ...config,
@@ -227,7 +227,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
         return <Circle className="h-3.5 w-3.5 text-blue-500" />;
       case '高':
         return <TrendingUpIcon className="h-3.5 w-3.5 text-orange-500" />;
-      case '极高':
+      case '很高':
         return <AlertTriangle className="h-3.5 w-3.5 text-red-500" />;
       default:
         return <Circle className="h-3.5 w-3.5 text-gray-400" />;
@@ -361,7 +361,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                           </tr>
                         </thead>
                         <tbody>
-                          {(['低', '中', '高', '极高'] as const).map((complexity) => (
+                          {(['低', '中', '高', '很高'] as const).map((complexity) => (
                             <tr key={complexity} className="border-b last:border-b-0 hover:bg-gray-50">
                               <td className="py-2 px-2">
                                 <div className="flex items-center justify-center gap-1.5">

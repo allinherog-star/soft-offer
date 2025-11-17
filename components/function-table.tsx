@@ -435,7 +435,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
       '低': 1,
       '中': 2,
       '高': 3,
-      '极高': 4
+      '很高': 4
     };
     return levels[complexity || '低'] || 1;
   };
