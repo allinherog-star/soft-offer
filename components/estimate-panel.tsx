@@ -372,6 +372,26 @@ export function EstimatePanel({
     }
   };
 
+  // 根据档位获取颜色（第1档统一颜色，第2-4档递增）
+  const getLevelColor = (index: number, isSelected: boolean) => {
+    if (!isSelected) {
+      return 'bg-gray-100 text-gray-700 hover:bg-gray-200';
+    }
+    
+    switch (index) {
+      case 0: // 第1档：统一灰蓝色
+        return 'bg-slate-500 text-white shadow-sm';
+      case 1: // 第2档：绿色
+        return 'bg-green-500 text-white shadow-sm';
+      case 2: // 第3档：橙色
+        return 'bg-orange-500 text-white shadow-sm';
+      case 3: // 第4档：红色
+        return 'bg-red-500 text-white shadow-sm';
+      default:
+        return 'bg-gray-500 text-white shadow-sm';
+    }
+  };
+
   return (
     <div className="h-full bg-white border-l flex flex-col">
       <ScrollArea className="flex-1 overflow-auto">
@@ -957,7 +977,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">用户规模</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['10w+', '100w+', '1000w+', '1ww+'] as UserScale[]).map((scale) => (
+                  {(['10w+', '100w+', '1000w+', '1ww+'] as UserScale[]).map((scale, index) => (
                     <button
                       key={scale}
                       onClick={() => {
@@ -972,9 +992,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.userScale === scale
-                          ? 'bg-blue-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.userScale === scale)
                       }`}
                     >
                       {getUserScaleIcon(scale)}
@@ -991,7 +1009,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">服务等级</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['标准', '及时响应', '工作日坐席', '7*24'] as ServiceLevel[]).map((level) => (
+                  {(['标准', '及时响应', '工作日坐席', '7*24'] as ServiceLevel[]).map((level, index) => (
                     <button
                       key={level}
                       onClick={() => {
@@ -1006,9 +1024,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.serviceLevel === level
-                          ? 'bg-green-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.serviceLevel === level)
                       }`}
                     >
                       {getServiceLevelIcon(level)}
@@ -1025,7 +1041,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">质量等级</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['标准', '高', '很高', '极高'] as QualityLevel[]).map((level) => (
+                  {(['标准', '高', '很高', '极高'] as QualityLevel[]).map((level, index) => (
                     <button
                       key={level}
                       onClick={() => {
@@ -1040,9 +1056,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.qualityLevel === level
-                          ? 'bg-amber-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.qualityLevel === level)
                       }`}
                     >
                       {getQualityLevelIcon(level)}
@@ -1059,7 +1073,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">安全等级</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['标准', '权限控制', '金融支付', '安全盾'] as SecurityLevel[]).map((level) => (
+                  {(['标准', '权限控制', '金融支付', '安全盾'] as SecurityLevel[]).map((level, index) => (
                     <button
                       key={level}
                       onClick={() => {
@@ -1074,9 +1088,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.securityLevel === level
-                          ? 'bg-red-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.securityLevel === level)
                       }`}
                     >
                       {getSecurityLevelIcon(level)}
@@ -1093,7 +1105,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">灾备等级</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['标准', '定时备份', 'T1可恢复', 'H1可恢复'] as DisasterRecoveryLevel[]).map((level) => (
+                  {(['标准', '定时备份', 'T1可恢复', 'H1可恢复'] as DisasterRecoveryLevel[]).map((level, index) => (
                     <button
                       key={level}
                       onClick={() => {
@@ -1108,9 +1120,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.disasterRecoveryLevel === level
-                          ? 'bg-indigo-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.disasterRecoveryLevel === level)
                       }`}
                     >
                       {getDisasterRecoveryIcon(level)}
@@ -1127,7 +1137,7 @@ export function EstimatePanel({
                   <span className="text-xs font-medium text-gray-700">灵活等级</span>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['标准', '多系统', '微服务', '组件化'] as FlexibilityLevel[]).map((level) => (
+                  {(['标准', '多系统', '微服务', '组件化'] as FlexibilityLevel[]).map((level, index) => (
                     <button
                       key={level}
                       onClick={() => {
@@ -1142,9 +1152,7 @@ export function EstimatePanel({
                         }
                       }}
                       className={`px-2 py-1.5 text-xs rounded transition-all flex items-center justify-center gap-1 ${
-                        config.impactFactorConfig?.flexibilityLevel === level
-                          ? 'bg-cyan-500 text-white shadow-sm'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        getLevelColor(index, config.impactFactorConfig?.flexibilityLevel === level)
                       }`}
                     >
                       {getFlexibilityLevelIcon(level)}
