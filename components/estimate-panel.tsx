@@ -686,12 +686,9 @@ export function EstimatePanel({
                         </Select>
                       ) : (
                         <div className="flex items-center justify-between w-full gap-0.5">
-                          <div className="flex items-center gap-1 flex-1 min-w-0">
-                            {getHardwareIcon(item.type)}
-                            <span className="text-xs text-gray-700 truncate flex-1 min-w-0">
-                              {item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '国内备案' : '100GB')}
-                            </span>
-                          </div>
+                          <span className="text-xs text-gray-700 truncate flex-1 min-w-0">
+                            {item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '国内备案' : '100GB')}
+                          </span>
                           <button
                             onClick={() => setEditingHardwareSpec(item.id)}
                             className="p-0.5 hover:bg-green-100 rounded transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
