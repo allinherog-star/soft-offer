@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { formatCurrency, formatDays } from '@/lib/calculation';
 import { DISCOUNT_OPTIONS, SERVER_SPEC_PRICES, STORAGE_SPEC_PRICES, BANDWIDTH_SPEC_PRICES, DOMAIN_SPEC_PRICES, TRAFFIC_SPEC_PRICES, calculateRecommendedSalary } from '@/lib/constants';
 import type { HardwareType, HardwareItem, ServerSpec, StorageSpec, BandwidthSpec, DomainSpec, TrafficSpec, WorkExperience } from '@/types';
-import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star } from 'lucide-react';
+import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface EstimatePanelProps {
@@ -488,7 +488,20 @@ export function EstimatePanel({
             <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
               <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">硬件</div>
               <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">标准规格</div>
-              <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0 text-right">云厂商成本</div>
+              <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0 text-right">
+                <div className="flex items-center justify-end gap-1">
+                  <span>云厂商成本</span>
+                  <a 
+                    href="https://www.aliyun.com/product/list" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-blue-500 hover:text-blue-700 transition-colors"
+                    title="访问阿里云"
+                  >
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
               <div className="text-xs font-medium text-gray-600 w-14 flex-shrink-0 text-center">需要</div>
               <div className="text-xs font-medium text-gray-600 flex-1 min-w-0 overflow-hidden">备注</div>
             </div>
@@ -533,7 +546,7 @@ export function EstimatePanel({
                             const quantity = item.quantity || 1;
                             const newItems = config.hardwareConfig!.items.map(i => 
                               i.id === item.id 
-                                ? { ...i, spec: value, unitPrice, price: unitPrice * quantity }
+                                ? { ...i, spec: value as any, unitPrice, price: unitPrice * quantity }
                                 : i
                             );
                             onConfigChange({
