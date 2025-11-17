@@ -142,8 +142,8 @@ export const COMPLEXITY_OPTIONS = [
 
 // 优先级选项（带图标）
 export const PRIORITY_OPTIONS = [
-  { value: '低', label: '低', icon: 'ArrowDown', color: 'text-gray-600' },
-  { value: '中', label: '中', icon: 'Minus', color: 'text-blue-600' },
+  { value: '低', label: '低', icon: 'ArrowDown', color: 'text-gray-400' },
+  { value: '中', label: '中', icon: 'Minus', color: 'text-gray-600' },
   { value: '高', label: '高', icon: 'ArrowUp', color: 'text-orange-600' },
   { value: '很高', label: '很高', icon: 'ChevronsUp', color: 'text-red-600' }
 ] as const;

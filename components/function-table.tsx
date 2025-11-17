@@ -203,6 +203,87 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     return colorMap[name] || 'text-gray-700 bg-gray-100 border border-gray-300';
   };
 
+  // 获取复杂度级别数值
+  const getComplexityLevel = (complexity?: Complexity): number => {
+    const levels: Record<string, number> = { '低': 1, '中': 2, '高': 3, '很高': 4 };
+    return levels[complexity || '低'] || 1;
+  };
+
+  // 获取优先级级别数值
+  const getPriorityLevel = (priority?: Priority): number => {
+    const levels: Record<string, number> = { '低': 1, '中': 2, '高': 3, '很高': 4 };
+    return levels[priority || '中'] || 2;
+  };
+
+  // 获取子节点中的最高复杂度
+  const getMaxComplexityFromChildren = (node: FunctionNode): Complexity | undefined => {
+    if (!node.children || node.children.length === 0) return node.complexity;
+    
+    let maxLevel = getComplexityLevel(node.complexity);
+    let maxComplexity: Complexity | undefined = node.complexity;
+    
+    const checkChildren = (children: FunctionNode[]) => {
+      children.forEach(child => {
+        const level = getComplexityLevel(child.complexity);
+        if (level > maxLevel) {
+          maxLevel = level;
+          maxComplexity = child.complexity;
+        }
+        if (child.children) {
+          checkChildren(child.children);
+        }
+      });
+    };
+    
+    checkChildren(node.children);
+    return maxComplexity;
+  };
+
+  // 获取子节点中的最高优先级
+  const getMaxPriorityFromChildren = (node: FunctionNode): Priority | undefined => {
+    if (!node.children || node.children.length === 0) return node.priority;
+    
+    let maxLevel = getPriorityLevel(node.priority);
+    let maxPriority: Priority | undefined = node.priority;
+    
+    const checkChildren = (children: FunctionNode[]) => {
+      children.forEach(child => {
+        const level = getPriorityLevel(child.priority);
+        if (level > maxLevel) {
+          maxLevel = level;
+          maxPriority = child.priority;
+        }
+        if (child.children) {
+          checkChildren(child.children);
+        }
+      });
+    };
+    
+    checkChildren(node.children);
+    return maxPriority;
+  };
+
+  // 向上同步父节点的复杂度和优先级
+  const syncParentLevels = (nodeList: FunctionNode[]) => {
+    const syncRecursive = (nodes: FunctionNode[]) => {
+      nodes.forEach(node => {
+        if (node.children && node.children.length > 0) {
+          // 先递归处理子节点
+          syncRecursive(node.children);
+          
+          // 然后同步当前节点
+          const maxComplexity = getMaxComplexityFromChildren(node);
+          const maxPriority = getMaxPriorityFromChildren(node);
+          
+          if (maxComplexity) node.complexity = maxComplexity;
+          if (maxPriority) node.priority = maxPriority;
+        }
+      });
+    };
+    
+    syncRecursive(nodeList);
+  };
+
   const updateNode = (id: string, updates: Partial<FunctionNode>) => {
     const updateRecursive = (nodeList: FunctionNode[]): boolean => {
       for (const node of nodeList) {
@@ -218,6 +299,12 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     };
     
     updateRecursive(nodes);
+    
+    // 如果更新了复杂度或优先级，同步所有父节点
+    if (updates.complexity !== undefined || updates.priority !== undefined) {
+      syncParentLevels(nodes);
+    }
+    
     onNodesChange([...nodes]);
   };
 
@@ -265,7 +352,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           // 排序按钮
           node.buttons = sortButtons(node.buttons);
           // 同步功能节点复杂度为所有操作中的最高值
-          const maxComplexity = getMaxComplexity(node.buttons);
+          const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           }
@@ -321,7 +408,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           node.buttons = sortButtons(node.buttons);
           
           // 同步功能节点复杂度为所有操作中的最高值
-          const maxComplexity = getMaxComplexity(node.buttons);
+          const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           }
@@ -383,7 +470,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           }
           
           // 同步功能节点复杂度为所有操作中的最高值
-          const maxComplexity = getMaxComplexity(node.buttons);
+          const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           }
@@ -437,7 +524,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           node.buttons = sortButtons(node.buttons);
           
           // 同步功能节点复杂度为所有操作中的最高值
-          const maxComplexity = getMaxComplexity(node.buttons);
+          const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           }
@@ -456,19 +543,8 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     onNodesChange([...nodes]);
   };
 
-  // 获取复杂度的优先级数值（用于比较）
-  const getComplexityLevel = (complexity?: Complexity): number => {
-    const levels: Record<string, number> = {
-      '低': 1,
-      '中': 2,
-      '高': 3,
-      '很高': 4
-    };
-    return levels[complexity || '低'] || 1;
-  };
-
   // 获取所有按钮中的最高复杂度
-  const getMaxComplexity = (buttons?: ButtonFunction[]): Complexity | undefined => {
+  const getMaxComplexityFromButtons = (buttons?: ButtonFunction[]): Complexity | undefined => {
     if (!buttons || buttons.length === 0) return undefined;
     
     let maxLevel = 0;
@@ -500,7 +576,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
             }
             // 如果更新了复杂度，自动同步功能节点的复杂度为所有操作中的最高值
             if (updates.complexity !== undefined) {
-              const maxComplexity = getMaxComplexity(node.buttons);
+              const maxComplexity = getMaxComplexityFromButtons(node.buttons);
               if (maxComplexity) {
                 node.complexity = maxComplexity;
               }
@@ -532,7 +608,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         if (node.id === buttonToDelete.nodeId && node.buttons) {
           node.buttons = node.buttons.filter(b => b.id !== buttonToDelete.buttonId);
           // 删除后同步功能节点复杂度为剩余操作中的最高值
-          const maxComplexity = getMaxComplexity(node.buttons);
+          const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           } else {
@@ -932,7 +1008,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           </table>
           {flatNodes.length === 0 && (
             <div className="flex items-center justify-center h-32 text-gray-400 text-xs">
-              暂无操作，请在左侧添加功能菜单节点
+              暂无操作，请在左侧添加需求模块和功能菜单
             </div>
           )}
         </ScrollArea>
