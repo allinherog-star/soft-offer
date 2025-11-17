@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { COMPLEXITY_OPTIONS, PRIORITY_OPTIONS } from '@/lib/constants';
-import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, Gauge, AlertTriangle, Minus, Equal, AlignJustify, Flame, ArrowDown, ArrowUp } from 'lucide-react';
+import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, AlertTriangle, Minus, Flame, ArrowDown, ArrowUp, Circle, AlertCircle, Equal, TrendingUp, Zap } from 'lucide-react';
 
 interface FunctionTableProps {
   nodes: FunctionNode[];
@@ -36,11 +36,15 @@ interface FunctionTableProps {
 const IconMap = {
   'Minus': Minus,
   'Equal': Equal,
-  'AlignJustify': AlignJustify,
+  'TrendingUp': TrendingUp,
+  'Zap': Zap,
   'Flame': Flame,
   'ArrowDown': ArrowDown,
   'ArrowUp': ArrowUp,
   'ChevronsUp': ChevronsUp,
+  'Circle': Circle,
+  'AlertCircle': AlertCircle,
+  'AlertTriangle': AlertTriangle,
 } as const;
 
 // 获取复杂度图标和颜色

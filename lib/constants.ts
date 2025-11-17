@@ -132,12 +132,12 @@ export const DISCOUNT_OPTIONS = [
   { label: '7折', value: 0.7, description: '战略合作伙伴' }
 ];
 
-// 复杂度选项（带图标）
+// 复杂度选项（带图标 - 进度条风格）
 export const COMPLEXITY_OPTIONS = [
-  { value: '低', label: '低', icon: 'Minus', color: 'text-green-600' },
-  { value: '中', label: '中', icon: 'Equal', color: 'text-blue-600' },
-  { value: '高', label: '高', icon: 'AlignJustify', color: 'text-orange-600' },
-  { value: '很高', label: '很高', icon: 'Flame', color: 'text-red-600' }
+  { value: '低', label: '低', icon: 'Minus', color: 'text-gray-400' },
+  { value: '中', label: '中', icon: 'Equal', color: 'text-gray-600' },
+  { value: '高', label: '高', icon: 'TrendingUp', color: 'text-orange-600' },
+  { value: '很高', label: '很高', icon: 'Zap', color: 'text-red-600' }
 ] as const;
 
 // 优先级选项（带图标）
