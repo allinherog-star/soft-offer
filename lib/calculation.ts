@@ -51,14 +51,9 @@ function collectLeafNodes(node: FunctionNode): Array<{complexity?: Complexity}> 
   return items;
 }
 
-// 根据平台确定需要的角色
-function getRequiredRoles(platforms: Platform[]): TeamRole[] {
-  const roles: Set<TeamRole> = new Set([
-    '产品经理',
-    '项目经理',
-    '架构师',
-    '美工师'
-  ]);
+// 根据平台确定需要的基础角色（不包含产品经理、项目经理、架构师、美工师）
+function getBaseRoles(platforms: Platform[]): TeamRole[] {
+  const roles: Set<TeamRole> = new Set();
 
   platforms.forEach(platform => {
     switch (platform) {
@@ -87,6 +82,37 @@ function getRequiredRoles(platforms: Platform[]): TeamRole[] {
   return Array.from(roles);
 }
 
+// 根据总人力和平台判断是否需要添加管理角色和美工师
+function getAdditionalRoles(totalManpower: number, platforms: Platform[]): TeamRole[] {
+  const additionalRoles: TeamRole[] = [];
+
+  // 当总人力 > 30 时，自动关联架构师
+  if (totalManpower > 30) {
+    additionalRoles.push('架构师');
+  }
+
+  // 当总人力 > 50 时，自动关联产品经理
+  if (totalManpower > 50) {
+    additionalRoles.push('产品经理');
+  }
+
+  // 当总人力 > 100 时，自动关联项目经理
+  if (totalManpower > 100) {
+    additionalRoles.push('项目经理');
+  }
+
+  // 当勾选PC端、web端、H5、Android端、IOS端、小程序时，自动关联美工师
+  const needDesigner = platforms.some(platform => 
+    ['PC端', 'Web端', 'H5', 'Android端', 'IOS端', '小程序'].includes(platform)
+  );
+  
+  if (needDesigner) {
+    additionalRoles.push('美工师');
+  }
+
+  return additionalRoles;
+}
+
 // 计算估价
 export function calculateEstimate(
   functionNodes: FunctionNode[],
@@ -103,11 +129,31 @@ export function calculateEstimate(
     backendTotalDays += getWorkDays(node.complexity, config);
   });
   
-  // 获取需要的角色
-  const requiredRoles = getRequiredRoles(platforms);
+  // 第一步：获取基础角色（不包含产品经理、项目经理、架构师、美工师）
+  const baseRoles = getBaseRoles(platforms);
   
-  // 计算各角色工作量
-  const teamWorkloads: TeamWorkload[] = requiredRoles.map(role => {
+  // 计算基础角色的工作量
+  let baseTeamWorkloads: TeamWorkload[] = baseRoles.map(role => {
+    const ratio = config.roleRatios[role] || 1;
+    const workDays = backendTotalDays * ratio;
+    return {
+      role,
+      workDays,
+      ratio
+    };
+  });
+  
+  // 计算基础角色的总人力
+  const baseTotalManpower = baseTeamWorkloads.reduce((sum, w) => sum + w.workDays, 0);
+  
+  // 第二步：根据总人力和平台判断是否需要添加额外角色
+  const additionalRoles = getAdditionalRoles(baseTotalManpower, platforms);
+  
+  // 将所有角色合并
+  const allRoles = [...baseRoles, ...additionalRoles];
+  
+  // 重新计算所有角色的工作量
+  const teamWorkloads: TeamWorkload[] = allRoles.map(role => {
     const ratio = config.roleRatios[role] || 1;
     const workDays = backendTotalDays * ratio;
     return {
