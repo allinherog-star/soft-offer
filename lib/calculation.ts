@@ -55,7 +55,7 @@ function calculateImpactMultiplier(config: GlobalConfig): number {
   const flexibilityLevels: FlexibilityLevel[] = ['标准', '多系统', '微服务', '组件化'];
   const flexibilityLevel = flexibilityLevels.indexOf(impactConfig.flexibilityLevel);
   
-  // 计算所有维度的平均倍数
+  // 计算所有维度的倍数（将超出基准1.0的部分累加）
   const multipliers = [
     getMultiplierByLevel(userScaleLevel),
     getMultiplierByLevel(serviceLevel),
@@ -65,9 +65,9 @@ function calculateImpactMultiplier(config: GlobalConfig): number {
     getMultiplierByLevel(flexibilityLevel)
   ];
   
-  // 返回平均倍数
-  const avgMultiplier = multipliers.reduce((sum, m) => sum + m, 0) / multipliers.length;
-  return avgMultiplier;
+  // 计算总倍数：基准1.0 + 所有维度超出1.0的部分之和
+  const additionalMultiplier = multipliers.reduce((sum, m) => sum + (m - 1.0), 0);
+  return 1.0 + additionalMultiplier;
 }
 
 // 获取角色的标准月薪（转换为元）
@@ -207,7 +207,8 @@ export function calculateEstimate(
   functionNodes: FunctionNode[],
   platforms: Platform[],
   config: GlobalConfig,
-  discount: number
+  discount: number,
+  roleCounts: Record<string, number> = {}
 ): EstimateResult {
   // 收集所有叶子节点
   const allLeafNodes = functionNodes.flatMap(node => collectLeafNodes(node));
@@ -261,11 +262,13 @@ export function calculateEstimate(
   // 计算总工期（所有工期的总和 * 70%）
   const totalDays = teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7;
   
-  // 计算基础成本
+  // 计算基础成本（基于实际投入的人力）
   let baseCost = 0;
   teamWorkloads.forEach(workload => {
     const monthlySalary = getSalary(config, workload.role);
-    const monthlyCost = (workload.workDays / 22) * monthlySalary; // 假设一个月22个工作日
+    const count = roleCounts[workload.role] || 1; // 获取岗位人数，默认为1
+    const actualWorkDays = workload.workDays / count; // 实际投入的人力
+    const monthlyCost = (actualWorkDays / 22) * monthlySalary; // 假设一个月22个工作日
     baseCost += monthlyCost;
   });
   

@@ -81,10 +81,11 @@ export default function Home() {
       functionNodes,
       projectInfo.platforms,
       config,
-      discount
+      discount,
+      roleCounts
     );
     setEstimate(newEstimate);
-  }, [functionNodes, projectInfo.platforms, config, discount]);
+  }, [functionNodes, projectInfo.platforms, config, discount, roleCounts]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
