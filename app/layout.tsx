@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +17,8 @@ export const metadata: Metadata = {
   title: "软件成本评估看板",
   description: "专业的软件项目成本测算和工期评估系统",
   icons: {
-    icon: '/dog-logo.png',
-    apple: '/dog-logo.png',
+    icon: '/favicon.svg',
+    apple: '/logo.svg',
   },
 };
 
@@ -33,6 +34,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );

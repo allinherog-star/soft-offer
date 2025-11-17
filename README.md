@@ -1,5 +1,26 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## 功能特性
+
+- 📊 项目需求管理和估价系统
+- 🪄 AI 智能生成需求模块 (一键跳转 DeepSeek)
+- 💰 成本估算和团队配置
+- 📋 可视化需求树结构
+- ✨ 无需配置 API Key,开箱即用
+
+## AI 生成功能使用
+
+### 快速开始
+
+1. **填写项目信息**: 在顶部导航栏填写项目名称和描述
+2. **点击 AI 生成**: 在左侧功能树点击 🪄 "AI 生成" 按钮
+3. **自动复制**: 系统自动生成并复制提示词到剪贴板
+4. **跳转 DeepSeek**: 自动打开 DeepSeek 网站
+5. **粘贴生成**: 在 DeepSeek 粘贴提示词,获取 AI 生成的需求列表
+6. **手动导入**: 根据生成结果创建需求模块
+
+**特点**: 无需配置 API Key,完全免费使用!
+
 ## Getting Started
 
 First, run the development server:
