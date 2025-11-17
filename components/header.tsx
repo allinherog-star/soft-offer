@@ -13,7 +13,7 @@ import {
   Globe, BadgeDollarSign, ShoppingCart, GraduationCap, Heart,
   Factory, Store, Truck, Home, Zap, Landmark, Radio, Tv,
   Plane, UtensilsCrossed, Briefcase, Gamepad2, Users, Car,
-  Sprout, MoreHorizontal, LucideIcon
+  Sprout, MoreHorizontal, LucideIcon, TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -67,8 +67,8 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
         <div className="flex items-center gap-4 flex-1">
           {/* Logo和系统名称 */}
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 shadow-sm">
-              <Calculator className="h-4 w-4 text-white" />
+            <div className="flex items-center justify-center w-8 h-8">
+              <img src="/dog-logo.png" alt="Logo" className="w-8 h-8 object-contain" />
             </div>
             <div className="flex flex-col">
               <h1 className="text-sm font-semibold text-gray-900">软件成本评估看板</h1>
