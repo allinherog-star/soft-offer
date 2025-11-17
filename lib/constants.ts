@@ -1,4 +1,4 @@
-import { GlobalConfig, RoleCost, TeamRole, WorkExperience } from '@/types';
+import { GlobalConfig, RoleCost, TeamRole, WorkExperience, ImpactFactorConfig } from '@/types';
 
 // 角色基础薪资（用于计算推荐标准月薪，调整为产生30k、35k、40k、80k等整数）
 const ROLE_BASE_SALARY: Record<TeamRole, number> = {
@@ -221,13 +221,24 @@ export const DEFAULT_HARDWARE_CONFIG = {
   ]
 };
 
+// 默认影响系数配置
+export const DEFAULT_IMPACT_FACTOR_CONFIG: ImpactFactorConfig = {
+  userScale: '10w+',
+  serviceLevel: '标准',
+  qualityLevel: '标准',
+  securityLevel: '标准',
+  disasterRecoveryLevel: '标准',
+  flexibilityLevel: '标准'
+};
+
 // 默认全局配置
 export const DEFAULT_CONFIG: GlobalConfig = {
   roleCosts: DEFAULT_ROLE_COSTS,
   workDurationConfigs: DEFAULT_WORK_DURATION,
   roleRatios: DEFAULT_ROLE_RATIOS,
   impactFactors: DEFAULT_IMPACT_FACTORS,
-  hardwareConfig: DEFAULT_HARDWARE_CONFIG
+  hardwareConfig: DEFAULT_HARDWARE_CONFIG,
+  impactFactorConfig: DEFAULT_IMPACT_FACTOR_CONFIG
 };
 
 

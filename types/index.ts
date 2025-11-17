@@ -82,6 +82,34 @@ export interface ImpactFactor {
   value: number;
 }
 
+// 用户规模类型
+export type UserScale = '10w+' | '100w+' | '1000w+' | '1ww+';
+
+// 服务等级类型
+export type ServiceLevel = '标准' | '及时响应' | '工作日坐席' | '7*24';
+
+// 质量等级类型
+export type QualityLevel = '标准' | '高' | '很高' | '极高';
+
+// 安全等级类型
+export type SecurityLevel = '标准' | '权限控制' | '金融支付' | '安全盾';
+
+// 灾备等级类型
+export type DisasterRecoveryLevel = '标准' | '定时备份' | 'T1可恢复' | 'H1可恢复';
+
+// 灵活等级类型
+export type FlexibilityLevel = '标准' | '多系统' | '微服务' | '组件化';
+
+// 影响系数配置
+export interface ImpactFactorConfig {
+  userScale: UserScale;
+  serviceLevel: ServiceLevel;
+  qualityLevel: QualityLevel;
+  securityLevel: SecurityLevel;
+  disasterRecoveryLevel: DisasterRecoveryLevel;
+  flexibilityLevel: FlexibilityLevel;
+}
+
 // 折扣选项
 export type Discount = 0.95 | 0.9 | 0.85 | 0.8 | 0.7 | 1;
 
@@ -144,6 +172,7 @@ export interface GlobalConfig {
   roleRatios: Record<TeamRole, number>;
   impactFactors: ImpactFactor[];
   hardwareConfig?: HardwareConfig;
+  impactFactorConfig?: ImpactFactorConfig;
 }
 
 

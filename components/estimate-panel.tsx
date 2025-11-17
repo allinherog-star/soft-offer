@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { EstimateResult, GlobalConfig, TeamRole } from '@/types';
+import { EstimateResult, GlobalConfig, TeamRole, UserScale, ServiceLevel, QualityLevel, SecurityLevel, DisasterRecoveryLevel, FlexibilityLevel } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { formatCurrency, formatDays } from '@/lib/calculation';
 import { DISCOUNT_OPTIONS, SERVER_SPEC_PRICES, STORAGE_SPEC_PRICES, BANDWIDTH_SPEC_PRICES, DOMAIN_SPEC_PRICES, TRAFFIC_SPEC_PRICES, calculateRecommendedSalary } from '@/lib/constants';
 import type { HardwareType, HardwareItem, ServerSpec, StorageSpec, BandwidthSpec, DomainSpec, TrafficSpec, WorkExperience } from '@/types';
-import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings } from 'lucide-react';
+import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings, UsersRound, MessageSquare, Shield, Database, Layers } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface EstimatePanelProps {
@@ -846,6 +846,216 @@ export function EstimatePanel({
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* 影响系数 */}
+          <div className="bg-white mt-0">
+            <div className="bg-gradient-to-r from-purple-50 to-violet-50 px-3 py-2 border-b border-purple-100">
+              <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+                <span className="w-0.5 h-4 bg-purple-500 rounded-full"></span>
+                影响系数
+              </h3>
+            </div>
+
+            <div className="p-3 space-y-3">
+              {/* 用户规模 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <UsersRound className="h-3.5 w-3.5 text-blue-500" />
+                  <span className="text-xs font-medium text-gray-700">用户规模</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['10w+', '100w+', '1000w+', '1ww+'] as UserScale[]).map((scale) => (
+                    <button
+                      key={scale}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              userScale: scale
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.userScale === scale
+                          ? 'bg-blue-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {scale}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 服务等级 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <MessageSquare className="h-3.5 w-3.5 text-green-500" />
+                  <span className="text-xs font-medium text-gray-700">服务等级</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['标准', '及时响应', '工作日坐席', '7*24'] as ServiceLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              serviceLevel: level
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.serviceLevel === level
+                          ? 'bg-green-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 质量等级 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-xs font-medium text-gray-700">质量等级</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['标准', '高', '很高', '极高'] as QualityLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              qualityLevel: level
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.qualityLevel === level
+                          ? 'bg-amber-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 安全等级 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5 text-red-500" />
+                  <span className="text-xs font-medium text-gray-700">安全等级</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['标准', '权限控制', '金融支付', '安全盾'] as SecurityLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              securityLevel: level
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.securityLevel === level
+                          ? 'bg-red-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 灾备等级 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Database className="h-3.5 w-3.5 text-indigo-500" />
+                  <span className="text-xs font-medium text-gray-700">灾备等级</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['标准', '定时备份', 'T1可恢复', 'H1可恢复'] as DisasterRecoveryLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              disasterRecoveryLevel: level
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.disasterRecoveryLevel === level
+                          ? 'bg-indigo-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 灵活等级 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5">
+                  <Layers className="h-3.5 w-3.5 text-cyan-500" />
+                  <span className="text-xs font-medium text-gray-700">灵活等级</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {(['标准', '多系统', '微服务', '组件化'] as FlexibilityLevel[]).map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        if (config.impactFactorConfig) {
+                          onConfigChange({
+                            ...config,
+                            impactFactorConfig: {
+                              ...config.impactFactorConfig,
+                              flexibilityLevel: level
+                            }
+                          });
+                        }
+                      }}
+                      className={`px-2 py-1.5 text-xs rounded transition-all ${
+                        config.impactFactorConfig?.flexibilityLevel === level
+                          ? 'bg-cyan-500 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
