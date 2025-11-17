@@ -132,11 +132,21 @@ export const DISCOUNT_OPTIONS = [
   { label: '7折', value: 0.7, description: '战略合作伙伴' }
 ];
 
-// 复杂度选项
-export const COMPLEXITY_OPTIONS = ['低', '中', '高', '很高'] as const;
+// 复杂度选项（带图标）
+export const COMPLEXITY_OPTIONS = [
+  { value: '低', label: '低', icon: 'Minus', color: 'text-green-600' },
+  { value: '中', label: '中', icon: 'Equal', color: 'text-blue-600' },
+  { value: '高', label: '高', icon: 'AlignJustify', color: 'text-orange-600' },
+  { value: '很高', label: '很高', icon: 'Flame', color: 'text-red-600' }
+] as const;
 
-// 优先级选项
-export const PRIORITY_OPTIONS = ['低', '中', '高', '很高'] as const;
+// 优先级选项（带图标）
+export const PRIORITY_OPTIONS = [
+  { value: '低', label: '低', icon: 'ArrowDown', color: 'text-gray-600' },
+  { value: '中', label: '中', icon: 'Minus', color: 'text-blue-600' },
+  { value: '高', label: '高', icon: 'ArrowUp', color: 'text-orange-600' },
+  { value: '很高', label: '很高', icon: 'ChevronsUp', color: 'text-red-600' }
+] as const;
 
 // 平台选项
 export const PLATFORM_OPTIONS = ['PC端', 'Web端', 'H5', 'Android端', 'IOS端', '小程序', '后台'] as const;

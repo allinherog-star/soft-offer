@@ -16,8 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Wand2 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Zap } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -57,7 +56,6 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const [nodeToDelete, setNodeToDelete] = useState<{ id: string; name: string; type: string } | null>(null);
   const [addConfirmDialogOpen, setAddConfirmDialogOpen] = useState(false);
   const [pendingAddParentId, setPendingAddParentId] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -150,14 +148,14 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const performAddNode = (parentId?: string) => {
     // 确定新节点的默认名称
     // 顶级节点（无父节点）：需求模块
-    // 非顶级节点（有父节点）：功能需求
-    const defaultName = parentId ? '功能需求' : '需求模块';
+    // 非顶级节点（有父节点）：功能菜单
+    const defaultName = parentId ? '功能菜单' : '需求模块';
     
     const newNode: FunctionNode = {
       id: `node-${Date.now()}-${Math.random()}`,
       name: defaultName,
       complexity: '低',
-      priority: '低',
+      priority: '中',
       isImportant: false,
       remark: '',
       parentId
@@ -271,56 +269,80 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     setNodeToDelete(null);
   };
 
-  // 处理AI生成 - 复制提示词并跳转到DeepSeek
-  const handleAIGenerate = async () => {
-    // 生成提示词
-    const prompt = `你是一个专业的软件需求分析师。请根据以下项目信息,生成详细的功能需求模块列表。
-
-项目名称: ${projectName || '未命名项目'}
-${projectDescription ? `项目描述: ${projectDescription}` : ''}
-
-请按照以下格式生成需求模块和功能列表:
-
-1. 模块名称
-1.1 子功能1
-1.2 子功能2
-
-2. 模块名称
-2.1 子功能1
-2.2 子功能2
-
-要求:
-1. 生成5-8个核心模块
-2. 每个模块包含3-6个子功能
-3. 功能描述要具体、清晰
-4. 覆盖系统的完整业务流程
-5. 只返回纯文本列表,不要有其他说明
-
-请开始生成:`;
-
-    try {
-      // 复制到剪贴板
-      await navigator.clipboard.writeText(prompt);
-      
-      // 显示成功提示
-      toast({
-        title: "✅ 提示词已复制",
-        description: "即将跳转到 DeepSeek，请在聊天框粘贴提示词",
-        duration: 3000,
-      });
-
-      // 延迟跳转，让用户看到提示
-      setTimeout(() => {
-        window.open('https://chat.deepseek.com/', '_blank');
-      }, 500);
-    } catch (error) {
-      toast({
-        title: "❌ 复制失败",
-        description: "请手动复制提示词",
-        variant: "destructive",
-        duration: 3000,
-      });
-    }
+  // 快速评估 - 添加常用需求模块
+  const handleQuickEstimate = () => {
+    const quickModules: FunctionNode[] = [
+      {
+        id: `node-${Date.now()}-1`,
+        name: '用户管理',
+        complexity: '中',
+        priority: '高',
+        isImportant: true,
+        remark: '',
+        children: [
+          {
+            id: `node-${Date.now()}-1-1`,
+            name: '用户注册',
+            complexity: '低',
+            priority: '中',
+            isImportant: false,
+            remark: '',
+          },
+          {
+            id: `node-${Date.now()}-1-2`,
+            name: '用户登录',
+            complexity: '低',
+            priority: '中',
+            isImportant: false,
+            remark: '',
+          },
+          {
+            id: `node-${Date.now()}-1-3`,
+            name: '个人信息管理',
+            complexity: '低',
+            priority: '中',
+            isImportant: false,
+            remark: '',
+          },
+        ]
+      },
+      {
+        id: `node-${Date.now()}-2`,
+        name: '系统管理',
+        complexity: '中',
+        priority: '中',
+        isImportant: false,
+        remark: '',
+        children: [
+          {
+            id: `node-${Date.now()}-2-1`,
+            name: '权限管理',
+            complexity: '中',
+            priority: '中',
+            isImportant: true,
+            remark: '',
+          },
+          {
+            id: `node-${Date.now()}-2-2`,
+            name: '角色管理',
+            complexity: '低',
+            priority: '中',
+            isImportant: false,
+            remark: '',
+          },
+          {
+            id: `node-${Date.now()}-2-3`,
+            name: '日志管理',
+            complexity: '低',
+            priority: '中',
+            isImportant: false,
+            remark: '',
+          },
+        ]
+      },
+    ];
+    
+    onNodesChange([...nodes, ...quickModules]);
   };
 
   // 可排序的树节点组件
@@ -371,12 +393,12 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     } else {
       // 叶子节点
-      nodeTypeLabel = '功能';
+      nodeTypeLabel = '功能菜单';
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     }
 
     // 确定添加按钮的提示文本
-    // 所有非顶级节点下添加的都是功能
+    // 所有非顶级节点下添加的都是功能菜单
     const addButtonTitle = '添加需求';
 
     return (
@@ -393,7 +415,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
             {...dragListeners}
             className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing"
           >
-            <GripVertical className="h-3 w-3 text-gray-400" />
+            <GripVertical className="h-2.5 w-2.5 text-gray-400" />
           </div>
 
           <button
@@ -402,9 +424,9 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
             style={{ visibility: hasChildren ? 'visible' : 'hidden' }}
           >
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3" />
             ) : (
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-3 w-3" />
             )}
           </button>
 
@@ -426,7 +448,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                 variant="ghost"
                 className="h-6 w-6 p-0"
               >
-                <Check className="h-3 w-3" />
+                <Check className="h-2.5 w-2.5" />
               </Button>
               <Button
                 onClick={cancelEdit}
@@ -434,14 +456,14 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                 variant="ghost"
                 className="h-6 w-6 p-0"
               >
-                <X className="h-3 w-3" />
+                <X className="h-2.5 w-2.5" />
               </Button>
             </div>
           ) : (
             <>
               <span
                 onClick={() => onSelectNode(node)}
-                className="flex-1 text-sm cursor-pointer select-none flex items-center gap-2"
+                className="flex-1 text-xs cursor-pointer select-none flex items-center gap-2"
               >
                 <span className="truncate">{node.name}</span>
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium whitespace-nowrap ${nodeTypeColor}`}>
@@ -457,7 +479,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                       variant="ghost"
                       className="h-6 w-6 p-0"
                     >
-                      <Edit2 className="h-3 w-3" />
+                      <Edit2 className="h-2.5 w-2.5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -472,7 +494,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                       variant="ghost"
                       className="h-6 w-6 p-0"
                     >
-                      <Plus className="h-3 w-3" />
+                      <Plus className="h-2.5 w-2.5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -487,7 +509,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                       variant="ghost"
                       className="h-6 w-6 p-0 text-red-600"
                     >
-                      <Trash2 className="h-3 w-3" />
+                      <Trash2 className="h-2.5 w-2.5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -529,40 +551,42 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
   return (
     <TooltipProvider>
       <div className="flex flex-col h-full bg-white border-r">
-        {/* 添加需求按钮 - 固定在顶部 */}
-        <div className="p-2 border-b space-y-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                onClick={() => tryAddNode()} 
-                size="sm" 
-                className="w-full h-7 text-xs"
-              >
-                <Plus className="h-3 w-3 mr-1" />
-                添加需求
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>添加顶级模块</p>
-            </TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                onClick={handleAIGenerate} 
-                size="sm" 
-                variant="outline"
-                className="w-full h-7 text-xs border-purple-200 text-purple-600 hover:bg-purple-50 hover:text-purple-700"
-              >
-                <Wand2 className="h-3 w-3 mr-1" />
-                AI 生成
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>复制提示词并跳转到 DeepSeek</p>
-            </TooltipContent>
-          </Tooltip>
+        {/* 按钮组 - 固定在顶部 */}
+        <div className="p-2 border-b">
+          <div className="flex gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={() => tryAddNode()} 
+                  size="sm" 
+                  className="flex-[3] h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="h-2.5 w-2.5 mr-1" />
+                  添加需求模块
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>添加顶级模块</p>
+              </TooltipContent>
+            </Tooltip>
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  onClick={handleQuickEstimate} 
+                  size="sm" 
+                  variant="outline"
+                  className="flex-[2] h-7 text-xs"
+                >
+                  <Zap className="h-2.5 w-2.5 mr-1" />
+                  快速评估
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>快速添加常用模块</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
         
         {/* 树内容区域 - 可滚动 */}
@@ -597,7 +621,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                 className="h-6 w-6 p-0"
                 disabled={historyIndex <= 0}
               >
-                <Undo2 className="h-3 w-3" />
+                <Undo2 className="h-2.5 w-2.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -613,7 +637,7 @@ ${projectDescription ? `项目描述: ${projectDescription}` : ''}
                 className="h-6 w-6 p-0"
                 disabled={historyIndex >= historyLength - 1}
               >
-                <Redo2 className="h-3 w-3" />
+                <Redo2 className="h-2.5 w-2.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>

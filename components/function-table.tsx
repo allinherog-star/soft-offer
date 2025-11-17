@@ -24,13 +24,40 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { COMPLEXITY_OPTIONS, PRIORITY_OPTIONS } from '@/lib/constants';
-import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2 } from 'lucide-react';
+import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, Gauge, AlertTriangle, Minus, Equal, AlignJustify, Flame, ArrowDown, ArrowUp } from 'lucide-react';
 
 interface FunctionTableProps {
   nodes: FunctionNode[];
   selectedNode: FunctionNode | null;
   onNodesChange: (nodes: FunctionNode[]) => void;
 }
+
+// 图标映射组件
+const IconMap = {
+  'Minus': Minus,
+  'Equal': Equal,
+  'AlignJustify': AlignJustify,
+  'Flame': Flame,
+  'ArrowDown': ArrowDown,
+  'ArrowUp': ArrowUp,
+  'ChevronsUp': ChevronsUp,
+} as const;
+
+// 获取复杂度图标和颜色
+const getComplexityIcon = (value: string) => {
+  const option = COMPLEXITY_OPTIONS.find(opt => opt.value === value);
+  if (!option) return null;
+  const Icon = IconMap[option.icon as keyof typeof IconMap];
+  return { Icon, color: option.color };
+};
+
+// 获取优先级图标和颜色
+const getPriorityIcon = (value: string) => {
+  const option = PRIORITY_OPTIONS.find(opt => opt.value === value);
+  if (!option) return null;
+  const Icon = IconMap[option.icon as keyof typeof IconMap];
+  return { Icon, color: option.color };
+};
 
 export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTableProps) {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
@@ -58,18 +85,18 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         const level = 0;
         const hasChildren = node.children && node.children.length > 0;
         const isLeaf = !hasChildren;
-        const nodeType = level === 0 ? '模块' : (isLeaf ? '功能' : '子模块');
+        const nodeType = level === 0 ? '模块' : (isLeaf ? '功能菜单' : '子模块');
         
         // 递归计算实际的nodeType
         const getNodeType = (n: FunctionNode, l: number): string => {
           const hasChild = n.children && n.children.length > 0;
           const isLeafNode = !hasChild;
-          return l === 0 ? '模块' : (isLeafNode ? '功能' : '子模块');
+          return l === 0 ? '模块' : (isLeafNode ? '功能菜单' : '子模块');
         };
         
         const realNodeType = getNodeType(node, 0);
         
-        if (realNodeType === '功能') {
+        if (realNodeType === '功能菜单') {
           menuIds.push(node.id);
         }
         
@@ -77,7 +104,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           const collectFromChildren = (children: FunctionNode[], currentLevel: number) => {
             children.forEach(child => {
               const childType = getNodeType(child, currentLevel);
-              if (childType === '功能') {
+              if (childType === '功能菜单') {
                 menuIds.push(child.id);
               }
               if (child.children) {
@@ -149,7 +176,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         nodeType = '子模块';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       } else {
-        nodeType = '功能';
+        nodeType = '功能菜单';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       }
       
@@ -223,9 +250,9 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
   const addButton = (nodeId: string) => {
     const newButton: ButtonFunction = {
       id: `btn-${Date.now()}-${Math.random()}`,
-      name: '新操作',
+      name: '按钮操作',
       complexity: '低',
-      priority: '低',
+      priority: '中',
       isImportant: false,
       remark: ''
     };
@@ -313,19 +340,19 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     onNodesChange([...nodes]);
   };
 
-  // 批量为所有功能节点添加标准操作
+  // 批量为所有功能菜单节点添加标准操作
   const batchAddStandardButtons = () => {
     const standardButtons = [
-      { name: '新增', isImportant: false, remark: '', complexity: '低', priority: '低' },
-      { name: '编辑', isImportant: false, remark: '', complexity: '低', priority: '低' },
-      { name: '删除', isImportant: false, remark: '', complexity: '低', priority: '低' },
-      { name: '查询', isImportant: false, remark: '', complexity: '低', priority: '低' },
+      { name: '新增', isImportant: false, remark: '', complexity: '低', priority: '中' },
+      { name: '编辑', isImportant: false, remark: '', complexity: '低', priority: '中' },
+      { name: '删除', isImportant: false, remark: '', complexity: '低', priority: '中' },
+      { name: '查询', isImportant: false, remark: '', complexity: '低', priority: '中' },
     ];
 
     const processNode = (nodeList: FunctionNode[]): void => {
       nodeList.forEach(node => {
         const hasChildren = node.children && node.children.length > 0;
-        const isMenuNode = !hasChildren; // 叶子节点是功能节点
+        const isMenuNode = !hasChildren; // 叶子节点是功能菜单节点
         
         if (isMenuNode) {
           if (!node.buttons) node.buttons = [];
@@ -565,7 +592,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
             </thead>
             <tbody>
               {flatNodes.map((node) => {
-                const isMenu = node.nodeType === '功能';
+                const isMenu = node.nodeType === '功能菜单';
                 const hasButtons = node.buttons && node.buttons.length > 0;
                 const isExpanded = expandedMenus.has(node.id);
                 
@@ -642,14 +669,38 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       onValueChange={(value) => updateNode(node.id, { complexity: value as Complexity })}
                     >
                       <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
-                        <SelectValue placeholder="选择" />
+                        {node.complexity ? (
+                          <div className="flex items-center gap-1">
+                            {(() => {
+                              const iconData = getComplexityIcon(node.complexity);
+                              if (iconData) {
+                                const { Icon, color } = iconData;
+                                return (
+                                  <>
+                                    <Icon className={`h-3 w-3 ${color}`} />
+                                    <span>{node.complexity}</span>
+                                  </>
+                                );
+                              }
+                              return <span>{node.complexity}</span>;
+                            })()}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">选择</span>
+                        )}
                       </SelectTrigger>
                       <SelectContent className="w-auto min-w-fit">
-                        {COMPLEXITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
-                            {option}
-                          </SelectItem>
-                        ))}
+                        {COMPLEXITY_OPTIONS.map((option) => {
+                          const Icon = IconMap[option.icon as keyof typeof IconMap];
+                          return (
+                            <SelectItem key={option.value} value={option.value} className="text-xs h-6 py-0.5 pl-3 pr-8">
+                              <div className="flex items-center gap-1.5">
+                                <Icon className={`h-3 w-3 ${option.color}`} />
+                                <span>{option.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </td>
@@ -659,14 +710,38 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       onValueChange={(value) => updateNode(node.id, { priority: value as Priority })}
                     >
                       <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
-                        <SelectValue placeholder="选择" />
+                        {node.priority ? (
+                          <div className="flex items-center gap-1">
+                            {(() => {
+                              const iconData = getPriorityIcon(node.priority);
+                              if (iconData) {
+                                const { Icon, color } = iconData;
+                                return (
+                                  <>
+                                    <Icon className={`h-3 w-3 ${color}`} />
+                                    <span>{node.priority}</span>
+                                  </>
+                                );
+                              }
+                              return <span>{node.priority}</span>;
+                            })()}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">选择</span>
+                        )}
                       </SelectTrigger>
                       <SelectContent className="w-auto min-w-fit">
-                        {PRIORITY_OPTIONS.map((option) => (
-                          <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
-                            {option}
-                          </SelectItem>
-                        ))}
+                        {PRIORITY_OPTIONS.map((option) => {
+                          const Icon = IconMap[option.icon as keyof typeof IconMap];
+                          return (
+                            <SelectItem key={option.value} value={option.value} className="text-xs h-6 py-0.5 pl-3 pr-8">
+                              <div className="flex items-center gap-1.5">
+                                <Icon className={`h-3 w-3 ${option.color}`} />
+                                <span>{option.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
                       </SelectContent>
                     </Select>
                   </td>
@@ -686,7 +761,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                     <Input
                       value={node.remark}
                       onChange={(e) => updateNode(node.id, { remark: e.target.value })}
-                      placeholder="细节详细说明"
+                      placeholder=""
                       className="h-6 text-xs min-h-6 max-h-6"
                     />
                   </td>
@@ -710,7 +785,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                                 if (e.key === 'Escape') cancelEditButton();
                               }}
                               className="h-5 text-xs min-h-5 max-h-5 w-32"
-                              placeholder="操作名称"
+                              placeholder="按钮操作名称"
                               autoFocus
                             />
                             <button
@@ -752,14 +827,38 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                         onValueChange={(value) => updateButton(node.id, button.id, { complexity: value as Complexity })}
                       >
                         <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
-                          <SelectValue placeholder="选择" />
+                          {button.complexity ? (
+                            <div className="flex items-center gap-1">
+                              {(() => {
+                                const iconData = getComplexityIcon(button.complexity);
+                                if (iconData) {
+                                  const { Icon, color } = iconData;
+                                  return (
+                                    <>
+                                      <Icon className={`h-3 w-3 ${color}`} />
+                                      <span>{button.complexity}</span>
+                                    </>
+                                  );
+                                }
+                                return <span>{button.complexity}</span>;
+                              })()}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">选择</span>
+                          )}
                         </SelectTrigger>
                         <SelectContent className="w-auto min-w-fit">
-                          {COMPLEXITY_OPTIONS.map((option) => (
-                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
-                              {option}
-                            </SelectItem>
-                          ))}
+                          {COMPLEXITY_OPTIONS.map((option) => {
+                            const Icon = IconMap[option.icon as keyof typeof IconMap];
+                            return (
+                              <SelectItem key={option.value} value={option.value} className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                <div className="flex items-center gap-1.5">
+                                  <Icon className={`h-3 w-3 ${option.color}`} />
+                                  <span>{option.label}</span>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                     </td>
@@ -769,14 +868,38 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                         onValueChange={(value) => updateButton(node.id, button.id, { priority: value as Priority })}
                       >
                         <SelectTrigger className="h-6 w-full text-xs px-2 py-0 min-h-6 max-h-6">
-                          <SelectValue placeholder="选择" />
+                          {button.priority ? (
+                            <div className="flex items-center gap-1">
+                              {(() => {
+                                const iconData = getPriorityIcon(button.priority);
+                                if (iconData) {
+                                  const { Icon, color } = iconData;
+                                  return (
+                                    <>
+                                      <Icon className={`h-3 w-3 ${color}`} />
+                                      <span>{button.priority}</span>
+                                    </>
+                                  );
+                                }
+                                return <span>{button.priority}</span>;
+                              })()}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">选择</span>
+                          )}
                         </SelectTrigger>
                         <SelectContent className="w-auto min-w-fit">
-                          {PRIORITY_OPTIONS.map((option) => (
-                            <SelectItem key={option} value={option} className="text-xs h-6 py-0.5 pl-3 pr-8">
-                              {option}
-                            </SelectItem>
-                          ))}
+                          {PRIORITY_OPTIONS.map((option) => {
+                            const Icon = IconMap[option.icon as keyof typeof IconMap];
+                            return (
+                              <SelectItem key={option.value} value={option.value} className="text-xs h-6 py-0.5 pl-3 pr-8">
+                                <div className="flex items-center gap-1.5">
+                                  <Icon className={`h-3 w-3 ${option.color}`} />
+                                  <span>{option.label}</span>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                     </td>
@@ -796,7 +919,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       <Input
                         value={button.remark}
                         onChange={(e) => updateButton(node.id, button.id, { remark: e.target.value })}
-                        placeholder="细节详细说明"
+                        placeholder=""
                         className="h-6 text-xs min-h-6 max-h-6"
                       />
                     </td>
@@ -809,7 +932,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           </table>
           {flatNodes.length === 0 && (
             <div className="flex items-center justify-center h-32 text-gray-400 text-xs">
-              暂无操作，请在左侧添加功能节点
+              暂无操作，请在左侧添加功能菜单节点
             </div>
           )}
         </ScrollArea>

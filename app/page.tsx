@@ -10,7 +10,7 @@ import { CostSettingsSheet } from '@/components/cost-settings-sheet';
 import { calculateEstimate } from '@/lib/calculation';
 import { DEFAULT_CONFIG, DISCOUNT_OPTIONS } from '@/lib/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server } from 'lucide-react';
+import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target } from 'lucide-react';
 
 export default function Home() {
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
@@ -46,6 +46,67 @@ export default function Home() {
       return sum + actualDays;
     }, 0);
     return totalDays * 0.7; // 总工期为工期总和的70%
+  };
+
+  // 统计子模块数量（有子节点的中间层节点，不包括顶层模块）
+  const countSubModules = (nodes: FunctionNode[]): number => {
+    let count = 0;
+    const countInChildren = (childNodes: FunctionNode[]): number => {
+      return childNodes.reduce((subCount, node) => {
+        let currentCount = 0;
+        // 如果这个节点有子节点，它就是一个子模块
+        if (node.children && node.children.length > 0) {
+          currentCount = 1;
+          // 递归统计更深层的子模块
+          currentCount += countInChildren(node.children);
+        }
+        return subCount + currentCount;
+      }, 0);
+    };
+    
+    // 只统计顶层节点的子节点中的子模块
+    nodes.forEach(node => {
+      if (node.children) {
+        count += countInChildren(node.children);
+      }
+    });
+    
+    return count;
+  };
+
+  // 统计功能需求数量（叶子节点，不包含模块）
+  const countFunctionRequirements = (nodes: FunctionNode[]): number => {
+    return nodes.reduce((count, node) => {
+      if (!node.children || node.children.length === 0) {
+        // 叶子节点才是功能需求
+        return count + 1;
+      }
+      // 有子节点的是模块，继续递归
+      return count + countFunctionRequirements(node.children);
+    }, 0);
+  };
+
+  // 统计高优先级需求数量
+  const countHighPriority = (nodes: FunctionNode[]): number => {
+    return nodes.reduce((count, node) => {
+      const current = (node.priority === '高' || node.priority === '很高') ? 1 : 0;
+      const children = node.children ? countHighPriority(node.children) : 0;
+      return count + current + children;
+    }, 0);
+  };
+
+  // 统计重要需求数量
+  const countImportant = (nodes: FunctionNode[]): number => {
+    return nodes.reduce((count, node) => {
+      const current = node.isImportant ? 1 : 0;
+      const children = node.children ? countImportant(node.children) : 0;
+      return count + current + children;
+    }, 0);
+  };
+
+  // 计算团队总人数
+  const getTotalTeamMembers = (): number => {
+    return Object.values(roleCounts).reduce((sum, count) => sum + count, 0);
   };
 
   // 保存到历史记录
@@ -141,27 +202,77 @@ export default function Home() {
       <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg">
         <div className="px-6 py-3">
           <div className="flex items-center justify-between max-w-full">
-            {/* 左侧：项目统计 */}
-            <div className="flex items-center gap-6">
+            {/* 左侧：整体统计 */}
+            <div className="flex flex-col gap-2">
+              {/* 标题 */}
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-blue-500" />
-                <span className="text-sm font-semibold text-gray-700">项目概览</span>
+                <span className="text-sm font-semibold text-gray-700">整体概览</span>
               </div>
               
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-500">需求总数</span>
-                <span className="text-sm font-bold text-gray-800">
-                  {functionNodes.length}
-                </span>
-              </div>
-              
-              <div className="w-px h-6 bg-gray-300"></div>
-              
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs text-gray-500">团队人数</span>
-                <span className="text-sm font-bold text-gray-800">
-                  {estimate.teamWorkloads.length}
-                </span>
+              {/* 统计信息 - 2行布局 */}
+              <div className="flex flex-col gap-2">
+                {/* 第一行 */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <Layers className="h-3.5 w-3.5 text-blue-500" />
+                    <span className="text-xs text-gray-500">需求模块</span>
+                    <span className="text-sm font-bold text-blue-600">
+                      {functionNodes.length}
+                    </span>
+                  </div>
+                  
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Layers className="h-3.5 w-3.5 text-cyan-500" />
+                    <span className="text-xs text-gray-500">子模块</span>
+                    <span className="text-sm font-bold text-cyan-600">
+                      {countSubModules(functionNodes)}
+                    </span>
+                  </div>
+                  
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                    <span className="text-xs text-gray-500">功能需求</span>
+                    <span className="text-sm font-bold text-green-600">
+                      {countFunctionRequirements(functionNodes)}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* 第二行 */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 text-orange-500" />
+                    <span className="text-xs text-gray-500">高优先级</span>
+                    <span className="text-sm font-bold text-orange-600">
+                      {countHighPriority(functionNodes)}
+                    </span>
+                  </div>
+                  
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Target className="h-3.5 w-3.5 text-red-500" />
+                    <span className="text-xs text-gray-500">重点需求</span>
+                    <span className="text-sm font-bold text-red-600">
+                      {countImportant(functionNodes)}
+                    </span>
+                  </div>
+                  
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Users2 className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-xs text-gray-500">团队人数</span>
+                    <span className="text-sm font-bold text-purple-600">
+                      {getTotalTeamMembers()}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
