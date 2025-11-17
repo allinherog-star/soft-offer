@@ -256,6 +256,19 @@ export function EstimatePanel({
     setEditingExperienceRole(null);
   };
 
+  // 批量更新所有人力岗位的人力水平
+  const batchUpdateExperience = (experience: WorkExperience) => {
+    const newRoleCosts = config.roleCosts.map(rc => {
+      // 根据新人力水平和现有工作年限计算新标准月薪
+      const newSalary = calculateRecommendedSalary(rc.role as any, experience, rc.workYears);
+      return { ...rc, experience, salary: newSalary };
+    });
+    onConfigChange({
+      ...config,
+      roleCosts: newRoleCosts
+    });
+  };
+
   const getRoleIcon = (role: TeamRole) => {
     switch (role) {
       case '产品经理':
@@ -399,10 +412,47 @@ export function EstimatePanel({
           {/* 人力投入 */}
           <div className="bg-white">
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-blue-100">
-              <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
-                <span className="w-0.5 h-4 bg-blue-500 rounded-full"></span>
-                人力投入
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+                  <span className="w-0.5 h-4 bg-blue-500 rounded-full"></span>
+                  人力投入
+                </h3>
+                {/* 批量调整人力水平按钮 */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => batchUpdateExperience('一线大厂')}
+                    className="group flex items-center gap-0.5 px-1.5 py-0.5 rounded hover:bg-amber-100 transition-colors"
+                    title="批量设置为一线大厂"
+                  >
+                    <Trophy className="h-3 w-3 text-amber-500" />
+                    <span className="text-[10px] text-gray-600 group-hover:text-amber-700">一线</span>
+                  </button>
+                  <button
+                    onClick={() => batchUpdateExperience('二线中厂')}
+                    className="group flex items-center gap-0.5 px-1.5 py-0.5 rounded hover:bg-gray-100 transition-colors"
+                    title="批量设置为二线中厂"
+                  >
+                    <Medal className="h-3 w-3 text-gray-500" />
+                    <span className="text-[10px] text-gray-600 group-hover:text-gray-700">二线</span>
+                  </button>
+                  <button
+                    onClick={() => batchUpdateExperience('三线小厂')}
+                    className="group flex items-center gap-0.5 px-1.5 py-0.5 rounded hover:bg-blue-100 transition-colors"
+                    title="批量设置为三线小厂"
+                  >
+                    <Award className="h-3 w-3 text-blue-500" />
+                    <span className="text-[10px] text-gray-600 group-hover:text-blue-700">三线</span>
+                  </button>
+                  <button
+                    onClick={() => batchUpdateExperience('新手上路')}
+                    className="group flex items-center gap-0.5 px-1.5 py-0.5 rounded hover:bg-green-100 transition-colors"
+                    title="批量设置为新手上路"
+                  >
+                    <Star className="h-3 w-3 text-green-500" />
+                    <span className="text-[10px] text-gray-600 group-hover:text-green-700">新手</span>
+                  </button>
+                </div>
+              </div>
             </div>
             
             {/* 表头 */}

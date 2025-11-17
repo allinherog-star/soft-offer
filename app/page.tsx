@@ -208,8 +208,8 @@ export default function Home() {
 
               {/* 总成本 */}
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <DollarSign className="h-5 w-5 text-green-600" />
+                <div className="p-2 bg-green-100 rounded-lg flex items-center justify-center w-9 h-9">
+                  <span className="text-xl font-bold text-green-600 leading-none">¥</span>
                 </div>
                 <div className="min-h-[60px] flex flex-col justify-start">
                   <div className="text-xs text-gray-500 h-4">总成本</div>
@@ -279,7 +279,7 @@ export default function Home() {
                   <div>
                     <div className="text-xs text-gray-600 font-medium h-4">折后价</div>
                     <div className="text-2xl font-bold text-red-600 mt-1">
-                      {(estimate.finalPrice / 10000).toFixed(1)}
+                      {(estimate.finalPrice / 10000).toFixed(2)}
                       <span className="text-base font-normal ml-1">万</span>
                     </div>
                   </div>
