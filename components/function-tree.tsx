@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { FunctionNode } from '@/types';
+import { FunctionNode, ProjectInfo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/components/ui/use-toast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { QuickEstimateDialog } from '@/components/quick-estimate-dialog';
 import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Zap } from 'lucide-react';
 import {
   DndContext,
@@ -44,11 +46,10 @@ interface FunctionTreeProps {
   onRedo: () => void;
   historyIndex: number;
   historyLength: number;
-  projectName?: string;
-  projectDescription?: string;
+  projectInfo: ProjectInfo;
 }
 
-export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode, onUndo, onRedo, historyIndex, historyLength, projectName, projectDescription }: FunctionTreeProps) {
+export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode, onUndo, onRedo, historyIndex, historyLength, projectInfo }: FunctionTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -56,6 +57,10 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const [nodeToDelete, setNodeToDelete] = useState<{ id: string; name: string; type: string } | null>(null);
   const [addConfirmDialogOpen, setAddConfirmDialogOpen] = useState(false);
   const [pendingAddParentId, setPendingAddParentId] = useState<string | null>(null);
+  const [quickEstimateOpen, setQuickEstimateOpen] = useState(false);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const { toast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -269,80 +274,36 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     setNodeToDelete(null);
   };
 
-  // 快速评估 - 添加常用需求模块
+  // 快速评估 - 验证后打开对话框
   const handleQuickEstimate = () => {
-    const quickModules: FunctionNode[] = [
-      {
-        id: `node-${Date.now()}-1`,
-        name: '用户管理',
-        complexity: '中',
-        priority: '高',
-        isImportant: true,
-        remark: '',
-        children: [
-          {
-            id: `node-${Date.now()}-1-1`,
-            name: '用户注册',
-            complexity: '低',
-            priority: '中',
-            isImportant: false,
-            remark: '',
-          },
-          {
-            id: `node-${Date.now()}-1-2`,
-            name: '用户登录',
-            complexity: '低',
-            priority: '中',
-            isImportant: false,
-            remark: '',
-          },
-          {
-            id: `node-${Date.now()}-1-3`,
-            name: '个人信息管理',
-            complexity: '低',
-            priority: '中',
-            isImportant: false,
-            remark: '',
-          },
-        ]
-      },
-      {
-        id: `node-${Date.now()}-2`,
-        name: '系统管理',
-        complexity: '中',
-        priority: '中',
-        isImportant: false,
-        remark: '',
-        children: [
-          {
-            id: `node-${Date.now()}-2-1`,
-            name: '权限管理',
-            complexity: '中',
-            priority: '中',
-            isImportant: true,
-            remark: '',
-          },
-          {
-            id: `node-${Date.now()}-2-2`,
-            name: '角色管理',
-            complexity: '低',
-            priority: '中',
-            isImportant: false,
-            remark: '',
-          },
-          {
-            id: `node-${Date.now()}-2-3`,
-            name: '日志管理',
-            complexity: '低',
-            priority: '中',
-            isImportant: false,
-            remark: '',
-          },
-        ]
-      },
-    ];
+    // 检查必填项
+    const errors: string[] = [];
     
-    onNodesChange([...nodes, ...quickModules]);
+    if (!projectInfo.name || projectInfo.name.trim() === '') {
+      errors.push('项目名称');
+    }
+    if (!projectInfo.description || projectInfo.description.trim() === '') {
+      errors.push('项目描述');
+    }
+    if (!projectInfo.industry || projectInfo.industry.trim() === '') {
+      errors.push('行业应用');
+    }
+    
+    // 如果有缺失项，显示验证对话框，不跳转 DeepSeek
+    if (errors.length > 0) {
+      setValidationErrors(errors);
+      setValidationDialogOpen(true);
+      return; // ⚠️ 重要：阻止继续执行，不会打开快速评估对话框，不会跳转 DeepSeek
+    }
+    
+    // ✅ 只有验证通过才会执行到这里
+    // 打开快速评估对话框，开始倒计时后跳转 DeepSeek
+    setQuickEstimateOpen(true);
+  };
+
+  // 导入AI生成的节点
+  const handleImportNodes = (importedNodes: FunctionNode[]) => {
+    onNodesChange([...nodes, ...importedNodes]);
   };
 
   // 可排序的树节点组件
@@ -583,7 +544,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>快速添加常用模块</p>
+                <p>使用AI快速生成需求清单</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -683,6 +644,82 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* 验证失败提示对话框 */}
+      <AlertDialog open={validationDialogOpen} onOpenChange={setValidationDialogOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-orange-600">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+                <path d="M12 9v4"/>
+                <path d="M12 17h.01"/>
+              </svg>
+              请先完善项目信息
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4">
+                <div className="text-gray-600">
+                  使用快速评估功能需要提供完整的项目信息，以便AI生成准确的需求清单。
+                </div>
+                
+                <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                  <div className="font-medium text-orange-900 mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                      <path d="M12 9v4"/>
+                      <path d="M12 17h.01"/>
+                      <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    请在顶部导航栏填写以下信息：
+                  </div>
+                  <ul className="space-y-2 ml-6">
+                    {validationErrors.map((error, index) => (
+                      <li key={index} className="text-orange-700 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                        <span className="font-medium">{error}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="flex items-start gap-2 text-sm text-gray-500 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mt-0.5 text-blue-600 shrink-0">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 16v-4"/>
+                    <path d="M12 8h.01"/>
+                  </svg>
+                  <div>
+                    <div className="font-medium text-blue-900 mb-1">为什么需要这些信息？</div>
+                    <div className="text-blue-700">
+                      项目信息越详细，AI生成的需求清单就越准确、越符合您的实际需求，可以大大节省后期调整的时间。
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction 
+              onClick={() => setValidationDialogOpen(false)}
+              className="w-full"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2">
+                <path d="M5 12h14"/>
+                <path d="m12 5 7 7-7 7"/>
+              </svg>
+              我知道了，去填写
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 快速评估对话框 */}
+      <QuickEstimateDialog
+        open={quickEstimateOpen}
+        onOpenChange={setQuickEstimateOpen}
+        projectInfo={projectInfo}
+        onImport={handleImportNodes}
+      />
     </TooltipProvider>
   );
 }

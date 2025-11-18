@@ -1,0 +1,209 @@
+[
+  {
+    "name": "用户管理",
+    "complexity": "中",
+    "priority": "高",
+    "isImportant": true,
+    "remark": "用户管理模块是系统的核心模块，包含用户的注册、登录、个人信息管理、权限验证等功能。需要确保安全性和用户体验。",
+    "children": [
+      {
+        "name": "用户注册",
+        "complexity": "低",
+        "priority": "高",
+        "isImportant": false,
+        "remark": "支持手机号和邮箱注册，需要短信/邮箱验证码验证。包含注册协议确认、密码强度验证等功能。"
+      },
+      {
+        "name": "用户登录",
+        "complexity": "中",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "支持账号密码登录、短信验证码登录、第三方登录（微信、支付宝、QQ）。包含记住密码、自动登录、找回密码等功能。需要实现登录状态管理和token刷新机制。"
+      },
+      {
+        "name": "个人信息管理",
+        "complexity": "低",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "用户可以查看和编辑个人资料，包括头像、昵称、性别、生日、地址等。支持头像上传和裁剪。"
+      },
+      {
+        "name": "账号安全",
+        "complexity": "中",
+        "priority": "高",
+        "isImportant": true,
+        "remark": "包含修改密码、绑定/解绑手机号和邮箱、设置支付密码、账号注销等功能。需要进行身份验证。"
+      }
+    ]
+  },
+  {
+    "name": "商品管理",
+    "complexity": "高",
+    "priority": "很高",
+    "isImportant": true,
+    "remark": "商品管理是电商系统的核心模块，包含商品的增删改查、分类管理、库存管理、SKU管理等功能。",
+    "children": [
+      {
+        "name": "商品列表",
+        "complexity": "中",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "展示所有商品，支持分页、搜索、筛选（按分类、价格、销量等）、排序。需要优化大数据量下的性能。"
+      },
+      {
+        "name": "商品详情",
+        "complexity": "中",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "展示商品的详细信息，包括图片轮播、规格选择、库存展示、价格计算、商品参数、用户评价等。支持分享和收藏。"
+      },
+      {
+        "name": "商品发布",
+        "complexity": "高",
+        "priority": "高",
+        "isImportant": true,
+        "remark": "后台功能，支持添加新商品。包含基本信息录入、多图上传、富文本编辑器、SKU配置、库存设置、运费模板等。需要表单验证和数据校验。"
+      },
+      {
+        "name": "商品编辑",
+        "complexity": "高",
+        "priority": "高",
+        "isImportant": false,
+        "remark": "修改已有商品信息，功能与商品发布类似。需要处理已售商品的特殊情况（如SKU变更对已下单但未发货订单的影响）。"
+      },
+      {
+        "name": "库存管理",
+        "complexity": "很高",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "管理商品库存，包含库存查询、库存预警、入库/出库记录、库存盘点等。需要处理并发扣库存问题，防止超卖。支持多仓库管理。"
+      }
+    ]
+  },
+  {
+    "name": "订单管理",
+    "complexity": "很高",
+    "priority": "很高",
+    "isImportant": true,
+    "remark": "订单管理是电商系统的核心交易模块，涉及订单创建、支付、发货、售后等完整流程。",
+    "children": [
+      {
+        "name": "下单流程",
+        "complexity": "很高",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "包含购物车、选择收货地址、选择配送方式、选择支付方式、使用优惠券、订单确认等步骤。需要处理库存校验、价格计算、并发下单等问题。"
+      },
+      {
+        "name": "订单列表",
+        "complexity": "中",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "展示用户的所有订单，支持按状态筛选（待支付、待发货、待收货、已完成、已取消）、搜索、排序。支持订单操作（取消、删除、申请售后等）。"
+      },
+      {
+        "name": "订单详情",
+        "complexity": "中",
+        "priority": "高",
+        "isImportant": false,
+        "remark": "展示订单的详细信息，包括商品信息、收货信息、支付信息、物流信息、订单状态等。支持订单追踪和操作。"
+      },
+      {
+        "name": "支付功能",
+        "complexity": "很高",
+        "priority": "很高",
+        "isImportant": true,
+        "remark": "对接第三方支付平台（微信支付、支付宝、银联等）。需要处理支付回调、支付结果查询、支付超时自动取消等。确保支付安全和幂等性。"
+      },
+      {
+        "name": "售后管理",
+        "complexity": "高",
+        "priority": "高",
+        "isImportant": true,
+        "remark": "包含退款、退货退款、换货等售后类型。需要处理售后申请、审核、退款、退货物流等流程。涉及订单状态变更和库存回滚。"
+      }
+    ]
+  },
+  {
+    "name": "系统管理",
+    "complexity": "中",
+    "priority": "中",
+    "isImportant": false,
+    "remark": "系统管理模块是后台管理的基础模块，包含权限管理、角色管理、菜单管理、系统配置等功能。",
+    "children": [
+      {
+        "name": "权限管理",
+        "complexity": "高",
+        "priority": "高",
+        "isImportant": true,
+        "remark": "实现基于RBAC的权限控制。包含权限定义、权限分配、权限校验。支持菜单权限和操作权限的细粒度控制。"
+      },
+      {
+        "name": "角色管理",
+        "complexity": "中",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "管理系统角色，包含角色的增删改查、角色权限配置。支持角色继承和角色组。"
+      },
+      {
+        "name": "用户管理",
+        "complexity": "中",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "后台管理员账号管理，包含账号的增删改查、角色分配、账号启用/禁用、重置密码等功能。"
+      },
+      {
+        "name": "操作日志",
+        "complexity": "中",
+        "priority": "低",
+        "isImportant": false,
+        "remark": "记录管理员的所有操作行为，包含操作时间、操作人、操作模块、操作内容、IP地址等。支持日志查询和导出。"
+      },
+      {
+        "name": "系统配置",
+        "complexity": "低",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "系统参数配置，如网站名称、LOGO、联系方式、备案信息等。支持配置的热更新。"
+      }
+    ]
+  },
+  {
+    "name": "消息通知",
+    "complexity": "中",
+    "priority": "中",
+    "isImportant": false,
+    "remark": "消息通知模块负责向用户发送各类通知消息，包含站内消息、短信、邮件、推送等。",
+    "children": [
+      {
+        "name": "站内消息",
+        "complexity": "中",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "系统内部消息通知，包含消息列表、消息详情、标记已读/未读、删除消息等功能。支持消息分类和消息模板。"
+      },
+      {
+        "name": "短信通知",
+        "complexity": "中",
+        "priority": "中",
+        "isImportant": true,
+        "remark": "对接短信服务商，发送验证码、订单通知等短信。需要处理短信发送失败、短信模板管理、短信记录查询等。"
+      },
+      {
+        "name": "邮件通知",
+        "complexity": "低",
+        "priority": "低",
+        "isImportant": false,
+        "remark": "通过邮件发送通知，如订单确认、发货通知等。支持HTML格式邮件和邮件模板。"
+      },
+      {
+        "name": "推送通知",
+        "complexity": "高",
+        "priority": "中",
+        "isImportant": false,
+        "remark": "App推送通知，对接推送服务（极光推送、个推等）。包含推送管理、推送记录、推送统计等功能。"
+      }
+    ]
+  }
+]
+

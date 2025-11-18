@@ -178,8 +178,7 @@ export default function Home() {
             onRedo={redo}
             historyIndex={historyIndex}
             historyLength={history.length}
-            projectName={projectInfo.name}
-            projectDescription={projectInfo.description}
+            projectInfo={projectInfo}
           />
         </div>
 
