@@ -488,37 +488,89 @@ export function QuickEstimateDialog({
 
           {/* 步骤2: 输入结果 */}
           {step === 'input' && (
-            <div className="flex flex-col h-full space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex-shrink-0">
-                <p className="text-sm text-blue-800">
-                  <strong>操作提示：</strong>
-                </p>
-                <ol className="text-sm text-blue-700 mt-2 space-y-1 list-decimal list-inside">
-                  <li>在 DeepSeek 中粘贴已复制的提示词</li>
-                  <li>等待 AI 生成结果</li>
-                  <li>复制 DeepSeek 返回的 JSON 格式内容</li>
-                  <li>粘贴到下方输入框中</li>
-                  <li>点击导入按钮完成</li>
-                </ol>
-              </div>
-
-              <div className="space-y-2 flex-1 flex flex-col min-h-0">
-                <label className="text-sm font-medium text-gray-700 flex-shrink-0">
-                  DeepSeek 生成结果
-                </label>
-                <Textarea
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="请粘贴 DeepSeek 生成的 JSON 格式结果..."
-                  className="flex-1 font-mono text-xs resize-none"
-                />
-              </div>
-
-              {inputText && (
-                <div className="text-xs text-gray-500 flex-shrink-0">
-                  已输入 {inputText.length} 个字符
+            <div className="flex flex-col space-y-4 h-full">
+              {/* 上部：输入框区域 */}
+              <div className="flex-1 flex flex-col space-y-3 min-h-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-gray-900">DeepSeek 生成结果</h3>
+                  <Button
+                    onClick={handleOpenDeepSeek}
+                    variant="outline"
+                    size="sm"
+                    className="h-9"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    重新打开 DeepSeek
+                  </Button>
                 </div>
-              )}
+                <div className="flex-1 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                  <Textarea
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="请粘贴 DeepSeek 生成的 JSON 格式结果..."
+                    className="w-full h-full font-mono text-xs resize-none border-0 bg-transparent focus:ring-0 p-5 placeholder:text-gray-400"
+                  />
+                </div>
+                {inputText && (
+                  <div className="text-xs text-gray-500 flex-shrink-0">
+                    已输入 {inputText.length} 个字符
+                  </div>
+                )}
+              </div>
+
+              {/* 下部：使用说明 */}
+              <div className="flex-shrink-0">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">操作提示</h3>
+                <div className="grid grid-cols-4 gap-3">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                        1
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">在 DeepSeek 中粘贴提示词</p>
+                        <p className="text-xs text-blue-700 mt-0.5">等待 AI 生成结果</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                        2
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-green-900">复制 JSON 结果</p>
+                        <p className="text-xs text-green-700 mt-0.5">复制 DeepSeek 返回内容</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-bold">
+                        3
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-purple-900">粘贴到输入框</p>
+                        <p className="text-xs text-purple-700 mt-0.5">粘贴到上方输入框中</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">
+                        4
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-orange-900">点击导入完成</p>
+                        <p className="text-xs text-orange-700 mt-0.5">点击导入按钮完成</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -552,25 +604,18 @@ export function QuickEstimateDialog({
           {step === 'input' && (
             <>
               <Button
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
-                取消
-              </Button>
-              <Button
-                onClick={handleOpenDeepSeek}
-                variant="outline"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                重新打开 DeepSeek
-              </Button>
-              <Button
                 onClick={handleImport}
                 disabled={!inputText.trim()}
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 导入
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                取消
               </Button>
             </>
           )}
