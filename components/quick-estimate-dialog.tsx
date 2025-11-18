@@ -28,7 +28,7 @@ export function QuickEstimateDialog({
   projectInfo,
   onImport
 }: QuickEstimateDialogProps) {
-  const [step, setStep] = useState<'generating' | 'waiting' | 'input'>('generating');
+  const [step, setStep] = useState<'preparing' | 'prompt' | 'input'>('preparing');
   const [countdown, setCountdown] = useState(3);
   const [inputText, setInputText] = useState('');
   const [isCopied, setIsCopied] = useState(false);
@@ -43,18 +43,19 @@ export function QuickEstimateDialog({
     return `请根据以下项目信息，生成详细的软件需求清单：
 
 【项目信息】
-项目名称：${projectInfo.name || '未命名项目'}
-项目描述：${projectInfo.description || '无描述'}
+系统名称：${projectInfo.name || '未命名项目'}
+系统描述：${projectInfo.description || '无描述'}
 行业应用：${projectInfo.industry || '未指定'}
-交付端：${platforms}
+用户端：${platforms}
 
 【输出要求】
 请按照以下JSON格式输出系统的需求清单，要求包含：
 1. 系统模块的层级结构（需求模块 → 子模块 → 功能菜单）
-2. 每个功能的复杂度评估（低、中、高、很高）
-3. 每个功能的优先级（低、中、高、很高）
-4. 重点功能标记（isImportant: true/false）
-5. 详细的功能说明（remark字段）
+2. 每个功能菜单必须包含完整的操作按钮（buttons数组：新增、编辑、删除、查询等）
+3. 每个功能的复杂度评估（低、中、高、很高）
+4. 每个功能的优先级（低、中、高、很高）
+5. 重点功能标记（isImportant: true/false）
+6. 详细的功能说明（remark字段）
 
 【JSON格式示例】
 \`\`\`json
@@ -64,33 +65,53 @@ export function QuickEstimateDialog({
     "complexity": "中",
     "priority": "高",
     "isImportant": true,
-    "remark": "用户管理模块包含用户的注册、登录、权限管理等核心功能",
+    "remark": "用户管理模块，包含用户信息的完整生命周期管理",
     "children": [
       {
-        "name": "用户注册",
-        "complexity": "低",
-        "priority": "高",
-        "isImportant": false,
-        "remark": "支持手机号、邮箱注册，需要验证码验证"
-      },
-      {
-        "name": "用户登录",
+        "name": "用户列表",
         "complexity": "中",
         "priority": "很高",
         "isImportant": true,
-        "remark": "支持密码登录、第三方登录（微信、支付宝），包含找回密码功能"
+        "remark": "展示所有用户信息，支持分页、搜索、筛选",
+        "buttons": [
+          { "name": "新增", "complexity": "低", "priority": "高", "isImportant": false, "remark": "新增用户信息" },
+          { "name": "编辑", "complexity": "低", "priority": "高", "isImportant": false, "remark": "修改用户信息" },
+          { "name": "删除", "complexity": "低", "priority": "中", "isImportant": false, "remark": "删除用户（逻辑删除）" },
+          { "name": "查询", "complexity": "低", "priority": "高", "isImportant": false, "remark": "按条件查询用户" },
+          { "name": "导出", "complexity": "中", "priority": "中", "isImportant": false, "remark": "导出用户数据为Excel" }
+        ]
+      },
+      {
+        "name": "角色管理",
+        "complexity": "中",
+        "priority": "高",
+        "isImportant": true,
+        "remark": "管理系统角色及权限分配",
+        "buttons": [
+          { "name": "新增", "complexity": "低", "priority": "高", "isImportant": false, "remark": "新增角色" },
+          { "name": "编辑", "complexity": "中", "priority": "高", "isImportant": true, "remark": "编辑角色权限" },
+          { "name": "删除", "complexity": "低", "priority": "中", "isImportant": false, "remark": "删除角色" },
+          { "name": "查询", "complexity": "低", "priority": "高", "isImportant": false, "remark": "查询角色列表" }
+        ]
       }
     ]
   }
 ]
 \`\`\`
 
+【重要说明】
+1. 功能菜单（叶子节点）必须包含buttons数组，定义该功能的所有操作
+2. 常见操作包括：新增、编辑、删除、查询、导出、导入、审核、启用/禁用等
+3. 根据实际业务场景选择合适的操作，不要机械套用
+
 请务必：
-- 根据行业特点生成相关的业务模块
-- 根据交付端特点考虑对应的技术实现
-- 合理评估每个功能的复杂度和优先级
-- 对重要功能进行标记
-- 提供详细的功能说明`;
+- 按照该行业的最佳实践进行功能模块划分
+- 每个功能菜单都要包含完整的操作按钮（buttons）
+- 根据业务特点选择合适的操作类型（CRUD、审批、导入导出等）
+- 根据用户端特点考虑对应的技术实现
+- 合理评估每个功能和操作的复杂度、优先级
+- 对核心功能进行重点标记
+- 提供详细的功能说明，便于后续开发理解`;
   }, [projectInfo]);
 
   // 复制提示词到剪贴板
@@ -113,9 +134,12 @@ export function QuickEstimateDialog({
     }
   }, [generatePrompt, toast]);
 
-  // 打开DeepSeek
-  const openDeepSeek = useCallback(() => {
+  // 打开DeepSeek并进入输入阶段
+  const handleOpenDeepSeek = useCallback(() => {
+    console.log('🌐 [快速评估对话框] 用户点击按钮，正在打开 DeepSeek 网站...');
     window.open('https://chat.deepseek.com/', '_blank');
+    console.log('✅ [快速评估对话框] DeepSeek 已在新标签页中打开，进入输入阶段');
+    setStep('input');
   }, []);
 
   // 解析DeepSeek返回的结果
@@ -189,6 +213,23 @@ export function QuickEstimateDialog({
             ? node.priority 
             : '中';
           
+          // 处理 buttons 数组
+          let buttons = undefined;
+          if (node.buttons && Array.isArray(node.buttons) && node.buttons.length > 0) {
+            buttons = node.buttons.map((btn: any, btnIndex: number) => ({
+              id: `btn-${id}-${btnIndex}`,
+              name: btn.name || '操作',
+              complexity: btn.complexity && validComplexity.includes(btn.complexity) 
+                ? btn.complexity 
+                : '低',
+              priority: btn.priority && validPriority.includes(btn.priority) 
+                ? btn.priority 
+                : '中',
+              isImportant: Boolean(btn.isImportant),
+              remark: btn.remark || ''
+            }));
+          }
+          
           return {
             id,
             name: node.name,
@@ -199,6 +240,7 @@ export function QuickEstimateDialog({
             children: node.children && Array.isArray(node.children) && node.children.length > 0
               ? addIds(node.children, id) 
               : undefined,
+            buttons,
             parentId
           };
         });
@@ -257,127 +299,196 @@ export function QuickEstimateDialog({
   // 对话框打开时的初始化
   useEffect(() => {
     if (open) {
-      setStep('generating');
+      console.log('📊 [快速评估对话框] 对话框已打开，开始初始化...');
+      setStep('preparing');
       setCountdown(3);
       setInputText('');
       setIsCopied(false);
-      
-      // 自动复制提示词
-      const timer = setTimeout(() => {
-        copyPromptToClipboard();
-      }, 500);
-      
-      return () => clearTimeout(timer);
     }
-  }, [open, copyPromptToClipboard]);
+  }, [open]);
 
-  // 倒计时和自动跳转
+  // 倒计时和准备提示词
   useEffect(() => {
-    if (step === 'generating' && countdown > 0) {
+    if (step === 'preparing' && countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
       return () => clearTimeout(timer);
-    } else if (step === 'generating' && countdown === 0) {
-      setStep('waiting');
-      openDeepSeek();
-      // 自动进入输入阶段
-      const timer = setTimeout(() => {
-        setStep('input');
-      }, 1000);
-      return () => clearTimeout(timer);
+    } else if (step === 'preparing' && countdown === 0) {
+      console.log('📋 [快速评估对话框] 准备完成，复制提示词到剪贴板...');
+      copyPromptToClipboard();
+      setStep('prompt');
     }
-  }, [step, countdown, openDeepSeek]);
+  }, [step, countdown, copyPromptToClipboard]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span>快速评估</span>
+      <DialogContent className="w-[1400px] max-w-[95vw] sm:max-w-[1400px] h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0 border-b pb-4">
+          <DialogTitle className="text-xl flex items-center gap-3">
+            <span>AI 快速评估</span>
             {step === 'input' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
           </DialogTitle>
-          <DialogDescription>
-            <div className="space-y-2">
-              <p>使用AI快速生成项目需求清单</p>
-              <div className="bg-blue-50 rounded-lg p-3 text-sm">
-                <div className="font-medium text-blue-900 mb-1">当前项目信息：</div>
-                <div className="text-blue-700 space-y-0.5">
-                  <div>📌 {projectInfo.name}</div>
-                  <div>📝 {projectInfo.description}</div>
-                  <div>🏢 {projectInfo.industry}</div>
-                  {projectInfo.platforms.length > 0 && (
-                    <div>💻 {projectInfo.platforms.join('、')}</div>
-                  )}
+          <DialogDescription asChild>
+            <div className="grid grid-cols-2 gap-4 mt-3">
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-3 border border-blue-200">
+                <div className="text-xs font-medium text-blue-900 mb-2">系统信息</div>
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-500">名称：</span>
+                    <span className="text-gray-900 font-medium">{projectInfo.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-500">行业：</span>
+                    <span className="text-gray-900">{projectInfo.industry}</span>
+                  </div>
                 </div>
+              </div>
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-200">
+                <div className="text-xs font-medium text-purple-900 mb-2">系统描述</div>
+                <div className="text-sm text-gray-700 line-clamp-2">
+                  {projectInfo.description}
+                </div>
+                {projectInfo.platforms.length > 0 && (
+                  <div className="mt-2 flex gap-1 flex-wrap">
+                    {projectInfo.platforms.map(p => (
+                      <span key={p} className="text-xs px-2 py-0.5 bg-white/50 rounded">
+                        {p}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto space-y-4">
-          {/* 步骤1: 生成提示词并倒计时 */}
-          {step === 'generating' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-center py-8">
-                <div className="text-center space-y-4">
-                  <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto" />
-                  <p className="text-lg font-medium">正在准备提示词...</p>
-                  <p className="text-sm text-gray-500">
-                    {countdown} 秒后将自动跳转到 DeepSeek
-                  </p>
-                  <p className="text-xs text-blue-600">
-                    ✓ 已根据您的项目信息生成专属提示词
-                  </p>
+        <div className="flex-1 overflow-y-auto px-1 space-y-4 min-h-0">
+          {/* 步骤0: 准备中倒计时 */}
+          {step === 'preparing' && (
+            <div className="flex flex-col items-center justify-center h-full space-y-6">
+              <div className="relative">
+                <Loader2 className="h-16 w-16 animate-spin text-blue-500" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-blue-600">{countdown}</span>
                 </div>
               </div>
+              <div className="text-center space-y-2">
+                <p className="text-lg font-medium text-gray-900">正在生成专属提示词...</p>
+                <p className="text-sm text-gray-500">根据您的项目信息定制 AI 提示词</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-gray-400">
+                <div className="flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>分析项目信息</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" />
+                  <span>生成提示模板</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>准备就绪</span>
+                </div>
+              </div>
+            </div>
+          )}
 
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+          {/* 步骤1: 显示提示词和跳转按钮 */}
+          {step === 'prompt' && (
+            <div className="flex flex-col space-y-4 h-full">
+              {/* 上部：提示词预览 */}
+              <div className="flex-1 flex flex-col space-y-3 min-h-0">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">提示词预览</span>
+                  <h3 className="text-base font-semibold text-gray-900">AI 提示词</h3>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={copyPromptToClipboard}
-                    className="h-7"
+                    className="h-9"
                   >
                     {isCopied ? (
                       <>
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        已复制
+                        <CheckCircle2 className="h-4 w-4 mr-2 text-green-600" />
+                        <span className="text-green-600">已复制</span>
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3 w-3 mr-1" />
-                        复制
+                        <Copy className="h-4 w-4 mr-2" />
+                        复制提示词
                       </>
                     )}
                   </Button>
                 </div>
-                <pre className="text-xs bg-white rounded p-3 overflow-x-auto max-h-[300px] overflow-y-auto border">
-                  {generatePrompt()}
-                </pre>
+                <div className="flex-1 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                  <div className="h-full overflow-y-auto scrollbar-hide p-5">
+                    <pre className="text-sm text-gray-700 whitespace-pre-wrap break-words leading-relaxed">
+                      {generatePrompt()}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+
+              {/* 下部：使用说明 */}
+              <div className="flex-shrink-0">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">使用说明</h3>
+                <div className="grid grid-cols-4 gap-3">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
+                        1
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-blue-900">点击下方按钮</p>
+                        <p className="text-xs text-blue-700 mt-0.5">跳转到 DeepSeek AI</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
+                        2
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-green-900">粘贴提示词</p>
+                        <p className="text-xs text-green-700 mt-0.5">提示词已自动复制</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-bold">
+                        3
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-purple-900">等待生成</p>
+                        <p className="text-xs text-purple-700 mt-0.5">AI 生成需求清单</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center text-xs font-bold">
+                        4
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-orange-900">复制结果</p>
+                        <p className="text-xs text-orange-700 mt-0.5">粘贴到下一步导入</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
 
-          {/* 步骤2: 等待跳转 */}
-          {step === 'waiting' && (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center space-y-4">
-                <ExternalLink className="h-12 w-12 text-blue-500 mx-auto animate-pulse" />
-                <p className="text-lg font-medium">正在跳转到 DeepSeek...</p>
-                <p className="text-sm text-gray-500">
-                  请在 DeepSeek 中粘贴提示词，等待生成结果
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* 步骤3: 输入结果 */}
+          {/* 步骤2: 输入结果 */}
           {step === 'input' && (
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex flex-col h-full space-y-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex-shrink-0">
                 <p className="text-sm text-blue-800">
                   <strong>操作提示：</strong>
                 </p>
@@ -390,20 +501,20 @@ export function QuickEstimateDialog({
                 </ol>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
+              <div className="space-y-2 flex-1 flex flex-col min-h-0">
+                <label className="text-sm font-medium text-gray-700 flex-shrink-0">
                   DeepSeek 生成结果
                 </label>
                 <Textarea
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder="请粘贴 DeepSeek 生成的 JSON 格式结果..."
-                  className="min-h-[300px] font-mono text-xs"
+                  className="flex-1 font-mono text-xs resize-none"
                 />
               </div>
 
               {inputText && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-500 flex-shrink-0">
                   已输入 {inputText.length} 个字符
                 </div>
               )}
@@ -411,7 +522,32 @@ export function QuickEstimateDialog({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 border-t pt-4">
+          {step === 'preparing' && (
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              取消
+            </Button>
+          )}
+          {step === 'prompt' && (
+            <>
+              <Button 
+                onClick={handleOpenDeepSeek}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                前往 DeepSeek 拆分需求模块
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                取消
+              </Button>
+            </>
+          )}
           {step === 'input' && (
             <>
               <Button
@@ -421,7 +557,7 @@ export function QuickEstimateDialog({
                 取消
               </Button>
               <Button
-                onClick={openDeepSeek}
+                onClick={handleOpenDeepSeek}
                 variant="outline"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
@@ -430,21 +566,12 @@ export function QuickEstimateDialog({
               <Button
                 onClick={handleImport}
                 disabled={!inputText.trim()}
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 <Upload className="h-4 w-4 mr-2" />
                 导入
               </Button>
             </>
-          )}
-          {step !== 'input' && (
-            <Button
-              variant="outline"
-              onClick={() => {
-                setStep('input');
-              }}
-            >
-              跳过等待
-            </Button>
           )}
         </DialogFooter>
       </DialogContent>

@@ -357,7 +357,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                           <tr className="bg-gray-50 border-b">
                             <th className="text-center py-2 px-2 font-medium text-gray-700">功能菜单复杂度</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700">标准工期</th>
-                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">动作</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">功能</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -434,7 +434,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                           <tr className="bg-gray-50 border-b">
                             <th className="text-left py-2 px-2 font-medium text-gray-700">岗位</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700">比例</th>
-                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">动作</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">功能</th>
                           </tr>
                         </thead>
                         <tbody>

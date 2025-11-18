@@ -80,9 +80,9 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
           <div className="h-8 w-px bg-gray-200"></div>
           
           <div className="flex flex-col gap-0.5">
-            {/* 第一行：项目名称 + 行业选择 + 用户端 */}
+            {/* 第一行：系统名称 + 行业选择 + 用户端 */}
             <div className="flex items-center gap-2">
-              {/* 项目名称 - 固定宽度容器 */}
+              {/* 系统名称 - 固定宽度容器 */}
               <div className="w-[160px]">
                 {isEditingName ? (
                   <Input
@@ -94,7 +94,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                       if (e.key === 'Escape') setIsEditingName(false);
                     }}
                     className="h-6 w-full text-sm"
-                    placeholder="名称"
+                    placeholder="系统名称"
                     autoFocus
                   />
                 ) : (
@@ -103,7 +103,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                     className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group h-6"
                   >
                     <span className="text-sm font-medium text-gray-900 truncate flex-1">
-                      {projectInfo.name || '名称'}
+                      {projectInfo.name || '系统名称'}
                     </span>
                     <Edit2 className="h-3 w-3 text-gray-300 group-hover:text-gray-500 shrink-0" />
                   </div>
@@ -194,7 +194,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
               </div>
             </div>
             
-            {/* 第二行：项目描述（宽度对齐上面三个控件：160px + 8px + 128px + 8px + 平台框宽度）*/}
+            {/* 第二行：系统描述（宽度对齐上面三个控件：160px + 8px + 128px + 8px + 平台框宽度）*/}
             <div className="w-full">
               {isEditingDescription ? (
                 <Input
@@ -206,7 +206,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                     if (e.key === 'Escape') setIsEditingDescription(false);
                   }}
                   className="h-5 w-full text-xs"
-                  placeholder="描述"
+                  placeholder="系统描述"
                   autoFocus
                 />
               ) : (
@@ -215,7 +215,7 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
                   className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group h-5"
                 >
                   <span className="text-xs text-gray-500 truncate flex-1">
-                    {projectInfo.description || '描述'}
+                    {projectInfo.description || '系统描述'}
                   </span>
                   <Edit2 className="h-2.5 w-2.5 text-gray-300 group-hover:text-gray-500 shrink-0" />
                 </div>
