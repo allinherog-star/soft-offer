@@ -109,7 +109,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     return false;
   };
 
-  // 检查节点是否有操作按钮
+  // 检查节点是否有动作按钮
   const hasButtons = (nodeId: string): boolean => {
     const findNode = (nodeList: FunctionNode[]): FunctionNode | null => {
       for (const node of nodeList) {
@@ -128,7 +128,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   // 尝试添加节点（可能需要确认）
   const tryAddNode = (parentId?: string) => {
     if (parentId && hasButtons(parentId)) {
-      // 如果父节点已有操作，需要二次确认
+      // 如果父节点已有动作，需要二次确认
       setPendingAddParentId(parentId);
       setAddConfirmDialogOpen(true);
     } else {
@@ -672,7 +672,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
           <AlertDialogHeader>
             <AlertDialogTitle>确认添加需求</AlertDialogTitle>
             <AlertDialogDescription>
-              当前需求下已有操作按钮，添加子需求后将变为子模块。是否继续？
+              当前需求下已有动作按钮，添加子需求后将变为子模块。是否继续？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

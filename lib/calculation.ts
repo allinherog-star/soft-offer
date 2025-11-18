@@ -85,19 +85,22 @@ function getWorkDays(complexity: Complexity | undefined, config: GlobalConfig): 
   return config.workDurationConfigs[complexity] || 0;
 }
 
-// 递归收集所有叶子节点（有复杂度的节点）和按钮操作
-function collectLeafNodes(node: FunctionNode): Array<{complexity?: Complexity}> {
+// 递归收集所有功能菜单节点（非顶层的叶子节点）和按钮操作
+function collectLeafNodes(node: FunctionNode, isTopLevel: boolean = false): Array<{complexity?: Complexity}> {
   const items: Array<{complexity?: Complexity}> = [];
   
-  // 收集节点本身（如果是叶子节点且有复杂度）
+  // 收集节点本身（如果是叶子节点且有复杂度，但不是顶层节点）
   if (node.complexity && (!node.children || node.children.length === 0)) {
-    items.push(node);
+    // 只收集非顶层的叶子节点（功能菜单）
+    if (!isTopLevel) {
+      items.push(node);
+    }
   }
   
-  // 收集子节点
+  // 收集子节点（子节点都不是顶层）
   if (node.children && node.children.length > 0) {
     node.children.forEach(child => {
-      items.push(...collectLeafNodes(child));
+      items.push(...collectLeafNodes(child, false));
     });
   }
   
@@ -210,8 +213,8 @@ export function calculateEstimate(
   discount: number,
   roleCounts: Record<string, number> = {}
 ): EstimateResult {
-  // 收集所有叶子节点
-  const allLeafNodes = functionNodes.flatMap(node => collectLeafNodes(node));
+  // 收集所有功能菜单节点（非顶层的叶子节点），顶层节点标记为 isTopLevel = true
+  const allLeafNodes = functionNodes.flatMap(node => collectLeafNodes(node, true));
   
   // 计算后端总工期（基准）
   let backendTotalDays = 0;

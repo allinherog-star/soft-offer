@@ -194,7 +194,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
 
   const flatNodes = flattenNodes(nodes);
 
-  // 根据操作名称获取对应的颜色样式
+  // 根据动作名称获取对应的颜色样式
   const getButtonColor = (name: string) => {
     const colorMap: Record<string, string> = {
       '新增': 'text-green-700 bg-green-100 border border-green-300',
@@ -223,8 +223,8 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
   const getMaxComplexityFromChildren = (node: FunctionNode): Complexity | undefined => {
     if (!node.children || node.children.length === 0) return node.complexity;
     
-    let maxLevel = getComplexityLevel(node.complexity);
-    let maxComplexity: Complexity | undefined = node.complexity;
+    let maxLevel = 0; // 从0开始，只看子节点
+    let maxComplexity: Complexity | undefined = undefined;
     
     const checkChildren = (children: FunctionNode[]) => {
       children.forEach(child => {
@@ -240,15 +240,15 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     };
     
     checkChildren(node.children);
-    return maxComplexity;
+    return maxComplexity || '低'; // 如果没有子节点有复杂度，返回低
   };
 
   // 获取子节点中的最高优先级
   const getMaxPriorityFromChildren = (node: FunctionNode): Priority | undefined => {
     if (!node.children || node.children.length === 0) return node.priority;
     
-    let maxLevel = getPriorityLevel(node.priority);
-    let maxPriority: Priority | undefined = node.priority;
+    let maxLevel = 0; // 从0开始，只看子节点
+    let maxPriority: Priority | undefined = undefined;
     
     const checkChildren = (children: FunctionNode[]) => {
       children.forEach(child => {
@@ -264,7 +264,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     };
     
     checkChildren(node.children);
-    return maxPriority;
+    return maxPriority || '中'; // 如果没有子节点有优先级，返回中
   };
 
   // 向上同步父节点的复杂度和优先级
@@ -312,7 +312,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     onNodesChange([...nodes]);
   };
 
-  // 定义操作顺序优先级
+  // 定义动作顺序优先级
   const getButtonPriority = (name: string): number => {
     const priorityMap: Record<string, number> = {
       '新增': 1,
@@ -322,7 +322,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
       '导入': 5,
       '导出': 6,
     };
-    return priorityMap[name] || 999; // 自定义操作排在最后
+    return priorityMap[name] || 999; // 自定义动作排在最后
   };
 
   // 对按钮进行排序
@@ -333,7 +333,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
       if (priorityA !== priorityB) {
         return priorityA - priorityB;
       }
-      // 如果优先级相同（都是自定义操作），保持原有顺序
+      // 如果优先级相同（都是自定义动作），保持原有顺序
       return 0;
     });
   };
@@ -341,7 +341,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
   const addButton = (nodeId: string) => {
     const newButton: ButtonFunction = {
       id: `btn-${Date.now()}-${Math.random()}`,
-      name: '按钮操作',
+      name: '按钮动作',
       complexity: '低',
       priority: '中',
       isImportant: false,
@@ -355,7 +355,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           node.buttons.push(newButton);
           // 排序按钮
           node.buttons = sortButtons(node.buttons);
-          // 同步功能节点复杂度为所有操作中的最高值
+          // 同步功能节点复杂度为所有动作中的最高值
           const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
@@ -379,10 +379,10 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
 
   const addStandardButtons = (nodeId: string) => {
     const standardButtons = [
-      { name: '新增', isImportant: false, remark: '' },
-      { name: '编辑', isImportant: false, remark: '' },
-      { name: '删除', isImportant: false, remark: '' },
-      { name: '查询', isImportant: false, remark: '' },
+      { name: '新增', complexity: '低', priority: '中', isImportant: false, remark: '' },
+      { name: '编辑', complexity: '低', priority: '中', isImportant: false, remark: '' },
+      { name: '删除', complexity: '低', priority: '中', isImportant: false, remark: '' },
+      { name: '查询', complexity: '低', priority: '中', isImportant: false, remark: '' },
     ];
 
     const addToNode = (nodeList: FunctionNode[]): boolean => {
@@ -390,15 +390,17 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         if (node.id === nodeId) {
           if (!node.buttons) node.buttons = [];
           
-          // 获取已存在的操作名称
+          // 获取已存在的动作名称
           const existingNames = new Set(node.buttons.map(b => b.name));
           
-          // 只添加不存在的标准操作
+          // 只添加不存在的标准动作
           standardButtons.forEach((btnTemplate, index) => {
             if (!existingNames.has(btnTemplate.name)) {
               const newButton: ButtonFunction = {
                 id: `btn-${Date.now()}-${Math.random()}-${index}`,
                 name: btnTemplate.name,
+                complexity: btnTemplate.complexity as Complexity,
+                priority: btnTemplate.priority as any,
                 isImportant: btnTemplate.isImportant,
                 remark: btnTemplate.remark
               };
@@ -411,7 +413,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           // 排序按钮
           node.buttons = sortButtons(node.buttons);
           
-          // 同步功能节点复杂度为所有操作中的最高值
+          // 同步功能节点复杂度为所有动作中的最高值
           const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
@@ -431,7 +433,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
     onNodesChange([...nodes]);
   };
 
-  // 批量为所有功能菜单节点添加标准操作
+  // 批量为所有功能菜单节点添加标准动作
   const batchAddStandardButtons = () => {
     const standardButtons = [
       { name: '新增', isImportant: false, remark: '', complexity: '低', priority: '中' },
@@ -448,10 +450,10 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         if (isMenuNode) {
           if (!node.buttons) node.buttons = [];
           
-          // 获取已存在的操作名称
+          // 获取已存在的动作名称
           const existingNames = new Set(node.buttons.map(b => b.name));
           
-          // 只添加不存在的标准操作
+          // 只添加不存在的标准动作
           standardButtons.forEach((btnTemplate, index) => {
             if (!existingNames.has(btnTemplate.name)) {
               const newButton: ButtonFunction = {
@@ -473,7 +475,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
             node.buttons = sortButtons(node.buttons);
           }
           
-          // 同步功能节点复杂度为所有操作中的最高值
+          // 同步功能节点复杂度为所有动作中的最高值
           const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
@@ -497,8 +499,8 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
 
   const addImportExportButtons = (nodeId: string) => {
     const importExportButtons = [
-      { name: '导入', isImportant: false, remark: '' },
-      { name: '导出', isImportant: false, remark: '' },
+      { name: '导入', complexity: '低', priority: '中', isImportant: false, remark: '' },
+      { name: '导出', complexity: '低', priority: '中', isImportant: false, remark: '' },
     ];
 
     const addToNode = (nodeList: FunctionNode[]): boolean => {
@@ -506,15 +508,17 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
         if (node.id === nodeId) {
           if (!node.buttons) node.buttons = [];
           
-          // 获取已存在的操作名称
+          // 获取已存在的动作名称
           const existingNames = new Set(node.buttons.map(b => b.name));
           
-          // 只添加不存在的导入导出操作
+          // 只添加不存在的导入导出动作
           importExportButtons.forEach((btnTemplate, index) => {
             if (!existingNames.has(btnTemplate.name)) {
               const newButton: ButtonFunction = {
                 id: `btn-${Date.now()}-${Math.random()}-${index}`,
                 name: btnTemplate.name,
+                complexity: btnTemplate.complexity as Complexity,
+                priority: btnTemplate.priority as any,
                 isImportant: btnTemplate.isImportant,
                 remark: btnTemplate.remark
               };
@@ -527,7 +531,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           // 排序按钮
           node.buttons = sortButtons(node.buttons);
           
-          // 同步功能节点复杂度为所有操作中的最高值
+          // 同步功能节点复杂度为所有动作中的最高值
           const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
@@ -578,7 +582,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
             if (updates.name !== undefined) {
               node.buttons = sortButtons(node.buttons);
             }
-            // 如果更新了复杂度，自动同步功能节点的复杂度为所有操作中的最高值
+            // 如果更新了复杂度，自动同步功能节点的复杂度为所有动作中的最高值
             if (updates.complexity !== undefined) {
               const maxComplexity = getMaxComplexityFromButtons(node.buttons);
               if (maxComplexity) {
@@ -611,12 +615,12 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
       for (const node of nodeList) {
         if (node.id === buttonToDelete.nodeId && node.buttons) {
           node.buttons = node.buttons.filter(b => b.id !== buttonToDelete.buttonId);
-          // 删除后同步功能节点复杂度为剩余操作中的最高值
+          // 删除后同步功能节点复杂度为剩余动作中的最高值
           const maxComplexity = getMaxComplexityFromButtons(node.buttons);
           if (maxComplexity) {
             node.complexity = maxComplexity;
           } else {
-            // 如果没有操作了，恢复为默认的低
+            // 如果没有动作了，恢复为默认的低
             node.complexity = '低';
           }
           return true;
@@ -658,7 +662,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                     <button
                       onClick={batchAddStandardButtons}
                       className="p-0.5 hover:bg-gray-300 rounded text-gray-600"
-                      title="批量添加标准操作（新增、编辑、删除、查询）"
+                      title="批量添加标准动作（新增、编辑、删除、查询）"
                     >
                       <Wand2 className="h-3 w-3" />
                     </button>
@@ -712,7 +716,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                                   className="h-4 px-1 py-0 text-[10px]"
                                 >
                                   <Plus className="h-2.5 w-2.5 mr-0.5" />
-                                  操作
+                                  动作
                                   <ChevronDown className="h-2.5 w-2.5 ml-0.5" />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -722,21 +726,21 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                                   className="text-xs py-1 px-2"
                                 >
                                   <ListChecks className="h-3 w-3 mr-1.5" />
-                                  标准操作
+                                  标准动作
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   onClick={() => addImportExportButtons(node.id)}
                                   className="text-xs py-1 px-2"
                                 >
                                   <Download className="h-3 w-3 mr-1.5" />
-                                  导入导出操作
+                                  导入导出动作
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   onClick={() => addButton(node.id)}
                                   className="text-xs py-1 px-2"
                                 >
                                   <Sparkles className="h-3 w-3 mr-1.5" />
-                                  自定义操作
+                                  自定义动作
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -847,7 +851,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                   </td>
                 </tr>
 
-                {/* 按钮操作列表 */}
+                {/* 按钮动作列表 */}
                 {isMenu && isExpanded && node.buttons && node.buttons.map((button) => (
                   <tr
                     key={button.id}
@@ -865,7 +869,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                                 if (e.key === 'Escape') cancelEditButton();
                               }}
                               className="h-5 text-xs min-h-5 max-h-5 w-32"
-                              placeholder="按钮操作名称"
+                              placeholder="按钮动作名称"
                               autoFocus
                             />
                             <button
@@ -893,7 +897,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                             <button
                               onClick={() => openDeleteButtonDialog(node.id, button.id, button.name)}
                               className="p-0.5 rounded hover:bg-red-100 text-red-600"
-                              title="删除操作"
+                              title="删除动作"
                             >
                               <Trash2 className="h-3 w-3" />
                             </button>
@@ -1012,19 +1016,19 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
           </table>
           {flatNodes.length === 0 && (
             <div className="flex items-center justify-center h-32 text-gray-400 text-xs">
-              暂无操作，请在左侧添加需求模块和功能菜单
+              暂无动作，请在左侧添加需求模块和功能菜单
             </div>
           )}
         </ScrollArea>
       </div>
 
-      {/* 删除操作确认对话框 */}
+      {/* 删除动作确认对话框 */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              确定要删除操作「{buttonToDelete?.buttonName}」吗？此操作无法撤销。
+              确定要删除动作「{buttonToDelete?.buttonName}」吗？此操作无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

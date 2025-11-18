@@ -74,33 +74,41 @@ export default function Home() {
     return count;
   };
 
-  // 统计功能需求数量（叶子节点，不包含模块）
-  const countFunctionRequirements = (nodes: FunctionNode[]): number => {
+  // 统计功能菜单数量（叶子节点，不包含顶层模块）
+  const countFunctionMenus = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
       if (!node.children || node.children.length === 0) {
-        // 叶子节点才是功能需求
-        return count + 1;
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则才是功能菜单
+        return count + (isTopLevel ? 0 : 1);
       }
-      // 有子节点的是模块，继续递归
-      return count + countFunctionRequirements(node.children);
+      // 有子节点的是模块，继续递归（非顶层）
+      return count + countFunctionMenus(node.children, false);
     }, 0);
   };
 
-  // 统计高优先级需求数量
-  const countHighPriority = (nodes: FunctionNode[]): number => {
+  // 统计高优先级功能菜单数量（仅统计叶子节点，不包含顶层模块）
+  const countHighPriority = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
-      const current = (node.priority === '高' || node.priority === '很高') ? 1 : 0;
-      const children = node.children ? countHighPriority(node.children) : 0;
-      return count + current + children;
+      if (!node.children || node.children.length === 0) {
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能菜单的高优先级
+        if (isTopLevel) return count;
+        return count + ((node.priority === '高' || node.priority === '很高') ? 1 : 0);
+      }
+      // 有子节点的是模块，继续递归（非顶层）
+      return count + countHighPriority(node.children, false);
     }, 0);
   };
 
-  // 统计重要需求数量
-  const countImportant = (nodes: FunctionNode[]): number => {
+  // 统计重要功能菜单数量（仅统计叶子节点，不包含顶层模块）
+  const countImportant = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
-      const current = node.isImportant ? 1 : 0;
-      const children = node.children ? countImportant(node.children) : 0;
-      return count + current + children;
+      if (!node.children || node.children.length === 0) {
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能菜单的重要标记
+        if (isTopLevel) return count;
+        return count + (node.isImportant ? 1 : 0);
+      }
+      // 有子节点的是模块，继续递归（非顶层）
+      return count + countImportant(node.children, false);
     }, 0);
   };
 
@@ -236,9 +244,9 @@ export default function Home() {
                   
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-xs text-gray-500">功能需求</span>
+                    <span className="text-xs text-gray-500">功能菜单</span>
                     <span className="text-sm font-bold text-green-600">
-                      {countFunctionRequirements(functionNodes)}
+                      {countFunctionMenus(functionNodes)}
                     </span>
                   </div>
                 </div>
