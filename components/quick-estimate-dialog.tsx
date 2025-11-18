@@ -323,41 +323,42 @@ export function QuickEstimateDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[1400px] max-w-[95vw] sm:max-w-[1400px] h-[90vh] flex flex-col">
+      <DialogContent className="max-w-[90vw] sm:max-w-[1100px] h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0 border-b pb-4">
           <DialogTitle className="text-xl flex items-center gap-3">
             <span>AI 快速评估</span>
             {step === 'input' && <CheckCircle2 className="h-5 w-5 text-green-500" />}
           </DialogTitle>
           <DialogDescription asChild>
-            <div className="grid grid-cols-2 gap-4 mt-3">
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-3 border border-blue-200">
-                <div className="text-xs font-medium text-blue-900 mb-2">系统信息</div>
-                <div className="space-y-1">
+            <div className="mt-3">
+              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-200">
+                <div className="text-xs font-medium text-blue-900 mb-3">系统信息</div>
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-500">名称：</span>
+                    <span className="text-gray-500 min-w-[60px]">名称：</span>
                     <span className="text-gray-900 font-medium">{projectInfo.name}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-500">行业：</span>
+                    <span className="text-gray-500 min-w-[60px]">行业：</span>
                     <span className="text-gray-900">{projectInfo.industry}</span>
                   </div>
-                </div>
-              </div>
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-200">
-                <div className="text-xs font-medium text-purple-900 mb-2">系统描述</div>
-                <div className="text-sm text-gray-700 line-clamp-2">
-                  {projectInfo.description}
-                </div>
-                {projectInfo.platforms.length > 0 && (
-                  <div className="mt-2 flex gap-1 flex-wrap">
-                    {projectInfo.platforms.map(p => (
-                      <span key={p} className="text-xs px-2 py-0.5 bg-white/50 rounded">
-                        {p}
-                      </span>
-                    ))}
+                  <div className="flex items-start gap-2 text-sm">
+                    <span className="text-gray-500 min-w-[60px] flex-shrink-0">描述：</span>
+                    <span className="text-gray-900 flex-1">{projectInfo.description}</span>
                   </div>
-                )}
+                  {projectInfo.platforms.length > 0 && (
+                    <div className="flex items-start gap-2 text-sm">
+                      <span className="text-gray-500 min-w-[60px] flex-shrink-0">用户端：</span>
+                      <div className="flex gap-1 flex-wrap flex-1">
+                        {projectInfo.platforms.map(p => (
+                          <span key={p} className="text-xs px-2 py-0.5 bg-white/50 rounded border border-blue-100">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </DialogDescription>
