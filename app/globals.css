@@ -271,11 +271,20 @@
   .print\:break-before-page {
     page-break-before: always !important;
     break-before: page !important;
+    -webkit-page-break-before: always !important;
   }
   
   .print\:break-inside-avoid {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    -webkit-page-break-inside: avoid !important;
+  }
+  
+  /* 确保第一页内容不会溢出到第二页 */
+  .print\:break-after-page {
+    page-break-after: always !important;
+    break-after: page !important;
+    -webkit-page-break-after: always !important;
   }
   
   /* 确保清除浮动 */
