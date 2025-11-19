@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { FunctionNode, Complexity, Priority, ButtonFunction } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,6 +30,7 @@ interface FunctionTableProps {
   nodes: FunctionNode[];
   selectedNode: FunctionNode | null;
   onNodesChange: (nodes: FunctionNode[]) => void;
+  autoExpandTrigger?: number;
 }
 
 // 图标映射组件
@@ -63,7 +64,7 @@ const getPriorityIcon = (value: string) => {
   return { Icon, color: option.color };
 };
 
-export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTableProps) {
+export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTrigger }: FunctionTableProps) {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
   const [isAllExpanded, setIsAllExpanded] = useState(false);
   const [editingButton, setEditingButton] = useState<string | null>(null);
@@ -147,6 +148,15 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
       expandAllMenus();
     }
   };
+
+  // 监听自动展开触发器
+  useEffect(() => {
+    if (autoExpandTrigger && autoExpandTrigger > 0 && nodes.length > 0) {
+      const allMenuIds = getAllMenuIds();
+      setExpandedMenus(new Set(allMenuIds));
+      setIsAllExpanded(true);
+    }
+  }, [autoExpandTrigger, nodes]);
 
   const startEditButton = (buttonId: string, currentName: string) => {
     setEditingButton(buttonId);

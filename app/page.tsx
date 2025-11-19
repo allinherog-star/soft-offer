@@ -705,6 +705,9 @@ export default function Home() {
         setRoleCounts(data.roleCounts || {});
         saveToHistory(data.functionNodes || []);
             
+        // 触发自动展开
+        setAutoExpandTrigger(prev => prev + 1);
+            
         toast({
           title: '恢复成功 ↩️',
               description: `已恢复 ${data.timestamp ? new Date(data.timestamp).toLocaleString() : '导入'} 的数据`,
@@ -785,6 +788,7 @@ export default function Home() {
             nodes={functionNodes}
             selectedNode={selectedNode}
             onNodesChange={saveToHistory}
+            autoExpandTrigger={autoExpandTrigger}
           />
         </div>
 
