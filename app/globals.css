@@ -145,8 +145,8 @@
 /* 打印样式 */
 @media print {
   @page {
-    size: A4;
-    margin: 1.5cm;
+    size: A4 landscape;
+    margin: 1cm;
   }
   
   /* 隐藏不需要打印的元素 */
@@ -158,10 +158,43 @@
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
   }
   
   /* 避免内容被截断 */
   .print-break-inside-avoid {
     break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* 表格优化 */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    page-break-inside: avoid;
+  }
+  
+  table td,
+  table th {
+    page-break-inside: avoid;
+  }
+  
+  /* 确保表格边框显示 */
+  table,
+  th,
+  td {
+    border-color: #000 !important;
+  }
+  
+  /* 移除阴影和渐变 */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  
+  /* 优化间距 */
+  .print-compact {
+    padding: 0.25rem !important;
+    margin: 0.25rem 0 !important;
   }
 }

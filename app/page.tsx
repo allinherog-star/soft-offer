@@ -690,24 +690,24 @@ export default function Home() {
             const jsonStr = event.target?.result as string;
             const data = JSON.parse(jsonStr);
             
-            setProjectInfo(data.projectInfo || { name: '', industry: '', platforms: [] });
-            setFunctionNodes(data.functionNodes || []);
-            setConfig(data.config || DEFAULT_CONFIG);
-            setDiscount(data.discount || 1);
-            setRoleCounts(data.roleCounts || {});
-            saveToHistory(data.functionNodes || []);
+        setProjectInfo(data.projectInfo || { name: '', industry: '', platforms: [] });
+        setFunctionNodes(data.functionNodes || []);
+        setConfig(data.config || DEFAULT_CONFIG);
+        setDiscount(data.discount || 1);
+        setRoleCounts(data.roleCounts || {});
+        saveToHistory(data.functionNodes || []);
             
-            toast({
-              title: '恢复成功 ↩️',
+        toast({
+          title: '恢复成功 ↩️',
               description: `已恢复 ${data.timestamp ? new Date(data.timestamp).toLocaleString() : '导入'} 的数据`,
-            });
-          } catch (error) {
-            toast({
-              title: '恢复失败 ❌',
+        });
+      } catch (error) {
+        toast({
+          title: '恢复失败 ❌',
               description: 'JSON文件格式错误，无法恢复',
-              variant: 'destructive',
-            });
-          }
+          variant: 'destructive',
+        });
+      }
         };
         reader.readAsText(file);
       }
@@ -719,7 +719,7 @@ export default function Home() {
   // 导出为PDF
   const handleExport = () => {
     // 直接打开打印对话框
-    window.print();
+      window.print();
   };
 
   // 自动计算估价
@@ -749,7 +749,7 @@ export default function Home() {
       />
 
       {/* 主内容区域 */}
-      <div className="flex-1 flex overflow-hidden print:flex-col print:overflow-visible">
+      <div className="flex-1 flex overflow-hidden print:flex-col print:overflow-visible print:gap-4">
         {/* 左侧功能树 */}
         <div className="w-[300px] flex-shrink-0 h-full overflow-hidden print:hidden">
           <FunctionTree
@@ -767,7 +767,7 @@ export default function Home() {
         </div>
 
         {/* 中间表格 */}
-        <div className="flex-1 min-w-0 print:w-full">
+        <div className="flex-1 min-w-0 print:w-full print:mb-4">
           <FunctionTable
             nodes={functionNodes}
             selectedNode={selectedNode}
@@ -776,7 +776,7 @@ export default function Home() {
         </div>
 
           {/* 右侧估价面板 */}
-          <div className="w-[500px] flex-shrink-0 h-full overflow-hidden print:w-full print:mt-4">
+          <div className="w-[500px] flex-shrink-0 h-full overflow-hidden print:w-full print:mt-4 print:border-t-2 print:border-gray-300 print:pt-4">
             <EstimatePanel
             estimate={estimate}
             config={config}
@@ -790,86 +790,194 @@ export default function Home() {
       </div>
 
       {/* 底部全屏统计栏 */}
-      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg">
-        <div className="px-6 py-3">
-          <div className="flex items-center justify-between max-w-full">
+      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg print:bg-white print:shadow-none print:border-2 print:border-gray-400 print:mt-6 print:rounded">
+        <div className="px-6 py-3 print:px-0 print:py-0">
+          {/* 打印时使用表格布局 */}
+          <div className="hidden print:block">
+            <table className="w-full border-collapse border border-gray-400">
+              <thead>
+                <tr className="bg-blue-100 border-b-2 border-gray-400">
+                  <th colSpan={8} className="text-left py-2.5 px-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-gray-800">📊 项目评估概览</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {/* 第一行：统计指标 */}
+                <tr className="border-b border-gray-400">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">需求模块</div>
+                    <div className="text-sm font-bold text-blue-600">{functionNodes.length}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">子模块</div>
+                    <div className="text-sm font-bold text-cyan-600">{countSubModules(functionNodes)}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">功能菜单</div>
+                    <div className="text-sm font-bold text-green-600">{countFunctionMenus(functionNodes)}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">功能点</div>
+                    <div className="text-sm font-bold text-purple-600">{countFunctionPoints(functionNodes)}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">高优先级</div>
+                    <div className="text-sm font-bold text-orange-600">{countHighPriority(functionNodes)}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">重点需求</div>
+                    <div className="text-sm font-bold text-red-600">{countImportant(functionNodes)}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">团队人数</div>
+                    <div className="text-sm font-bold text-purple-600">{getTotalTeamMembers()}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center">
+                    <div className="text-[10px] text-gray-600">折扣</div>
+                    <div className="text-sm font-bold text-orange-600">{(discount * 10).toFixed(0)}折</div>
+                  </td>
+                </tr>
+                {/* 第二行：关键指标 */}
+                <tr className="bg-gray-50">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">总人力</div>
+                    <div className="text-base font-bold text-purple-600">
+                      {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
+                      <span className="text-xs font-normal"> 人天</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">总工期</div>
+                    <div className="text-base font-bold text-blue-600">
+                      {calculateActualTotalDays().toFixed(1)}
+                      <span className="text-xs font-normal"> 天</span>
+                    </div>
+                    <div className="text-[9px] text-gray-500 mt-0.5">
+                      {(() => {
+                        const totalDays = calculateActualTotalDays();
+                        const deliveryDate = new Date();
+                        deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
+                        return deliveryDate.toLocaleDateString('zh-CN').replace(/\//g, '-');
+                      })()}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
+                    <div className="text-[10px] text-gray-600">市场成本</div>
+                    <div className="text-base font-bold text-gray-700">
+                      {(estimate.baseCost / 10000).toFixed(2)}
+                      <span className="text-xs font-normal"> 万</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 bg-red-50">
+                    <div className="text-[10px] text-gray-700 font-semibold">折后成本</div>
+                    <div className="text-lg font-bold text-red-600">
+                      {(estimate.finalPrice / 10000).toFixed(2)}
+                      <span className="text-sm font-normal"> 万</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400" colSpan={2}>
+                    <div className="text-[10px] text-gray-600">运维成本</div>
+                    <div className="text-sm font-bold text-orange-600">
+                      {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}
+                      <span className="text-xs font-normal"> 万/月</span>
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-3 text-center" colSpan={2}>
+                    <div className="text-[10px] text-gray-600">硬件成本</div>
+                    <div className="text-sm font-bold text-green-600">
+                      {config.hardwareConfig 
+                        ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 12 / 10000).toFixed(2)
+                        : '0.00'}
+                      <span className="text-xs font-normal"> 万/月</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* 屏幕显示时使用flex布局 */}
+          <div className="flex items-start justify-between gap-6 max-w-full print:hidden">
             {/* 左侧：整体统计 */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2.5 flex-shrink-0">
               {/* 标题 */}
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-blue-500" />
+                <Sparkles className="h-4.5 w-4.5 text-blue-500" />
                 <span className="text-sm font-semibold text-gray-700">整体概览</span>
               </div>
               
-              {/* 统计信息 - 2行布局 */}
-              <div className="flex flex-col gap-2">
+              {/* 统计信息 - 2行紧凑布局 */}
+              <div className="flex flex-col gap-1.5">
                 {/* 第一行 */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
                     <Layers className="h-3.5 w-3.5 text-blue-500" />
                     <span className="text-xs text-gray-500">需求模块</span>
-                    <span className="text-sm font-bold text-blue-600">
+                    <span className="text-sm font-bold text-blue-600 ml-0.5">
                       {functionNodes.length}
                     </span>
                   </div>
                   
-                  <div className="w-px h-6 bg-gray-300"></div>
+                  <div className="w-px h-4 bg-gray-300"></div>
                   
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Layers className="h-3.5 w-3.5 text-cyan-500" />
                     <span className="text-xs text-gray-500">子模块</span>
-                    <span className="text-sm font-bold text-cyan-600">
+                    <span className="text-sm font-bold text-cyan-600 ml-0.5">
                       {countSubModules(functionNodes)}
                     </span>
                   </div>
                   
-                  <div className="w-px h-6 bg-gray-300"></div>
+                  <div className="w-px h-4 bg-gray-300"></div>
                   
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
                     <span className="text-xs text-gray-500">功能菜单</span>
-                    <span className="text-sm font-bold text-green-600">
+                    <span className="text-sm font-bold text-green-600 ml-0.5">
                       {countFunctionMenus(functionNodes)}
                     </span>
                   </div>
                   
-                  <div className="w-px h-6 bg-gray-300"></div>
+                  <div className="w-px h-4 bg-gray-300"></div>
                   
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Zap className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs text-gray-500">功能点</span>
-                    <span className="text-sm font-bold text-purple-600">
+                    <span className="text-sm font-bold text-purple-600 ml-0.5">
                       {countFunctionPoints(functionNodes)}
                     </span>
                   </div>
                 </div>
                 
                 {/* 第二行 */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
                     <AlertCircle className="h-3.5 w-3.5 text-orange-500" />
                     <span className="text-xs text-gray-500">高优先级</span>
-                    <span className="text-sm font-bold text-orange-600">
+                    <span className="text-sm font-bold text-orange-600 ml-0.5">
                       {countHighPriority(functionNodes)}
                     </span>
                   </div>
                   
-                  <div className="w-px h-6 bg-gray-300"></div>
+                  <div className="w-px h-4 bg-gray-300"></div>
                   
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Target className="h-3.5 w-3.5 text-red-500" />
                     <span className="text-xs text-gray-500">重点需求</span>
-                    <span className="text-sm font-bold text-red-600">
+                    <span className="text-sm font-bold text-red-600 ml-0.5">
                       {countImportant(functionNodes)}
                     </span>
                   </div>
                   
-                  <div className="w-px h-6 bg-gray-300"></div>
+                  <div className="w-px h-4 bg-gray-300"></div>
                   
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <Users2 className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs text-gray-500">团队人数</span>
-                    <span className="text-sm font-bold text-purple-600">
+                    <span className="text-sm font-bold text-purple-600 ml-0.5">
                       {getTotalTeamMembers()}
                     </span>
                   </div>
@@ -878,36 +986,35 @@ export default function Home() {
             </div>
 
             {/* 右侧：关键指标 */}
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-5 flex-wrap">
               {/* 总人力 */}
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Users2 className="h-5 w-5 text-purple-600" />
+              <div className="flex items-start gap-2">
+                <div className="p-1.5 bg-purple-100 rounded-lg">
+                  <Users2 className="h-4 w-4 text-purple-600" />
                 </div>
-                <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4 leading-4">总人力</div>
-                  <div className="text-xl font-bold text-purple-600 mt-1">
+                <div className="flex flex-col">
+                  <div className="text-xs text-gray-500 leading-tight">总人力</div>
+                  <div className="text-lg font-bold text-purple-600 leading-tight mt-0.5">
                     {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
-                    <span className="text-sm font-normal ml-0.5">人天</span>
+                    <span className="text-xs font-normal ml-0.5">人天</span>
                   </div>
-                  <div className="h-[18px]"></div>
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-10 bg-gray-300"></div>
 
               {/* 总工期 */}
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-600" />
+              <div className="flex items-start gap-2">
+                <div className="p-1.5 bg-blue-100 rounded-lg">
+                  <Clock className="h-4 w-4 text-blue-600" />
                 </div>
-                <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4 leading-4">总工期</div>
-                  <div className="text-xl font-bold text-blue-600 mt-1">
+                <div className="flex flex-col">
+                  <div className="text-xs text-gray-500 leading-tight">总工期</div>
+                  <div className="text-lg font-bold text-blue-600 leading-tight mt-0.5">
                     {calculateActualTotalDays().toFixed(1)}
-                    <span className="text-sm font-normal ml-0.5">天</span>
+                    <span className="text-xs font-normal ml-0.5">天</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5 h-[18px] leading-[18px]">
+                  <div className="text-[10px] text-gray-400 leading-tight mt-0.5">
                     预计 {(() => {
                       const totalDays = calculateActualTotalDays();
                       const deliveryDate = new Date();
@@ -918,37 +1025,37 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-10 bg-gray-300"></div>
 
               {/* 市场成本 */}
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-red-100 rounded-lg flex items-center justify-center w-9 h-9">
-                  <span className="text-xl font-bold text-red-600 leading-none">¥</span>
+              <div className="flex items-start gap-2">
+                <div className="p-1.5 bg-red-100 rounded-lg flex items-center justify-center w-7 h-7">
+                  <span className="text-base font-bold text-red-600 leading-none">¥</span>
                 </div>
-                <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4">市场成本</div>
-                  <div className="text-xl font-bold text-red-600 mt-1">
+                <div className="flex flex-col">
+                  <div className="text-xs text-gray-500 leading-tight">市场成本</div>
+                  <div className="text-lg font-bold text-red-600 leading-tight mt-0.5">
                     {(estimate.baseCost / 10000).toFixed(2)}
-                    <span className="text-sm font-normal ml-0.5">万</span>
+                    <span className="text-xs font-normal ml-0.5">万</span>
                   </div>
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-10 bg-gray-300"></div>
 
               {/* 折扣选择 */}
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-orange-100 rounded-lg">
-                  <TrendingDown className="h-5 w-5 text-orange-600" />
+              <div className="flex items-start gap-2 print:hidden">
+                <div className="p-1.5 bg-orange-100 rounded-lg">
+                  <TrendingDown className="h-4 w-4 text-orange-600" />
                 </div>
-                <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4">折扣</div>
+                <div className="flex flex-col">
+                  <div className="text-xs text-gray-500 leading-tight">折扣</div>
                   <div className="mt-1">
                     <Select
                       value={discount.toString()}
                       onValueChange={(value) => setDiscount(parseFloat(value))}
                     >
-                      <SelectTrigger className="h-7 w-36 text-xs">
+                      <SelectTrigger className="h-7 w-32 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -985,32 +1092,47 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="w-px h-12 bg-gray-300"></div>
+              <div className="w-px h-10 bg-gray-300 print:hidden"></div>
+              
+              {/* 打印时显示折扣 */}
+              <div className="hidden print:flex items-start gap-2">
+                <div className="p-1.5 bg-orange-100 rounded-lg">
+                  <TrendingDown className="h-4 w-4 text-orange-600" />
+                </div>
+                <div className="flex flex-col">
+                  <div className="text-xs text-gray-500 leading-tight">折扣</div>
+                  <div className="text-lg font-bold text-orange-600 leading-tight mt-0.5">
+                    {(discount * 10).toFixed(0)}折
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden print:block w-px h-10 bg-gray-300"></div>
 
               {/* 折后成本 + 运维成本 + 硬件费用 */}
-              <div className="flex items-start gap-3 bg-gradient-to-r from-red-50 to-orange-50 px-4 py-2 rounded-lg border-2 border-red-300 min-h-[60px]">
-                <div className="flex flex-col justify-start gap-1.5">
+              <div className="flex items-start gap-2 bg-gradient-to-r from-red-50 to-orange-50 px-3 py-1.5 rounded-lg border-2 border-red-300">
+                <div className="flex flex-col gap-1">
                   <div>
-                    <div className="text-xs text-gray-600 font-medium h-4">折后成本</div>
-                    <div className="text-2xl font-bold text-red-600 mt-1">
+                    <div className="text-xs text-gray-600 font-medium leading-tight">折后成本</div>
+                    <div className="text-xl font-bold text-red-600 leading-tight mt-0.5">
                       {(estimate.finalPrice / 10000).toFixed(2)}
-                      <span className="text-base font-normal ml-1">万</span>
+                      <span className="text-sm font-normal ml-0.5">万</span>
                     </div>
                   </div>
-                  <div className="border-t border-red-200 pt-1">
-                    <div className="flex items-center gap-2">
-                      <Wrench className="h-3 w-3 text-gray-500" />
-                      <span className="text-[10px] text-gray-600">运维成本</span>
-                      <span className="text-xs font-semibold text-red-500">
+                  <div className="border-t border-red-200 pt-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <Wrench className="h-2.5 w-2.5 text-gray-500" />
+                      <span className="text-[10px] text-gray-600">运维</span>
+                      <span className="text-[10px] font-semibold text-red-500">
                         {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}万/月
                       </span>
                     </div>
                   </div>
-                  <div className="pt-0.5">
-                    <div className="flex items-center gap-2">
-                      <Server className="h-3 w-3 text-gray-500" />
-                      <span className="text-[10px] text-gray-600">硬件成本</span>
-                      <span className="text-xs font-semibold text-red-500">
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <Server className="h-2.5 w-2.5 text-gray-500" />
+                      <span className="text-[10px] text-gray-600">硬件</span>
+                      <span className="text-[10px] font-semibold text-red-500">
                         {config.hardwareConfig 
                           ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 12 / 10000).toFixed(2)
                           : '0.00'}万/月
