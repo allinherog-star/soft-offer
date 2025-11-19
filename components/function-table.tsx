@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { COMPLEXITY_OPTIONS, PRIORITY_OPTIONS } from '@/lib/constants';
-import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, AlertTriangle, Minus, Flame, ArrowDown, ArrowUp, Circle, AlertCircle, Equal, TrendingUp, Zap } from 'lucide-react';
+import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, AlertTriangle, Minus, Flame, ArrowDown, ArrowUp, Circle, AlertCircle, Equal, TrendingUp, Zap, Pencil } from 'lucide-react';
 
 interface FunctionTableProps {
   nodes: FunctionNode[];
@@ -68,6 +68,8 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
   const [isAllExpanded, setIsAllExpanded] = useState(false);
   const [editingButton, setEditingButton] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [editingRemark, setEditingRemark] = useState<string | null>(null); // 编辑备注的ID（可以是节点ID或按钮ID）
+  const [remarkText, setRemarkText] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [buttonToDelete, setButtonToDelete] = useState<{ nodeId: string; buttonId: string; buttonName: string } | null>(null);
 
@@ -162,6 +164,29 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
   const cancelEditButton = () => {
     setEditingButton(null);
     setEditingName('');
+  };
+
+  // 备注编辑相关函数
+  const startEditRemark = (id: string, currentRemark: string) => {
+    setEditingRemark(id);
+    setRemarkText(currentRemark || '');
+  };
+
+  const saveEditNodeRemark = (nodeId: string) => {
+    updateNode(nodeId, { remark: remarkText });
+    setEditingRemark(null);
+    setRemarkText('');
+  };
+
+  const saveEditButtonRemark = (nodeId: string, buttonId: string) => {
+    updateButton(nodeId, buttonId, { remark: remarkText });
+    setEditingRemark(null);
+    setRemarkText('');
+  };
+
+  const cancelEditRemark = () => {
+    setEditingRemark(null);
+    setRemarkText('');
   };
 
   // 递归收集所有节点（展平）
@@ -698,12 +723,48 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                     </div>
                   </td>
                   <td className="px-2 py-1">
-                    <Input
-                      value={node.remark}
-                      onChange={(e) => updateNode(node.id, { remark: e.target.value })}
-                      placeholder=""
-                      className="h-6 text-xs min-h-6 max-h-6"
-                    />
+                    <div className="flex items-center gap-1.5">
+                      {editingRemark === node.id ? (
+                        <>
+                          <Input
+                            value={remarkText}
+                            onChange={(e) => setRemarkText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') saveEditNodeRemark(node.id);
+                              if (e.key === 'Escape') cancelEditRemark();
+                            }}
+                            placeholder="输入说明..."
+                            className="h-6 text-[11px] min-h-6 max-h-6 flex-1"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => saveEditNodeRemark(node.id)}
+                            className="p-0.5 rounded hover:bg-green-100 text-green-600"
+                          >
+                            <Check className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={cancelEditRemark}
+                            className="p-0.5 rounded hover:bg-red-100 text-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-[11px] text-gray-600 flex-1">
+                            {node.remark || ''}
+                          </span>
+                          <button
+                            onClick={() => startEditRemark(node.id, node.remark || '')}
+                            className="p-0.5 rounded hover:bg-gray-200 text-gray-500"
+                            title="编辑说明"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
 
@@ -856,12 +917,48 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange }: FunctionTa
                       </div>
                     </td>
                     <td className="px-2 py-1">
-                      <Input
-                        value={button.remark}
-                        onChange={(e) => updateButton(node.id, button.id, { remark: e.target.value })}
-                        placeholder=""
-                        className="h-6 text-xs min-h-6 max-h-6"
-                      />
+                      <div className="flex items-center gap-1.5">
+                        {editingRemark === `${node.id}-${button.id}` ? (
+                          <>
+                            <Input
+                              value={remarkText}
+                              onChange={(e) => setRemarkText(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditButtonRemark(node.id, button.id);
+                                if (e.key === 'Escape') cancelEditRemark();
+                              }}
+                              placeholder="输入说明..."
+                              className="h-6 text-[11px] min-h-6 max-h-6 flex-1"
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => saveEditButtonRemark(node.id, button.id)}
+                              className="p-0.5 rounded hover:bg-green-100 text-green-600"
+                            >
+                              <Check className="h-3 w-3" />
+                            </button>
+                            <button
+                              onClick={cancelEditRemark}
+                              className="p-0.5 rounded hover:bg-red-100 text-red-600"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-[11px] text-gray-600 flex-1">
+                              {button.remark || ''}
+                            </span>
+                            <button
+                              onClick={() => startEditRemark(`${node.id}-${button.id}`, button.remark || '')}
+                              className="p-0.5 rounded hover:bg-gray-200 text-gray-500"
+                              title="编辑说明"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

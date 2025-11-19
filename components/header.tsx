@@ -13,7 +13,8 @@ import {
   Globe, BadgeDollarSign, ShoppingCart, GraduationCap, Heart,
   Factory, Store, Truck, Home, Zap, Landmark, Radio, Tv,
   Plane, UtensilsCrossed, Briefcase, Gamepad2, Users, Car,
-  Sprout, MoreHorizontal, LucideIcon
+  Sprout, MoreHorizontal, LucideIcon, FileText, Trash2, Save,
+  RotateCcw, Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -46,9 +47,23 @@ interface HeaderProps {
   projectInfo: ProjectInfo;
   onProjectInfoChange: (info: ProjectInfo) => void;
   onOpenCostSettings: () => void;
+  onLoadSample: () => void;
+  onClear: () => void;
+  onSave: () => void;
+  onRestore: () => void;
+  onExport: () => void;
 }
 
-export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }: HeaderProps) {
+export function Header({ 
+  projectInfo, 
+  onProjectInfoChange, 
+  onOpenCostSettings,
+  onLoadSample,
+  onClear,
+  onSave,
+  onRestore,
+  onExport
+}: HeaderProps) {
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [industryOpen, setIndustryOpen] = useState(false);
@@ -224,14 +239,68 @@ export function Header({ projectInfo, onProjectInfoChange, onOpenCostSettings }:
           </div>
         </div>
 
-        <Button 
-          onClick={onOpenCostSettings} 
-          variant="outline" 
-          size="sm"
-        >
-          <Calculator className="h-4 w-4 mr-1.5" />
-          单位成本
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={onLoadSample} 
+            variant="outline" 
+            size="sm"
+            className="text-xs"
+          >
+            <FileText className="h-3.5 w-3.5 mr-1" />
+            示例数据
+          </Button>
+
+          <Button 
+            onClick={onClear} 
+            variant="outline" 
+            size="sm"
+            className="text-xs"
+          >
+            <Trash2 className="h-3.5 w-3.5 mr-1" />
+            清空
+          </Button>
+
+          <Button 
+            onClick={onSave} 
+            variant="outline" 
+            size="sm"
+            className="text-xs"
+          >
+            <Save className="h-3.5 w-3.5 mr-1" />
+            保存
+          </Button>
+
+          <Button 
+            onClick={onRestore} 
+            variant="outline" 
+            size="sm"
+            className="text-xs"
+          >
+            <RotateCcw className="h-3.5 w-3.5 mr-1" />
+            恢复
+          </Button>
+
+          <Button 
+            onClick={onExport} 
+            variant="outline" 
+            size="sm"
+            className="text-xs"
+          >
+            <Download className="h-3.5 w-3.5 mr-1" />
+            导出
+          </Button>
+
+          <div className="w-px h-6 bg-gray-300"></div>
+
+          <Button 
+            onClick={onOpenCostSettings} 
+            variant="outline" 
+            size="sm"
+          >
+            <Calculator className="h-4 w-4 mr-1.5" />
+            单位成本
+          </Button>
+        </div>
       </div>
     </div>
   );

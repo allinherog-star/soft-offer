@@ -10,9 +10,21 @@ import { CostSettingsSheet } from '@/components/cost-settings-sheet';
 import { calculateEstimate } from '@/lib/calculation';
 import { DEFAULT_CONFIG, DISCOUNT_OPTIONS } from '@/lib/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
 import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target } from 'lucide-react';
 
 export default function Home() {
+  const { toast } = useToast();
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>({
     name: '',
     industry: '',
@@ -32,6 +44,7 @@ export default function Home() {
     finalPrice: 0
   });
   const [costSettingsOpen, setCostSettingsOpen] = useState(false);
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const [roleCounts, setRoleCounts] = useState<Record<string, number>>({});
 
   // 历史记录管理
@@ -166,6 +179,191 @@ export default function Home() {
     }
   };
 
+  // 示例数据
+  const SAMPLE_DATA = {
+    projectInfo: {
+      name: '智慧园区管理系统',
+      industry: '智慧园区',
+      description: '智能化园区综合管理平台，涵盖访客、车辆、物业、安防等功能',
+      platforms: ['PC端', 'Web端', 'H5']
+    },
+    functionNodes: [
+      {
+        id: 'module-1',
+        name: '用户管理',
+        complexity: '中',
+        priority: '高',
+        isImportant: false,
+        remark: '系统核心模块',
+        children: [
+          {
+            id: 'menu-1',
+            name: '用户管理',
+            complexity: '低',
+            priority: '高',
+            isImportant: false,
+            remark: '',
+            buttons: [
+              { id: 'btn-1', name: '新增', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-2', name: '编辑', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-3', name: '删除', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-4', name: '查询', complexity: '低', priority: '中', isImportant: false, remark: '' }
+            ]
+          },
+          {
+            id: 'menu-2',
+            name: '角色管理',
+            complexity: '中',
+            priority: '高',
+            isImportant: false,
+            remark: '',
+            buttons: [
+              { id: 'btn-5', name: '新增', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-6', name: '编辑', complexity: '中', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-7', name: '删除', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-8', name: '查询', complexity: '低', priority: '中', isImportant: false, remark: '' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'module-2',
+        name: '访客管理',
+        complexity: '高',
+        priority: '很高',
+        isImportant: true,
+        remark: '重点需求',
+        children: [
+          {
+            id: 'menu-3',
+            name: '访客预约',
+            complexity: '高',
+            priority: '很高',
+            isImportant: true,
+            remark: '',
+            buttons: [
+              { id: 'btn-9', name: '新增', complexity: '高', priority: '高', isImportant: false, remark: '' },
+              { id: 'btn-10', name: '编辑', complexity: '中', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-11', name: '删除', complexity: '低', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-12', name: '查询', complexity: '中', priority: '中', isImportant: false, remark: '' },
+              { id: 'btn-13', name: '审批', complexity: '高', priority: '很高', isImportant: true, remark: '核心功能' }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+
+  // 加载示例数据
+  const handleLoadSample = () => {
+    setProjectInfo(SAMPLE_DATA.projectInfo);
+    setFunctionNodes(SAMPLE_DATA.functionNodes);
+    saveToHistory(SAMPLE_DATA.functionNodes);
+    toast({
+      title: '加载成功 ✅',
+      description: '已加载示例数据',
+    });
+  };
+
+  // 清空数据
+  const handleClear = () => {
+    setClearDialogOpen(true);
+  };
+
+  const confirmClear = () => {
+    setProjectInfo({
+      name: '',
+      industry: '',
+      platforms: []
+    });
+    setFunctionNodes([]);
+    setSelectedNode(null);
+    setHistory([[]]);
+    setHistoryIndex(0);
+    setClearDialogOpen(false);
+    toast({
+      title: '已清空 🗑️',
+      description: '所有数据已清空',
+    });
+  };
+
+  // 保存数据到本地存储
+  const handleSave = () => {
+    const data = {
+      projectInfo,
+      functionNodes,
+      config,
+      discount,
+      roleCounts,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('estimate-data', JSON.stringify(data));
+    toast({
+      title: '保存成功 💾',
+      description: '数据已保存到本地',
+    });
+  };
+
+  // 从本地存储恢复数据
+  const handleRestore = () => {
+    const savedData = localStorage.getItem('estimate-data');
+    if (savedData) {
+      try {
+        const data = JSON.parse(savedData);
+        setProjectInfo(data.projectInfo || { name: '', industry: '', platforms: [] });
+        setFunctionNodes(data.functionNodes || []);
+        setConfig(data.config || DEFAULT_CONFIG);
+        setDiscount(data.discount || 1);
+        setRoleCounts(data.roleCounts || {});
+        saveToHistory(data.functionNodes || []);
+        toast({
+          title: '恢复成功 ↩️',
+          description: `已恢复 ${new Date(data.timestamp).toLocaleString()} 的数据`,
+        });
+      } catch (error) {
+        toast({
+          title: '恢复失败 ❌',
+          description: '数据格式错误，无法恢复',
+          variant: 'destructive',
+        });
+      }
+    } else {
+      toast({
+        title: '暂无数据 📭',
+        description: '本地没有保存的数据',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // 导出数据为JSON文件
+  const handleExport = () => {
+    const data = {
+      projectInfo,
+      functionNodes,
+      config,
+      discount,
+      roleCounts,
+      exportTime: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `软件评估-${projectInfo.name || '未命名'}-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: '导出成功 📥',
+      description: '数据已导出为JSON文件',
+    });
+  };
+
   // 自动计算估价
   useEffect(() => {
     const newEstimate = calculateEstimate(
@@ -185,6 +383,11 @@ export default function Home() {
         projectInfo={projectInfo}
         onProjectInfoChange={setProjectInfo}
         onOpenCostSettings={() => setCostSettingsOpen(true)}
+        onLoadSample={handleLoadSample}
+        onClear={handleClear}
+        onSave={handleSave}
+        onRestore={handleRestore}
+        onExport={handleExport}
       />
 
       {/* 主内容区域 */}
@@ -469,6 +672,24 @@ export default function Home() {
         config={config}
         onConfigChange={setConfig}
       />
+
+      {/* 清空确认对话框 */}
+      <AlertDialog open={clearDialogOpen} onOpenChange={setClearDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认清空</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作将清空所有项目信息和需求清单数据，此操作无法撤销。是否继续？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmClear} className="bg-red-600 hover:bg-red-700">
+              确认清空
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
