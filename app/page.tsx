@@ -182,12 +182,15 @@ export default function Home() {
   };
 
   // 示例数据
-  const SAMPLE_DATA = {
+  const SAMPLE_DATA: {
+    projectInfo: ProjectInfo;
+    functionNodes: FunctionNode[];
+  } = {
     projectInfo: {
       name: '电商平台',
       industry: '电子商务',
       description: 'B2C在线购物平台，包含商品管理、订单管理、支付系统等核心功能',
-      platforms: ['Web端', 'H5', '小程序']
+      platforms: ['Web端', 'H5', '小程序'] as Platform[]
     },
     functionNodes: [
       {
