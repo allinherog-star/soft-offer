@@ -149,6 +149,14 @@
     margin: 1cm;
   }
   
+  @page :first {
+    margin-top: 1cm;
+  }
+  
+  @page :last {
+    margin-bottom: 1cm;
+  }
+  
   /* 隐藏不需要打印的元素 */
   body {
     @apply bg-white;
@@ -253,6 +261,21 @@
   
   .print\:gap-8 {
     gap: 2rem !important;
+  }
+  
+  .print\:mt-8 {
+    margin-top: 2rem !important;
+  }
+  
+  /* 强制分页控制 */
+  .print\:break-before-page {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+  
+  .print\:break-inside-avoid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
   
   /* 确保清除浮动 */
