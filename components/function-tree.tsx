@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { QuickEstimateDialog } from '@/components/quick-estimate-dialog';
-import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Zap } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Zap, ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -81,6 +81,33 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
       newExpanded.add(id);
     }
     setExpandedIds(newExpanded);
+  };
+
+  // 收集所有节点ID
+  const getAllNodeIds = (nodeList: FunctionNode[]): string[] => {
+    let ids: string[] = [];
+    const traverse = (nodes: FunctionNode[]) => {
+      nodes.forEach(node => {
+        if (node.children && node.children.length > 0) {
+          ids.push(node.id);
+          traverse(node.children);
+        }
+      });
+    };
+    traverse(nodeList);
+    return ids;
+  };
+
+  // 切换全部展开/收起
+  const toggleExpandAll = () => {
+    const allIds = getAllNodeIds(nodes);
+    if (expandedIds.size === allIds.length) {
+      // 全部收起
+      setExpandedIds(new Set());
+    } else {
+      // 全部展开
+      setExpandedIds(new Set(allIds));
+    }
   };
 
   const startEdit = (node: FunctionNode) => {
@@ -623,6 +650,29 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
               <p>前进</p>
             </TooltipContent>
           </Tooltip>
+          
+          <div className="w-px h-4 bg-gray-300 mx-1"></div>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                onClick={toggleExpandAll}
+                size="sm" 
+                variant="ghost" 
+                className="h-6 w-6 p-0"
+                disabled={nodes.length === 0}
+              >
+                {expandedIds.size === getAllNodeIds(nodes).length && expandedIds.size > 0 ? (
+                  <ChevronsDownUp className="h-2.5 w-2.5" />
+                ) : (
+                  <ChevronsUpDown className="h-2.5 w-2.5" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{expandedIds.size === getAllNodeIds(nodes).length && expandedIds.size > 0 ? '全部收起' : '全部展开'}</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -673,7 +723,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                 <path d="M12 9v4"/>
                 <path d="M12 17h.01"/>
               </svg>
-              请完善项目信息
+              请完善相关信息
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">

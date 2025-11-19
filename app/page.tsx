@@ -326,13 +326,13 @@ export default function Home() {
 
               <div className="w-px h-12 bg-gray-300"></div>
 
-              {/* 总成本 */}
+              {/* 市场成本 */}
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-green-100 rounded-lg flex items-center justify-center w-9 h-9">
                   <span className="text-xl font-bold text-green-600 leading-none">¥</span>
                 </div>
                 <div className="min-h-[60px] flex flex-col justify-start">
-                  <div className="text-xs text-gray-500 h-4">总成本</div>
+                  <div className="text-xs text-gray-500 h-4">市场成本</div>
                   <div className="text-xl font-bold text-green-600 mt-1">
                     {(estimate.baseCost / 10000).toFixed(1)}
                     <span className="text-sm font-normal ml-0.5">万</span>
@@ -393,11 +393,11 @@ export default function Home() {
 
               <div className="w-px h-12 bg-gray-300"></div>
 
-              {/* 折后价 + 运维成本 + 硬件费用 */}
+              {/* 折后成本 + 运维成本 + 硬件费用 */}
               <div className="flex items-start gap-3 bg-gradient-to-r from-red-50 to-orange-50 px-4 py-2 rounded-lg border-2 border-red-300 min-h-[60px]">
                 <div className="flex flex-col justify-start gap-1.5">
                   <div>
-                    <div className="text-xs text-gray-600 font-medium h-4">折后价</div>
+                    <div className="text-xs text-gray-600 font-medium h-4">折后成本</div>
                     <div className="text-2xl font-bold text-red-600 mt-1">
                       {(estimate.finalPrice / 10000).toFixed(2)}
                       <span className="text-base font-normal ml-1">万</span>
