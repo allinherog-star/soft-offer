@@ -120,10 +120,6 @@ export function QuickEstimateDialog({
       const prompt = generatePrompt();
       await navigator.clipboard.writeText(prompt);
       setIsCopied(true);
-      toast({
-        title: '已复制',
-        description: '提示词已复制到剪贴板',
-      });
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
       toast({

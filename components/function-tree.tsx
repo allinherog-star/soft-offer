@@ -585,7 +585,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                   className="flex-[2] h-7 text-xs"
                 >
                   <Zap className="h-2.5 w-2.5 mr-1" />
-                  快速评估
+                  AI快速评估
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

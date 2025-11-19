@@ -117,10 +117,10 @@ export type Discount = 0.95 | 0.9 | 0.85 | 0.8 | 0.7 | 1;
 export interface EstimateResult {
   totalDays: number;           // 总工期（天）
   teamWorkloads: TeamWorkload[]; // 各角色工作量
-  baseCost: number;            // 基础成本
+  baseCost: number;            // 市场成本（已应用整体系数）
   impactFactors: ImpactFactor[]; // 整体系数
   discount: Discount;          // 折扣
-  finalPrice: number;          // 最终报价
+  finalPrice: number;          // 折后成本（应用折扣后）
 }
 
 // 硬件类型

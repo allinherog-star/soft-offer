@@ -265,32 +265,32 @@ export function calculateEstimate(
   // 计算总工期（所有工期的总和 * 70%）
   const totalDays = teamWorkloads.reduce((sum, w) => sum + w.workDays, 0) * 0.7;
   
-  // 计算基础成本（基于实际投入的人力）
-  let baseCost = 0;
+  // 计算基础成本（基于总人天数，与人数无关）
+  let rawCost = 0;
   teamWorkloads.forEach(workload => {
     const monthlySalary = getSalary(config, workload.role);
-    const count = roleCounts[workload.role] || 1; // 获取岗位人数，默认为1
-    const actualWorkDays = workload.workDays / count; // 实际投入的人力
-    const monthlyCost = (actualWorkDays / 22) * monthlySalary; // 假设一个月22个工作日
-    baseCost += monthlyCost;
+    // 成本 = 总人天数 / 22 * 月薪
+    // 例如：10人天，1人干10天 或 2人干5天，成本都是 10/22 * 月薪
+    const monthlyCost = (workload.workDays / 22) * monthlySalary; // 假设一个月22个工作日
+    rawCost += monthlyCost;
   });
   
-  // 应用整体系数
-  let costAfterFactors = baseCost;
+  // 应用整体系数，得到市场成本
+  let baseCost = rawCost;
   config.impactFactors.forEach(factor => {
-    costAfterFactors *= factor.value;
+    baseCost *= factor.value;
   });
   
-  // 应用折扣
-  const finalPrice = costAfterFactors * discount;
+  // 应用折扣，得到折后成本
+  const finalPrice = baseCost * discount;
   
   return {
     totalDays,
     teamWorkloads,
-    baseCost,
+    baseCost,  // 市场成本（已应用整体系数）
     impactFactors: config.impactFactors,
     discount: discount as any,
-    finalPrice
+    finalPrice  // 折后成本
   };
 }
 

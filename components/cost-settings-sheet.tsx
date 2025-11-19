@@ -13,7 +13,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Toast } from '@/components/ui/toast';
 
 interface CostSettingsSheetProps {
   open: boolean;
@@ -27,9 +26,6 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   const [tempRoleCost, setTempRoleCost] = useState<any>(null);
   const [editingDuration, setEditingDuration] = useState<string | null>(null); // 正在编辑的复杂度
   const [editingRatio, setEditingRatio] = useState<string | null>(null); // 正在编辑的岗位
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
   
   // 复制查询文本到剪贴板并打开 DeepSeek
   const handleQuerySalary = async () => {
@@ -54,21 +50,10 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
 
     try {
       await navigator.clipboard.writeText(queryText);
-      
-      // 显示成功toast
-      setToastMessage('问题已复制到剪贴板，3秒后将自动打开 DeepSeek，请粘贴查询');
-      setToastType('success');
-      setShowToast(true);
-      
-      // 延迟3秒跳转，让用户看完toast提示
-      setTimeout(() => {
-        window.open('https://chat.deepseek.com', '_blank');
-      }, 3000);
+      // 直接打开 DeepSeek
+      window.open('https://chat.deepseek.com', '_blank');
     } catch (err) {
       console.error('复制失败:', err);
-      setToastMessage('复制失败，请手动复制问题内容');
-      setToastType('error');
-      setShowToast(true);
     }
   };
   
@@ -236,14 +221,6 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
 
   return (
     <>
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          duration={3000}
-          onClose={() => setShowToast(false)}
-        />
-      )}
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-[700px] sm:w-[800px] sm:max-w-[800px] p-0">
           <SheetTitle className="sr-only">单位成本配置</SheetTitle>

@@ -112,6 +112,29 @@ export default function Home() {
     }, 0);
   };
 
+  // 统计功能点数量（功能菜单 + 按钮操作）
+  const countFunctionPoints = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
+    return nodes.reduce((count, node) => {
+      let currentCount = 0;
+      
+      if (!node.children || node.children.length === 0) {
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+        if (!isTopLevel) {
+          currentCount += 1; // 功能菜单本身算1个功能点
+          // 加上该功能菜单的所有按钮数量
+          if (node.buttons && node.buttons.length > 0) {
+            currentCount += node.buttons.length;
+          }
+        }
+      } else {
+        // 有子节点的是模块，继续递归（非顶层）
+        currentCount += countFunctionPoints(node.children, false);
+      }
+      
+      return count + currentCount;
+    }, 0);
+  };
+
   // 计算团队总人数
   const getTotalTeamMembers = (): number => {
     return Object.values(roleCounts).reduce((sum, count) => sum + count, 0);
@@ -248,6 +271,16 @@ export default function Home() {
                       {countFunctionMenus(functionNodes)}
                     </span>
                   </div>
+                  
+                  <div className="w-px h-6 bg-gray-300"></div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-xs text-gray-500">功能点</span>
+                    <span className="text-sm font-bold text-purple-600">
+                      {countFunctionPoints(functionNodes)}
+                    </span>
+                  </div>
                 </div>
                 
                 {/* 第二行 */}
@@ -328,13 +361,13 @@ export default function Home() {
 
               {/* 市场成本 */}
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-green-100 rounded-lg flex items-center justify-center w-9 h-9">
-                  <span className="text-xl font-bold text-green-600 leading-none">¥</span>
+                <div className="p-2 bg-red-100 rounded-lg flex items-center justify-center w-9 h-9">
+                  <span className="text-xl font-bold text-red-600 leading-none">¥</span>
                 </div>
                 <div className="min-h-[60px] flex flex-col justify-start">
                   <div className="text-xs text-gray-500 h-4">市场成本</div>
-                  <div className="text-xl font-bold text-green-600 mt-1">
-                    {(estimate.baseCost / 10000).toFixed(1)}
+                  <div className="text-xl font-bold text-red-600 mt-1">
+                    {(estimate.baseCost / 10000).toFixed(2)}
                     <span className="text-sm font-normal ml-0.5">万</span>
                   </div>
                 </div>

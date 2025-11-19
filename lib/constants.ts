@@ -96,10 +96,10 @@ export const DEFAULT_ROLE_COSTS: RoleCost[] = [
 
 // 工期单位成本（以天为单位，后端为基准）
 export const DEFAULT_WORK_DURATION = {
-  低: 2,
-  中: 4,
-  高: 6,
-  很高: 10
+  低: 0.5,
+  中: 1,
+  高: 2,
+  很高: 4
 };
 
 // 各角色相对后端的工期比例
