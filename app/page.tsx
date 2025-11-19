@@ -112,16 +112,15 @@ export default function Home() {
     }, 0);
   };
 
-  // 统计功能点数量（功能菜单 + 按钮操作）
+  // 统计功能点数量（只统计按钮操作）
   const countFunctionPoints = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
       let currentCount = 0;
       
       if (!node.children || node.children.length === 0) {
-        // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+        // 叶子节点：功能菜单，只统计其按钮数量
         if (!isTopLevel) {
-          currentCount += 1; // 功能菜单本身算1个功能点
-          // 加上该功能菜单的所有按钮数量
+          // 只统计该功能菜单的所有按钮数量
           if (node.buttons && node.buttons.length > 0) {
             currentCount += node.buttons.length;
           }

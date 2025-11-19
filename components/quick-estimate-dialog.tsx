@@ -272,16 +272,27 @@ export function QuickEstimateDialog({
       return;
     }
 
-    // 统计功能点数量（功能菜单 + 按钮操作）
+    // 统计功能菜单数量（叶子节点）
+    const countFunctionMenus = (nodeList: FunctionNode[], isTopLevel: boolean = true): number => {
+      return nodeList.reduce((count, node) => {
+        if (!node.children || node.children.length === 0) {
+          // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+          return count + (isTopLevel ? 0 : 1);
+        }
+        // 有子节点的是模块，继续递归（非顶层）
+        return count + countFunctionMenus(node.children, false);
+      }, 0);
+    };
+
+    // 统计功能点数量（只统计按钮操作）
     const countFunctionPoints = (nodeList: FunctionNode[], isTopLevel: boolean = true): number => {
       return nodeList.reduce((count, node) => {
         let currentCount = 0;
         
         if (!node.children || node.children.length === 0) {
-          // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+          // 叶子节点：功能菜单，只统计其按钮数量
           if (!isTopLevel) {
-            currentCount += 1; // 功能菜单本身算1个功能点
-            // 加上该功能菜单的所有按钮数量
+            // 只统计该功能菜单的所有按钮数量
             if (node.buttons && node.buttons.length > 0) {
               currentCount += node.buttons.length;
             }
@@ -295,12 +306,13 @@ export function QuickEstimateDialog({
       }, 0);
     };
     
+    const functionMenusCount = countFunctionMenus(nodes);
     const functionPointsCount = countFunctionPoints(nodes);
 
     onImport(nodes);
     toast({
       title: '导入成功 ✅',
-      description: `已成功导入 ${nodes.length} 个需求模块，共 ${functionPointsCount} 个功能点`,
+      description: `已成功导入 ${nodes.length} 个需求模块，包含 ${functionMenusCount} 个功能菜单、${functionPointsCount} 个功能点`,
     });
     
     // 重置状态
