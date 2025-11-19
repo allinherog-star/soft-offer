@@ -616,8 +616,8 @@ export default function Home() {
     // 触发自动展开
     setAutoExpandTrigger(prev => prev + 1);
     toast({
-      title: '加载成功 ✅',
-      description: '已加载示例数据',
+      title: '示例数据加载成功 ✅',
+      description: '已加载电商平台示例数据（10个模块、22个菜单、89个按钮）',
     });
   };
 
@@ -718,16 +718,8 @@ export default function Home() {
 
   // 导出为PDF
   const handleExport = () => {
-    // 提示用户即将打开打印对话框
-    toast({
-      title: '准备导出 📄',
-      description: '即将打开打印对话框，请选择"保存为PDF"',
-    });
-    
-    // 延迟打开打印对话框，让toast显示
-    setTimeout(() => {
-      window.print();
-    }, 500);
+    // 直接打开打印对话框
+    window.print();
   };
 
   // 自动计算估价

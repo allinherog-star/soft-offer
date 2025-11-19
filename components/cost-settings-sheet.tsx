@@ -333,7 +333,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="bg-gray-50 border-b">
-                            <th className="text-center py-2 px-2 font-medium text-gray-700">功能菜单复杂度</th>
+                            <th className="text-center py-2 px-2 font-medium text-gray-700">功能复杂度</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700">标准工期</th>
                             <th className="text-center py-2 px-2 font-medium text-gray-700 w-[50px]">功能</th>
                           </tr>
