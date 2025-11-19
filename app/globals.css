@@ -152,6 +152,8 @@
   /* 隐藏不需要打印的元素 */
   body {
     @apply bg-white;
+    overflow: visible !important;
+    height: auto !important;
   }
   
   /* 确保所有内容可见 */
@@ -159,6 +161,15 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
+    overflow: visible !important;
+  }
+  
+  /* 移除所有滚动容器 */
+  [class*="ScrollArea"],
+  [data-radix-scroll-area-viewport] {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
   }
   
   /* 避免内容被截断 */
@@ -196,5 +207,66 @@
   .print-compact {
     padding: 0.25rem !important;
     margin: 0.25rem 0 !important;
+  }
+  
+  /* 确保所有内容都可以打印 */
+  html, body {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  /* 移除固定高度 */
+  div[class*="h-full"],
+  div[class*="h-screen"] {
+    height: auto !important;
+    min-height: auto !important;
+  }
+  
+  /* 移除固定定位和粘性定位 */
+  [class*="fixed"],
+  [class*="sticky"] {
+    position: static !important;
+  }
+  
+  /* 确保flex布局在打印时正常工作 */
+  .print\:flex-col {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* 打印时的间距控制 */
+  .print\:mt-12 {
+    margin-top: 3rem !important;
+  }
+  
+  .print\:mt-20 {
+    margin-top: 5rem !important;
+  }
+  
+  .print\:mb-16 {
+    margin-bottom: 4rem !important;
+  }
+  
+  .print\:pb-16 {
+    padding-bottom: 4rem !important;
+  }
+  
+  .print\:gap-8 {
+    gap: 2rem !important;
+  }
+  
+  /* 确保清除浮动 */
+  .print\:clear-both {
+    clear: both !important;
+  }
+  
+  /* 打印时确保底部统计栏与上面内容有足够间距 */
+  .print\:mt-8 {
+    margin-top: 2rem !important;
+  }
+  
+  /* 打印时确保估价面板底部有足够空间 */
+  .print\:pb-8 {
+    padding-bottom: 2rem !important;
   }
 }

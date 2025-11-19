@@ -749,7 +749,7 @@ export default function Home() {
       />
 
       {/* 主内容区域 */}
-      <div className="flex-1 flex overflow-hidden print:flex-col print:overflow-visible print:gap-4">
+      <div className="flex-1 flex overflow-hidden print:flex-col print:overflow-visible print:gap-8">
         {/* 左侧功能树 */}
         <div className="w-[300px] flex-shrink-0 h-full overflow-hidden print:hidden">
           <FunctionTree
@@ -776,7 +776,7 @@ export default function Home() {
         </div>
 
           {/* 右侧估价面板 */}
-          <div className="w-[500px] flex-shrink-0 h-full overflow-hidden print:w-full print:mt-4 print:border-t-2 print:border-gray-300 print:pt-4">
+          <div className="w-[500px] flex-shrink-0 h-full overflow-hidden print:w-full print:border-t-2 print:border-gray-300">
             <EstimatePanel
             estimate={estimate}
             config={config}
@@ -790,7 +790,7 @@ export default function Home() {
       </div>
 
       {/* 底部全屏统计栏 */}
-      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg print:bg-white print:shadow-none print:border-2 print:border-gray-400 print:mt-6 print:rounded">
+      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg print:bg-white print:shadow-none print:border-2 print:border-gray-400 print:rounded print:mt-8 print:clear-both">
         <div className="px-6 py-3 print:px-0 print:py-0">
           {/* 打印时使用表格布局 */}
           <div className="hidden print:block">

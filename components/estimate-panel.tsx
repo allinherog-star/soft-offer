@@ -406,12 +406,14 @@ export function EstimatePanel({
   };
 
   return (
-    <div className="h-full bg-white border-l flex flex-col">
-      <ScrollArea className="flex-1 overflow-auto">
-        <div>
-          {/* 人力投入 */}
-          <div className="bg-white">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-blue-100">
+    <div className="h-full bg-white border-l flex flex-col print:h-auto print:border-0 print:overflow-visible print:flex-none">
+      {/* 屏幕显示时使用ScrollArea */}
+      <div className="flex-1 overflow-auto print:hidden">
+        <ScrollArea className="h-full">
+          <div>
+            {/* 人力投入 */}
+            <div className="bg-white">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-2 border-b border-blue-100 print:bg-blue-100 print:border-2 print:border-blue-400">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
                   <span className="w-0.5 h-4 bg-blue-500 rounded-full"></span>
@@ -456,7 +458,7 @@ export function EstimatePanel({
             </div>
             
             {/* 表头 */}
-            <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
+            <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0 print:border-2 print:border-blue-300 print:bg-blue-50">
               <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
                 <span className="text-xs font-medium text-gray-600 truncate">人力岗位</span>
               </div>
@@ -468,7 +470,7 @@ export function EstimatePanel({
             </div>
             
             {/* 人力岗位列表 */}
-            <div className="space-y-0">
+            <div className="space-y-0 print:border-2 print:border-t-0 print:border-blue-300">
               {estimate.teamWorkloads.map((workload, index) => {
                 const marketSalary = getMarketSalary(workload.role);
                 const roleCount = getRoleCount(workload.role);
@@ -637,8 +639,8 @@ export function EstimatePanel({
           </div>
 
           {/* 硬件投入 */}
-          <div className="bg-white mt-0">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 border-b border-green-100">
+          <div className="bg-white mt-0 print:break-inside-avoid print:mb-6 print:mt-0">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-3 py-2 border-b border-green-100 print:bg-green-100 print:border-2 print:border-green-400">
               <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
                 <span className="w-0.5 h-4 bg-green-500 rounded-full"></span>
                 硬件投入
@@ -646,7 +648,7 @@ export function EstimatePanel({
             </div>
             
             {/* 表头 */}
-            <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0">
+            <div className="flex items-center gap-2 py-1.5 px-3 border-b border-gray-200 bg-gray-50 min-w-0 print:border-2 print:border-green-300 print:bg-green-50">
               <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">硬件</div>
               <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">标准规格</div>
               <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0 text-right">
@@ -656,7 +658,7 @@ export function EstimatePanel({
                     href="https://www.aliyun.com/product/list" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-500 hover:text-blue-700 transition-colors"
+                    className="inline-flex items-center text-blue-500 hover:text-blue-700 transition-colors print:hidden"
                     title="访问阿里云"
                   >
                     <ExternalLink className="h-3 w-3" />
@@ -668,7 +670,7 @@ export function EstimatePanel({
             </div>
             
             {/* 数据行 */}
-            <div className="space-y-0">
+            <div className="space-y-0 print:border-2 print:border-t-0 print:border-green-300">
               {config.hardwareConfig?.items.map((item, index) => {
                 const isEditingUnitPrice = editingHardwareUnitPrice === item.id;
                 const isEditingRemark = editingHardwareRemark === item.id;
@@ -1011,15 +1013,15 @@ export function EstimatePanel({
           </div>
 
           {/* 整体系数 */}
-          <div className="bg-white mt-0">
-            <div className="bg-gradient-to-r from-purple-50 to-violet-50 px-3 py-2 border-b border-purple-100">
+          <div className="bg-white mt-0 print:break-inside-avoid print:mb-0 print:mt-0">
+            <div className="bg-gradient-to-r from-purple-50 to-violet-50 px-3 py-2 border-b border-purple-100 print:bg-purple-100 print:border-2 print:border-purple-400">
               <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
                 <span className="w-0.5 h-4 bg-purple-500 rounded-full"></span>
                 整体系数
               </h3>
             </div>
 
-            <div className="p-3 space-y-3">
+            <div className="p-3 space-y-3 print:border-2 print:border-t-0 print:border-purple-300">
               {/* 用户规模 */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5">
@@ -1214,7 +1216,294 @@ export function EstimatePanel({
             </div>
           </div>
         </div>
-      </ScrollArea>
+        </ScrollArea>
+      </div>
+
+      {/* 打印时使用独立布局，不使用ScrollArea */}
+      <div className="hidden print:block overflow-visible print:pb-8">
+        {/* 人力投入 */}
+        <div className="bg-white break-inside-avoid mb-6">
+          <div className="bg-blue-100 px-3 py-2 border-2 border-blue-400">
+            <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+              <span className="w-0.5 h-4 bg-blue-500 rounded-full"></span>
+              人力投入
+            </h3>
+          </div>
+          
+          {/* 表头 */}
+          <div className="flex items-center gap-2 py-1.5 px-3 border-2 border-t-0 border-blue-300 bg-blue-50">
+            <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden">
+              <span className="text-xs font-medium text-gray-600 truncate">人力岗位</span>
+            </div>
+            <div className="text-xs font-medium text-gray-600 w-20 text-center flex-shrink-0">人力水平</div>
+            <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">人力</div>
+            <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">人数</div>
+            <div className="text-xs font-medium text-gray-600 w-12 text-right flex-shrink-0">工期</div>
+            <div className="text-xs font-medium text-gray-600 w-16 text-right flex-shrink-0">标准月薪</div>
+          </div>
+          
+          {/* 人力岗位列表 */}
+          <div className="border-2 border-t-0 border-blue-300">
+            {estimate.teamWorkloads.map((workload, index) => {
+              const marketSalary = getMarketSalary(workload.role);
+              const roleCount = getRoleCount(workload.role);
+              const actualWorkDays = workload.workDays / roleCount;
+              
+              return (
+                <div 
+                  key={workload.role} 
+                  className={`flex items-center gap-2 py-1.5 px-3 border-b border-gray-100 last:border-b-0 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                >
+                  {/* 人力岗位名称 */}
+                  <div className="flex items-center gap-0.5 flex-1 min-w-0 overflow-hidden">
+                    {getRoleIcon(workload.role as TeamRole)}
+                    <span className="text-xs text-gray-700 truncate">{workload.role}</span>
+                  </div>
+                  
+                  {/* 人力水平 */}
+                  <div className="w-20 flex items-center justify-center flex-shrink-0">
+                    <div className="flex items-center gap-1">
+                      {getExperienceIcon(getRoleExperience(workload.role))}
+                      <span className="text-[10px] text-gray-700">
+                        {getExperienceShortText(getRoleExperience(workload.role))}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* 总人力 */}
+                  <div className="text-xs text-gray-600 w-12 text-right flex-shrink-0">
+                    {workload.workDays.toFixed(1)}
+                    <span className="text-[10px] text-gray-500 ml-0.5">天</span>
+                  </div>
+                  
+                  {/* 人力岗位人数 */}
+                  <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0">
+                    <span className="text-[11px] text-blue-600 font-medium">
+                      {roleCount}<span className="text-[10px] text-gray-500 ml-0.5">人</span>
+                    </span>
+                  </div>
+                  
+                  {/* 实际工期 */}
+                  <div className="text-xs text-purple-600 font-medium w-12 text-right flex-shrink-0">
+                    {actualWorkDays.toFixed(1)}
+                    <span className="text-[10px] text-gray-500 ml-0.5">天</span>
+                  </div>
+                  
+                  {/* 标准月薪 */}
+                  <div className="w-16 flex items-center justify-end gap-0.5 flex-shrink-0">
+                    <span className="text-[11px] text-orange-600 font-semibold text-right">
+                      {(marketSalary / 10).toFixed(1)}<span className="text-[10px] text-gray-500 ml-0.5">万</span>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 硬件投入 */}
+        <div className="bg-white break-inside-avoid mb-6">
+          <div className="bg-green-100 px-3 py-2 border-2 border-green-400">
+            <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+              <span className="w-0.5 h-4 bg-green-500 rounded-full"></span>
+              硬件投入
+            </h3>
+          </div>
+          
+          {/* 表头 */}
+          <div className="flex items-center gap-2 py-1.5 px-3 border-2 border-t-0 border-green-300 bg-green-50">
+            <div className="text-xs font-medium text-gray-600 w-16 flex-shrink-0">硬件</div>
+            <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0">标准规格</div>
+            <div className="text-xs font-medium text-gray-600 w-20 flex-shrink-0 text-right">云厂商成本</div>
+            <div className="text-xs font-medium text-gray-600 w-14 flex-shrink-0 text-center">需要</div>
+            <div className="text-xs font-medium text-gray-600 flex-1 min-w-0 overflow-hidden">备注</div>
+          </div>
+          
+          {/* 数据行 */}
+          <div className="border-2 border-t-0 border-green-300">
+            {config.hardwareConfig?.items.map((item, index) => (
+              <div 
+                key={item.id} 
+                className={`flex items-center gap-2 py-1.5 px-3 border-b border-gray-100 last:border-b-0 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+              >
+                {/* 硬件名称 */}
+                <div className="flex items-center gap-1 w-16 flex-shrink-0">
+                  {getHardwareIcon(item.type)}
+                  <span className="text-xs text-gray-700 truncate">{item.type}</span>
+                </div>
+                
+                {/* 标准规格 */}
+                <div className="w-20 flex-shrink-0">
+                  <span className="text-xs text-gray-700">
+                    {item.spec || (item.type === '服务器' ? '4C8G' : item.type === '存储' ? '40GB' : item.type === '带宽' ? '1Mbps' : item.type === '域名' ? '国内备案' : '100GB')}
+                  </span>
+                </div>
+                
+                {/* 云厂商成本 */}
+                <div className="w-20 flex items-center justify-end flex-shrink-0">
+                  <span className="text-xs text-gray-400">
+                    {Math.round(item.unitPrice / 12).toLocaleString()}<span className="text-[10px]">/月</span>
+                  </span>
+                </div>
+                
+                {/* 需要/数量 */}
+                <div className="w-14 flex items-center justify-center flex-shrink-0">
+                  {item.type === '服务器' ? (
+                    <span className="text-xs text-gray-700 font-medium">
+                      {item.quantity}<span className="text-[10px] text-gray-500 ml-0.5">台</span>
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-700">{item.quantity > 0 ? '✓' : '—'}</span>
+                  )}
+                </div>
+                
+                {/* 备注 */}
+                <div className="flex-1 min-w-0">
+                  <span className="text-xs text-gray-600 truncate">{item.remark || ''}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 整体系数 */}
+        <div className="bg-white break-inside-avoid mb-6">
+          <div className="bg-purple-100 px-3 py-2 border-2 border-purple-400">
+            <h3 className="text-xs font-semibold text-gray-800 flex items-center gap-2">
+              <span className="w-0.5 h-4 bg-purple-500 rounded-full"></span>
+              整体系数
+            </h3>
+          </div>
+
+          <div className="p-3 space-y-3 border-2 border-t-0 border-purple-300">
+            {/* 用户规模 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <UsersRound className="h-3.5 w-3.5 text-blue-500" />
+                <span className="text-xs font-medium text-gray-700">用户规模</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['10w+', '100w+', '1000w+', '1ww+'] as UserScale[]).map((scale, index) => (
+                  <div
+                    key={scale}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.userScale === scale)
+                    }`}
+                  >
+                    {getUserScaleIcon(scale)}
+                    {scale}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 服务等级 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5 text-green-500" />
+                <span className="text-xs font-medium text-gray-700">服务等级</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['标准', '及时响应', '工作日坐席', '7*24'] as ServiceLevel[]).map((level, index) => (
+                  <div
+                    key={level}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.serviceLevel === level)
+                    }`}
+                  >
+                    {getServiceLevelIcon(level)}
+                    {level}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 质量等级 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Star className="h-3.5 w-3.5 text-amber-500" />
+                <span className="text-xs font-medium text-gray-700">质量等级</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['标准', '高', '很高', '极高'] as QualityLevel[]).map((level, index) => (
+                  <div
+                    key={level}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.qualityLevel === level)
+                    }`}
+                  >
+                    {getQualityLevelIcon(level)}
+                    {level}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 安全等级 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Shield className="h-3.5 w-3.5 text-red-500" />
+                <span className="text-xs font-medium text-gray-700">安全等级</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['标准', '权限控制', '金融支付', '安全盾'] as SecurityLevel[]).map((level, index) => (
+                  <div
+                    key={level}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.securityLevel === level)
+                    }`}
+                  >
+                    {getSecurityLevelIcon(level)}
+                    {level}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 灾备等级 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Database className="h-3.5 w-3.5 text-indigo-500" />
+                <span className="text-xs font-medium text-gray-700">灾备等级</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['标准', '定时备份', 'T1可恢复', 'H1可恢复'] as DisasterRecoveryLevel[]).map((level, index) => (
+                  <div
+                    key={level}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.disasterRecoveryLevel === level)
+                    }`}
+                  >
+                    {getDisasterRecoveryIcon(level)}
+                    {level}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 灵活等级 */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-cyan-500" />
+                <span className="text-xs font-medium text-gray-700">灵活等级</span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {(['标准', '多系统', '微服务', '组件化'] as FlexibilityLevel[]).map((level, index) => (
+                  <div
+                    key={level}
+                    className={`px-2 py-1.5 text-xs rounded flex items-center justify-center gap-1 ${
+                      getLevelColor(index, config.impactFactorConfig?.flexibilityLevel === level)
+                    }`}
+                  >
+                    {getFlexibilityLevelIcon(level)}
+                    {level}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
