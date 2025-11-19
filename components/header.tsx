@@ -248,7 +248,7 @@ export function Header({
               size="sm"
               className="text-xs"
             >
-              <FileText className="h-3.5 w-3.5 mr-1" />
+              <FileText className="h-3.5 w-3.5 mr-1 text-blue-600" />
               示例
             </Button>
 
@@ -258,7 +258,7 @@ export function Header({
               size="sm"
               className="text-xs"
             >
-              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              <Trash2 className="h-3.5 w-3.5 mr-1 text-red-600" />
               清空
             </Button>
           </div>
@@ -273,7 +273,7 @@ export function Header({
               size="sm"
               className="text-xs"
             >
-              <Save className="h-3.5 w-3.5 mr-1" />
+              <Save className="h-3.5 w-3.5 mr-1 text-green-600" />
               保存
             </Button>
 
@@ -283,7 +283,7 @@ export function Header({
               size="sm"
               className="text-xs"
             >
-              <RotateCcw className="h-3.5 w-3.5 mr-1" />
+              <RotateCcw className="h-3.5 w-3.5 mr-1 text-orange-600" />
               恢复
             </Button>
           </div>
@@ -295,7 +295,7 @@ export function Header({
             variant="outline" 
             size="sm"
           >
-            <Calculator className="h-4 w-4 mr-1.5" />
+            <Calculator className="h-4 w-4 mr-1.5 text-purple-600" />
             单位成本
           </Button>
 
