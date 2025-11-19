@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ProjectInfo, FunctionNode, GlobalConfig, EstimateResult } from '@/types';
+import { ProjectInfo, FunctionNode, GlobalConfig, EstimateResult, Platform } from '@/types';
 import { Header } from '@/components/header';
 import { FunctionTree } from '@/components/function-tree';
 import { FunctionTable } from '@/components/function-table';
