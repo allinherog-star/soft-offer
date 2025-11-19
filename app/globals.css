@@ -269,4 +269,10 @@
   .print\:pb-8 {
     padding-bottom: 2rem !important;
   }
+  
+  /* 打印时强制在新页面开始 */
+  .print\:break-before-page {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
 }

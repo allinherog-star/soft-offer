@@ -790,7 +790,7 @@ export default function Home() {
       </div>
 
       {/* 底部全屏统计栏 */}
-      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg print:bg-white print:shadow-none print:border-2 print:border-gray-400 print:rounded print:mt-8 print:clear-both">
+      <div className="border-t bg-gradient-to-r from-blue-50 via-white to-blue-50 shadow-lg print:bg-white print:shadow-none print:border-2 print:border-gray-400 print:rounded print:break-before-page print:mt-0">
         <div className="px-6 py-3 print:px-0 print:py-0">
           {/* 打印时使用表格布局 */}
           <div className="hidden print:block">
