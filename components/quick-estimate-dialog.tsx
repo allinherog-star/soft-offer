@@ -122,13 +122,10 @@ export function QuickEstimateDialog({
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
-      toast({
-        title: '复制失败',
-        description: '请手动复制提示词',
-        variant: 'destructive',
-      });
+      // 静默处理复制失败
+      console.error('复制失败:', error);
     }
-  }, [generatePrompt, toast]);
+  }, [generatePrompt]);
 
   // 打开DeepSeek并进入输入阶段
   const handleOpenDeepSeek = useCallback(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FunctionNode, ProjectInfo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,9 +48,10 @@ interface FunctionTreeProps {
   historyIndex: number;
   historyLength: number;
   projectInfo: ProjectInfo;
+  autoExpandTrigger?: number;
 }
 
-export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode, onUndo, onRedo, historyIndex, historyLength, projectInfo }: FunctionTreeProps) {
+export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode, onUndo, onRedo, historyIndex, historyLength, projectInfo, autoExpandTrigger }: FunctionTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -98,6 +99,14 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     traverse(nodeList);
     return ids;
   };
+
+  // 监听自动展开触发器
+  useEffect(() => {
+    if (autoExpandTrigger && autoExpandTrigger > 0 && nodes.length > 0) {
+      const allIds = getAllNodeIds(nodes);
+      setExpandedIds(new Set(allIds));
+    }
+  }, [autoExpandTrigger]);
 
   // 切换全部展开/收起
   const toggleExpandAll = () => {
@@ -348,30 +357,13 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
 
   // 导入AI生成的节点
   const handleImportNodes = (importedNodes: FunctionNode[]) => {
-    // 收集导入节点的所有ID（包括子节点）
-    const collectAllIds = (nodeList: FunctionNode[]): string[] => {
-      let ids: string[] = [];
-      const traverse = (nodes: FunctionNode[]) => {
-        nodes.forEach(node => {
-          ids.push(node.id);
-          if (node.children && node.children.length > 0) {
-            traverse(node.children);
-          }
-        });
-      };
-      traverse(nodeList);
-      return ids;
-    };
-    
-    // 获取导入节点的所有ID
-    const importedIds = collectAllIds(importedNodes);
-    
-    // 合并现有展开的节点和新导入的节点
-    const newExpandedIds = new Set([...expandedIds, ...importedIds]);
-    setExpandedIds(newExpandedIds);
-    
     // 更新节点列表
-    onNodesChange([...nodes, ...importedNodes]);
+    const newNodes = [...nodes, ...importedNodes];
+    onNodesChange(newNodes);
+    
+    // 展开所有节点（包括原有的和新导入的）
+    const allIds = getAllNodeIds(newNodes);
+    setExpandedIds(new Set(allIds));
   };
 
   // 可排序的树节点组件

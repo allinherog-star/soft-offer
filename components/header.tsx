@@ -77,7 +77,7 @@ export function Header({
   };
 
   return (
-    <div className="border-b bg-white px-2 py-2">
+    <div className="border-b bg-white px-2 py-2 print:border-0 print:pb-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4 flex-1">
           {/* Logo和系统名称 */}
@@ -239,56 +239,54 @@ export function Header({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button 
-            onClick={onLoadSample} 
-            variant="outline" 
-            size="sm"
-            className="text-xs"
-          >
-            <FileText className="h-3.5 w-3.5 mr-1" />
-            示例数据
-          </Button>
+        <div className="flex items-center gap-2 print:hidden">
+          {/* 示例与清空按钮分组 */}
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={onLoadSample} 
+              variant="outline" 
+              size="sm"
+              className="text-xs"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1" />
+              示例
+            </Button>
 
-          <Button 
-            onClick={onClear} 
-            variant="outline" 
-            size="sm"
-            className="text-xs"
-          >
-            <Trash2 className="h-3.5 w-3.5 mr-1" />
-            清空
-          </Button>
+            <Button 
+              onClick={onClear} 
+              variant="outline" 
+              size="sm"
+              className="text-xs"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              清空
+            </Button>
+          </div>
 
-          <Button 
-            onClick={onSave} 
-            variant="outline" 
-            size="sm"
-            className="text-xs"
-          >
-            <Save className="h-3.5 w-3.5 mr-1" />
-            保存
-          </Button>
+          <div className="w-px h-6 bg-gray-300"></div>
 
-          <Button 
-            onClick={onRestore} 
-            variant="outline" 
-            size="sm"
-            className="text-xs"
-          >
-            <RotateCcw className="h-3.5 w-3.5 mr-1" />
-            恢复
-          </Button>
+          {/* 保存与恢复按钮分组 */}
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={onSave} 
+              variant="outline" 
+              size="sm"
+              className="text-xs"
+            >
+              <Save className="h-3.5 w-3.5 mr-1" />
+              保存
+            </Button>
 
-          <Button 
-            onClick={onExport} 
-            variant="outline" 
-            size="sm"
-            className="text-xs"
-          >
-            <Download className="h-3.5 w-3.5 mr-1" />
-            导出
-          </Button>
+            <Button 
+              onClick={onRestore} 
+              variant="outline" 
+              size="sm"
+              className="text-xs"
+            >
+              <RotateCcw className="h-3.5 w-3.5 mr-1" />
+              恢复
+            </Button>
+          </div>
 
           <div className="w-px h-6 bg-gray-300"></div>
 
@@ -299,6 +297,17 @@ export function Header({
           >
             <Calculator className="h-4 w-4 mr-1.5" />
             单位成本
+          </Button>
+
+          <div className="w-px h-6 bg-gray-300"></div>
+
+          <Button 
+            onClick={onExport} 
+            size="sm"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium shadow-md"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            导出PDF
           </Button>
         </div>
       </div>
