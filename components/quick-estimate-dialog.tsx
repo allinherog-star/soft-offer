@@ -272,19 +272,35 @@ export function QuickEstimateDialog({
       return;
     }
 
-    // 统计导入的节点数量（包括子节点）
-    const countNodes = (nodeList: FunctionNode[]): number => {
+    // 统计功能点数量（功能菜单 + 按钮操作）
+    const countFunctionPoints = (nodeList: FunctionNode[], isTopLevel: boolean = true): number => {
       return nodeList.reduce((count, node) => {
-        return count + 1 + (node.children ? countNodes(node.children) : 0);
+        let currentCount = 0;
+        
+        if (!node.children || node.children.length === 0) {
+          // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+          if (!isTopLevel) {
+            currentCount += 1; // 功能菜单本身算1个功能点
+            // 加上该功能菜单的所有按钮数量
+            if (node.buttons && node.buttons.length > 0) {
+              currentCount += node.buttons.length;
+            }
+          }
+        } else {
+          // 有子节点的是模块，继续递归（非顶层）
+          currentCount += countFunctionPoints(node.children, false);
+        }
+        
+        return count + currentCount;
       }, 0);
     };
     
-    const totalCount = countNodes(nodes);
+    const functionPointsCount = countFunctionPoints(nodes);
 
     onImport(nodes);
     toast({
       title: '导入成功 ✅',
-      description: `已成功导入 ${nodes.length} 个需求模块，共 ${totalCount} 个功能节点`,
+      description: `已成功导入 ${nodes.length} 个需求模块，共 ${functionPointsCount} 个功能点`,
     });
     
     // 重置状态

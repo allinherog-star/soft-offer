@@ -348,6 +348,29 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
 
   // 导入AI生成的节点
   const handleImportNodes = (importedNodes: FunctionNode[]) => {
+    // 收集导入节点的所有ID（包括子节点）
+    const collectAllIds = (nodeList: FunctionNode[]): string[] => {
+      let ids: string[] = [];
+      const traverse = (nodes: FunctionNode[]) => {
+        nodes.forEach(node => {
+          ids.push(node.id);
+          if (node.children && node.children.length > 0) {
+            traverse(node.children);
+          }
+        });
+      };
+      traverse(nodeList);
+      return ids;
+    };
+    
+    // 获取导入节点的所有ID
+    const importedIds = collectAllIds(importedNodes);
+    
+    // 合并现有展开的节点和新导入的节点
+    const newExpandedIds = new Set([...expandedIds, ...importedIds]);
+    setExpandedIds(newExpandedIds);
+    
+    // 更新节点列表
     onNodesChange([...nodes, ...importedNodes]);
   };
 
