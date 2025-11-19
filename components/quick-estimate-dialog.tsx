@@ -371,7 +371,7 @@ export function QuickEstimateDialog({
                 </div>
               </div>
               <div className="text-center space-y-2">
-                <p className="text-lg font-medium text-gray-900">正在生成专属提示词...</p>
+                <p className="text-lg font-medium text-gray-900">正在准备优质提示词...</p>
                 <p className="text-sm text-gray-500">根据您的项目信息定制 AI 提示词</p>
               </div>
               <div className="flex items-center gap-4 text-xs text-gray-400">

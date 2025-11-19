@@ -11,8 +11,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle, ExternalLink } from 'lucide-react';
+import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DeepSeekIcon } from '@/components/ui/deepseek-icon';
 
 interface CostSettingsSheetProps {
   open: boolean;
@@ -249,7 +250,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                             className="text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
                             title="在 DeepSeek 中查询市场薪资（自动复制问题）"
                           >
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <DeepSeekIcon className="h-4 w-4" />
                           </button>
                         </div>
                       </th>

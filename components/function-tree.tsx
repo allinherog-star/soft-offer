@@ -18,7 +18,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { QuickEstimateDialog } from '@/components/quick-estimate-dialog';
-import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, Zap, ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
+import { DeepSeekIcon } from '@/components/ui/deepseek-icon';
 import {
   DndContext,
   closestCenter,
@@ -584,7 +585,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                   variant="outline"
                   className="flex-[2] h-7 text-xs"
                 >
-                  <Zap className="h-2.5 w-2.5 mr-1" />
+                  <DeepSeekIcon className="h-3 w-3 mr-1 text-blue-600" />
                   AI快速评估
                 </Button>
               </TooltipTrigger>

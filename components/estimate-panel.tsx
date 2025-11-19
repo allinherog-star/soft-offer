@@ -392,10 +392,10 @@ export function EstimatePanel({
     }
     
     switch (index) {
-      case 0: // 第1档：绿色
-        return 'bg-green-500 text-white shadow-sm';
-      case 1: // 第2档：蓝色
+      case 0: // 第1档：蓝色
         return 'bg-blue-500 text-white shadow-sm';
+      case 1: // 第2档：绿色
+        return 'bg-green-500 text-white shadow-sm';
       case 2: // 第3档：橙色
         return 'bg-orange-500 text-white shadow-sm';
       case 3: // 第4档：红色
