@@ -28,6 +28,31 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   const [editingDuration, setEditingDuration] = useState<string | null>(null); // 正在编辑的复杂度
   const [editingRatio, setEditingRatio] = useState<string | null>(null); // 正在编辑的岗位
   
+  // 降级复制方案（当 Clipboard API 不可用时）
+  const fallbackCopyText = (text: string) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('降级复制也失败:', err);
+      }
+      
+      document.body.removeChild(textArea);
+    } catch (err) {
+      console.error('降级复制方案失败:', err);
+    }
+  };
+
   // 复制查询文本到剪贴板并打开 DeepSeek
   const handleQuerySalary = async () => {
     const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考标准月薪（单位：万元），并整理成表格形式：
@@ -50,11 +75,19 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
 - 新手上路（2年）`;
 
     try {
-      await navigator.clipboard.writeText(queryText);
-      // 直接打开 DeepSeek
-      window.open('https://chat.deepseek.com', '_blank');
+      // 先打开窗口（在用户操作的同步上下文中）
+      const newWindow = window.open('https://chat.deepseek.com', '_blank');
+      
+      // 然后复制文本（即使失去焦点也不影响窗口已经打开）
+      try {
+        await navigator.clipboard.writeText(queryText);
+      } catch (clipboardErr) {
+        // 如果复制失败，尝试使用降级方案
+        console.warn('Clipboard API 失败，尝试降级方案:', clipboardErr);
+        fallbackCopyText(queryText);
+      }
     } catch (err) {
-      console.error('复制失败:', err);
+      console.error('操作失败:', err);
     }
   };
   

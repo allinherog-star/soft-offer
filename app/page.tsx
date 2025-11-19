@@ -149,9 +149,14 @@ export default function Home() {
     }, 0);
   };
 
-  // 计算团队总人数
+  // 计算团队总人数（考虑所有有工作量的角色，默认每个角色至少1人）
   const getTotalTeamMembers = (): number => {
-    return Object.values(roleCounts).reduce((sum, count) => sum + count, 0);
+    if (estimate.teamWorkloads.length === 0) return 0;
+    
+    return estimate.teamWorkloads.reduce((sum, workload) => {
+      const count = roleCounts[workload.role] || 1;
+      return sum + count;
+    }, 0);
   };
 
   // 保存到历史记录
@@ -850,16 +855,16 @@ export default function Home() {
                 </tr>
                 {/* 第二行：关键指标 */}
                 <tr className="bg-gray-50">
-                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
-                    <div className="text-[10px] text-gray-600">总人力</div>
-                    <div className="text-base font-bold text-purple-600">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top">
+                    <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">总人力</div>
+                    <div className="text-base font-bold text-purple-600 mt-1">
                       {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
                       <span className="text-xs font-normal"> 人天</span>
                     </div>
                   </td>
-                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
-                    <div className="text-[10px] text-gray-600">总工期</div>
-                    <div className="text-base font-bold text-blue-600">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top">
+                    <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">总工期</div>
+                    <div className="text-base font-bold text-blue-600 mt-1">
                       {calculateActualTotalDays().toFixed(1)}
                       <span className="text-xs font-normal"> 天</span>
                     </div>
@@ -872,30 +877,30 @@ export default function Home() {
                       })()}
                     </div>
                   </td>
-                  <td className="py-2.5 px-3 text-center border-r border-gray-400">
-                    <div className="text-[10px] text-gray-600">市场成本</div>
-                    <div className="text-base font-bold text-gray-700">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top">
+                    <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">市场成本</div>
+                    <div className="text-base font-bold text-gray-700 mt-1">
                       {(estimate.baseCost / 10000).toFixed(2)}
                       <span className="text-xs font-normal"> 万</span>
                     </div>
                   </td>
-                  <td className="py-2.5 px-3 text-center border-r border-gray-400 bg-red-50">
-                    <div className="text-[10px] text-gray-700 font-semibold">折后成本</div>
-                    <div className="text-lg font-bold text-red-600">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 bg-red-50 align-top">
+                    <div className="text-[10px] text-gray-700 font-semibold h-[14px] leading-[14px]">折后成本</div>
+                    <div className="text-lg font-bold text-red-600 mt-1">
                       {(estimate.finalPrice / 10000).toFixed(2)}
                       <span className="text-sm font-normal"> 万</span>
                     </div>
                   </td>
-                  <td className="py-2.5 px-3 text-center border-r border-gray-400" colSpan={2}>
-                    <div className="text-[10px] text-gray-600">运维成本</div>
-                    <div className="text-sm font-bold text-orange-600">
+                  <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top" colSpan={2}>
+                    <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">运维成本</div>
+                    <div className="text-sm font-bold text-orange-600 mt-1">
                       {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}
                       <span className="text-xs font-normal"> 万/月</span>
                     </div>
                   </td>
-                  <td className="py-2.5 px-3 text-center" colSpan={2}>
-                    <div className="text-[10px] text-gray-600">硬件成本</div>
-                    <div className="text-sm font-bold text-green-600">
+                  <td className="py-2.5 px-3 text-center align-top" colSpan={2}>
+                    <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">硬件成本</div>
+                    <div className="text-sm font-bold text-green-600 mt-1">
                       {config.hardwareConfig 
                         ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 12 / 10000).toFixed(2)
                         : '0.00'}
@@ -1000,8 +1005,8 @@ export default function Home() {
                 <div className="p-1.5 bg-purple-100 rounded-lg">
                   <Users2 className="h-4 w-4 text-purple-600" />
                 </div>
-                <div className="flex flex-col">
-                  <div className="text-xs text-gray-500 leading-tight">总人力</div>
+                <div className="flex flex-col min-h-[48px]">
+                  <div className="text-xs text-gray-500 leading-tight h-[16px]">总人力</div>
                   <div className="text-lg font-bold text-purple-600 leading-tight mt-0.5">
                     {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
                     <span className="text-xs font-normal ml-0.5">人天</span>
@@ -1016,8 +1021,8 @@ export default function Home() {
                 <div className="p-1.5 bg-blue-100 rounded-lg">
                   <Clock className="h-4 w-4 text-blue-600" />
                 </div>
-                <div className="flex flex-col">
-                  <div className="text-xs text-gray-500 leading-tight">总工期</div>
+                <div className="flex flex-col min-h-[48px]">
+                  <div className="text-xs text-gray-500 leading-tight h-[16px]">总工期</div>
                   <div className="text-lg font-bold text-blue-600 leading-tight mt-0.5">
                     {calculateActualTotalDays().toFixed(1)}
                     <span className="text-xs font-normal ml-0.5">天</span>
@@ -1040,8 +1045,8 @@ export default function Home() {
                 <div className="p-1.5 bg-red-100 rounded-lg flex items-center justify-center w-7 h-7">
                   <span className="text-base font-bold text-red-600 leading-none">¥</span>
                 </div>
-                <div className="flex flex-col">
-                  <div className="text-xs text-gray-500 leading-tight">市场成本</div>
+                <div className="flex flex-col min-h-[48px]">
+                  <div className="text-xs text-gray-500 leading-tight h-[16px]">市场成本</div>
                   <div className="text-lg font-bold text-red-600 leading-tight mt-0.5">
                     {(estimate.baseCost / 10000).toFixed(2)}
                     <span className="text-xs font-normal ml-0.5">万</span>
@@ -1056,17 +1061,17 @@ export default function Home() {
                 <div className="p-1.5 bg-orange-100 rounded-lg">
                   <TrendingDown className="h-4 w-4 text-orange-600" />
                 </div>
-                <div className="flex flex-col">
-                  <div className="text-xs text-gray-500 leading-tight">折扣</div>
+                <div className="flex flex-col min-h-[48px]">
+                  <div className="text-xs text-gray-500 leading-tight h-[16px]">折扣</div>
                   <div className="mt-1">
                     <Select
                       value={discount.toString()}
                       onValueChange={(value) => setDiscount(parseFloat(value))}
                     >
-                      <SelectTrigger className="h-7 w-32 text-xs">
+                      <SelectTrigger className="h-7 w-auto min-w-[90px] text-xs px-3">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="w-auto min-w-[180px]">
                         {DISCOUNT_OPTIONS.map((option) => {
                           // 根据折扣力度显示不同图标和颜色
                           let icon;
@@ -1083,12 +1088,12 @@ export default function Home() {
                           }
                           
                           return (
-                            <SelectItem key={option.value} value={option.value.toString()} className="text-xs">
+                            <SelectItem key={option.value} value={option.value.toString()} className="text-xs h-auto py-2">
                               <div className="flex items-center gap-2">
                                 {icon}
                                 <div className="flex flex-col">
-                                  <span>{option.label}</span>
-                                  <span className="text-[10px] text-gray-400">{option.description}</span>
+                                  <span className="whitespace-nowrap">{option.label}</span>
+                                  <span className="text-[10px] text-gray-400 whitespace-nowrap">{option.description}</span>
                                 </div>
                               </div>
                             </SelectItem>

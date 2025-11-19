@@ -116,14 +116,39 @@ export function QuickEstimateDialog({
 
   // 复制提示词到剪贴板
   const copyPromptToClipboard = useCallback(async () => {
+    const prompt = generatePrompt();
+    
     try {
-      const prompt = generatePrompt();
       await navigator.clipboard.writeText(prompt);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
-      // 静默处理复制失败
-      console.error('复制失败:', error);
+      // 使用降级方案
+      console.warn('Clipboard API 失败，尝试降级方案:', error);
+      
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = prompt;
+        textArea.style.position = 'fixed';
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          setIsCopied(true);
+          setTimeout(() => setIsCopied(false), 2000);
+        } catch (err) {
+          console.error('降级复制也失败:', err);
+        }
+        
+        document.body.removeChild(textArea);
+      } catch (err) {
+        console.error('降级复制方案失败:', err);
+      }
     }
   }, [generatePrompt]);
 
