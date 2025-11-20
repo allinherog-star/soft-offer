@@ -1210,7 +1210,7 @@ export default function Home() {
                   <div className="border-t border-red-200 pt-0.5">
                     <div className="flex items-center gap-1.5">
                       <Wrench className="h-2.5 w-2.5 text-gray-500" />
-                      <span className="text-[10px] text-gray-600">运维</span>
+                      <span className="text-[10px] text-gray-600">运维成本</span>
                       <span className="text-[10px] font-semibold text-red-500">
                         {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}万/月
                       </span>
@@ -1219,7 +1219,7 @@ export default function Home() {
                   <div>
                     <div className="flex items-center gap-1.5">
                       <Server className="h-2.5 w-2.5 text-gray-500" />
-                      <span className="text-[10px] text-gray-600">硬件</span>
+                      <span className="text-[10px] text-gray-600">硬件成本</span>
                       <span className="text-[10px] font-semibold text-red-500">
                         {config.hardwareConfig 
                           ? (config.hardwareConfig.items.reduce((sum, item) => sum + item.price, 0) / 12 / 10000).toFixed(2)
