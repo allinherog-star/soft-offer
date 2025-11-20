@@ -48,6 +48,7 @@ export default function Home() {
   const [sampleDialogOpen, setSampleDialogOpen] = useState(false);
   const [autoExpandTrigger, setAutoExpandTrigger] = useState(0);
   const [roleCounts, setRoleCounts] = useState<Record<string, number>>({});
+  const [expectedDuration, setExpectedDuration] = useState<number | null>(null); // 期望工期（月）
 
   // 历史记录管理
   const [history, setHistory] = useState<FunctionNode[][]>([[]]);
@@ -644,6 +645,7 @@ export default function Home() {
     setSelectedNode(null);
     setHistory([[]]);
     setHistoryIndex(0);
+    setExpectedDuration(null);
     setClearDialogOpen(false);
     toast({
       title: '已清空 🗑️',
@@ -659,6 +661,7 @@ export default function Home() {
       config,
       discount,
       roleCounts,
+      expectedDuration,
       timestamp: new Date().toISOString()
     };
     
@@ -703,6 +706,7 @@ export default function Home() {
         setConfig(data.config || DEFAULT_CONFIG);
         setDiscount(data.discount || 1);
         setRoleCounts(data.roleCounts || {});
+        setExpectedDuration(data.expectedDuration || null);
         saveToHistory(data.functionNodes || []);
             
         // 触发自动展开
@@ -874,6 +878,13 @@ export default function Home() {
                     </div>
                     <div className="text-[9px] text-gray-500 mt-0.5">
                       {(() => {
+                        // 如果选择了期望工期，根据期望工期计算交付日期
+                        if (expectedDuration) {
+                          const deliveryDate = new Date();
+                          deliveryDate.setMonth(deliveryDate.getMonth() + expectedDuration);
+                          return deliveryDate.toLocaleDateString('zh-CN').replace(/\//g, '-') + ' (' + (expectedDuration === 12 ? '1年' : expectedDuration + '月') + ')';
+                        }
+                        // 否则根据实际工期计算
                         const totalDays = calculateActualTotalDays();
                         const deliveryDate = new Date();
                         deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
@@ -1021,7 +1032,7 @@ export default function Home() {
               <div className="w-px h-10 bg-gray-300"></div>
 
               {/* 总工期 */}
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 py-1">
                 <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-[2px]">
                   <Clock className="h-4 w-4 text-blue-600" />
                 </div>
@@ -1031,13 +1042,39 @@ export default function Home() {
                     {calculateActualTotalDays().toFixed(1)}
                     <span className="text-xs font-normal ml-0.5">天</span>
                   </div>
-                  <div className="text-[10px] text-gray-400 leading-tight mt-1">
-                    预计交付：{(() => {
-                      const totalDays = calculateActualTotalDays();
-                      const deliveryDate = new Date();
-                      deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
-                      return deliveryDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
-                    })()}
+                  <div className="mt-1">
+                    <div className="text-[10px] text-gray-400 leading-tight">
+                      预计交付：{(() => {
+                        // 如果选择了期望工期，根据期望工期计算交付日期
+                        if (expectedDuration) {
+                          const deliveryDate = new Date();
+                          deliveryDate.setMonth(deliveryDate.getMonth() + expectedDuration);
+                          return deliveryDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+                        }
+                        // 否则根据实际工期计算
+                        const totalDays = calculateActualTotalDays();
+                        const deliveryDate = new Date();
+                        deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
+                        return deliveryDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
+                      })()}
+                    </div>
+                    <div className="mt-1">
+                      <Select
+                        value={expectedDuration?.toString() || ''}
+                        onValueChange={(value) => setExpectedDuration(value ? parseInt(value) : null)}
+                      >
+                        <SelectTrigger className="!h-[22px] !min-h-[22px] w-[80px] text-[9px] !px-1.5 !py-0 !leading-[22px]">
+                          <SelectValue placeholder="期望进度" />
+                        </SelectTrigger>
+                        <SelectContent className="w-auto min-w-[80px]">
+                          <SelectItem value="1" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">1个月</SelectItem>
+                          <SelectItem value="2" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">2个月</SelectItem>
+                          <SelectItem value="3" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">3个月</SelectItem>
+                          <SelectItem value="6" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">6个月</SelectItem>
+                          <SelectItem value="12" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">1年</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               </div>
