@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target, X } from 'lucide-react';
+import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target, X, Calendar, CalendarDays, CalendarRange, Flame, Timer } from 'lucide-react';
 
 export default function Home() {
   const { toast } = useToast();
@@ -1063,15 +1063,40 @@ export default function Home() {
                         value={expectedDuration?.toString() || ''}
                         onValueChange={(value) => setExpectedDuration(value ? parseInt(value) : null)}
                       >
-                        <SelectTrigger className="!h-[22px] !min-h-[22px] w-[80px] text-[9px] !px-1.5 !py-0 !leading-[22px]">
+                        <SelectTrigger className="!h-[22px] !min-h-[22px] w-[90px] text-[9px] !px-1.5 !py-0 !leading-[22px]">
                           <SelectValue placeholder="期望进度" />
                         </SelectTrigger>
-                        <SelectContent className="w-auto min-w-[80px]">
-                          <SelectItem value="1" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">1个月</SelectItem>
-                          <SelectItem value="2" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">2个月</SelectItem>
-                          <SelectItem value="3" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">3个月</SelectItem>
-                          <SelectItem value="6" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">6个月</SelectItem>
-                          <SelectItem value="12" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">1年</SelectItem>
+                        <SelectContent className="w-auto min-w-[100px]">
+                          <SelectItem value="1" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">
+                            <div className="flex items-center gap-1.5">
+                              <Flame className="h-3 w-3 text-red-500" />
+                              <span>1个月</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="2" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">
+                            <div className="flex items-center gap-1.5">
+                              <Timer className="h-3 w-3 text-orange-500" />
+                              <span>2个月</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="3" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="h-3 w-3 text-yellow-500" />
+                              <span>3个月</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="6" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="h-3 w-3 text-blue-500" />
+                              <span>6个月</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="12" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">
+                            <div className="flex items-center gap-1.5">
+                              <CalendarRange className="h-3 w-3 text-green-500" />
+                              <span>1年</span>
+                            </div>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       {expectedDuration && (
