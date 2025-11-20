@@ -64,6 +64,27 @@ export default function Home() {
     return totalDays * 0.7; // 总工期为工期总和的70%
   };
 
+  // 计算工期压缩系数（当总工期超过期望进度时需要增加成本）
+  const calculateDurationRatio = () => {
+    if (!expectedDuration) return 1;
+    
+    const actualDays = calculateActualTotalDays();
+    const expectedDays = expectedDuration * 30; // 将月转换为天
+    const ratio = actualDays / expectedDays;
+    
+    return ratio > 1 ? ratio : 1;
+  };
+
+  // 获取调整后的市场成本
+  const getAdjustedBaseCost = () => {
+    return estimate.baseCost * calculateDurationRatio();
+  };
+
+  // 获取调整后的折后成本
+  const getAdjustedFinalPrice = () => {
+    return estimate.finalPrice * calculateDurationRatio();
+  };
+
   // 统计子模块数量（有子节点的中间层节点，不包括顶层模块）
   const countSubModules = (nodes: FunctionNode[]): number => {
     let count = 0;
@@ -895,21 +916,21 @@ export default function Home() {
                   <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top">
                     <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">市场成本</div>
                     <div className="text-base font-bold text-gray-700 mt-1">
-                      {(estimate.baseCost / 10000).toFixed(2)}
+                      {(getAdjustedBaseCost() / 10000).toFixed(2)}
                       <span className="text-xs font-normal"> 万</span>
                     </div>
                   </td>
                   <td className="py-2.5 px-3 text-center border-r border-gray-400 bg-red-50 align-top">
                     <div className="text-[10px] text-gray-700 font-semibold h-[14px] leading-[14px]">折后成本</div>
                     <div className="text-lg font-bold text-red-600 mt-1">
-                      {(estimate.finalPrice / 10000).toFixed(2)}
+                      {(getAdjustedFinalPrice() / 10000).toFixed(2)}
                       <span className="text-sm font-normal"> 万</span>
                     </div>
                   </td>
                   <td className="py-2.5 px-3 text-center border-r border-gray-400 align-top" colSpan={2}>
                     <div className="text-[10px] text-gray-600 h-[14px] leading-[14px]">运维成本</div>
                     <div className="text-sm font-bold text-orange-600 mt-1">
-                      {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}
+                      {(getAdjustedFinalPrice() * 0.1 / 10000).toFixed(2)}
                       <span className="text-xs font-normal"> 万/月</span>
                     </div>
                   </td>
@@ -1123,7 +1144,7 @@ export default function Home() {
                 <div className="flex flex-col justify-start">
                   <div className="text-xs text-gray-500 leading-[16px] h-4">市场成本</div>
                   <div className="text-lg font-bold text-red-600 leading-tight mt-1">
-                    {(estimate.baseCost / 10000).toFixed(2)}
+                    {(getAdjustedBaseCost() / 10000).toFixed(2)}
                     <span className="text-xs font-normal ml-0.5">万</span>
                   </div>
                 </div>
@@ -1203,7 +1224,7 @@ export default function Home() {
                   <div>
                     <div className="text-xs text-gray-600 font-medium leading-tight">折后成本</div>
                     <div className="text-xl font-bold text-red-600 leading-tight mt-0.5">
-                      {(estimate.finalPrice / 10000).toFixed(2)}
+                      {(getAdjustedFinalPrice() / 10000).toFixed(2)}
                       <span className="text-sm font-normal ml-0.5">万</span>
                     </div>
                   </div>
@@ -1212,7 +1233,7 @@ export default function Home() {
                       <Wrench className="h-2.5 w-2.5 text-gray-500" />
                       <span className="text-[10px] text-gray-600">运维成本</span>
                       <span className="text-[10px] font-semibold text-red-500">
-                        {(estimate.finalPrice * 0.1 / 10000).toFixed(2)}万/月
+                        {(getAdjustedFinalPrice() * 0.1 / 10000).toFixed(2)}万/月
                       </span>
                     </div>
                   </div>
