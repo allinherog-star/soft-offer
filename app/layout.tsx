@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,6 +21,15 @@ export const metadata: Metadata = {
     icon: '/favicon.svg',
     apple: '/logo.svg',
   },
+};
+
+// 移动端显示PC端布局：设置固定宽度并允许缩放
+export const viewport: Viewport = {
+  width: 1440,
+  initialScale: 1,
+  minimumScale: 0.1,
+  maximumScale: 3,
+  userScalable: true,
 };
 
 export default function RootLayout({
