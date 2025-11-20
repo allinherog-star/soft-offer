@@ -14,6 +14,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Pencil, Check, X, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Award, Medal, Trophy, Star, CircleDollarSign, CircleDot, Circle, TrendingUp as TrendingUpIcon, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DeepSeekIcon } from '@/components/ui/deepseek-icon';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface CostSettingsSheetProps {
   open: boolean;
@@ -23,10 +34,12 @@ interface CostSettingsSheetProps {
 }
 
 export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }: CostSettingsSheetProps) {
+  const { toast } = useToast();
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempRoleCost, setTempRoleCost] = useState<any>(null);
   const [editingDuration, setEditingDuration] = useState<string | null>(null); // 正在编辑的复杂度
   const [editingRatio, setEditingRatio] = useState<string | null>(null); // 正在编辑的岗位
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // 确认对话框状态
   
   // 降级复制方案（当 Clipboard API 不可用时）
   const fallbackCopyText = (text: string) => {
@@ -53,9 +66,8 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
     }
   };
 
-  // 复制查询文本到剪贴板并打开 DeepSeek
-  const handleQuerySalary = async () => {
-    const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考标准月薪（单位：万元），并整理成表格形式：
+  // 生成查询文本
+  const queryText = `请帮我整理一下下列岗位在不同工作经验级别下的市场参考标准月薪（单位：万元），并整理成表格形式：
 
 岗位列表：
 1. 产品经理
@@ -74,11 +86,10 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
 - 三线小厂（4年）
 - 新手上路（2年）`;
 
+  // 复制查询文本到剪贴板
+  const handleQuerySalary = async () => {
     try {
-      // 先打开窗口（在用户操作的同步上下文中）
-      const newWindow = window.open('https://chat.deepseek.com', '_blank');
-      
-      // 然后复制文本（即使失去焦点也不影响窗口已经打开）
+      // 复制文本
       try {
         await navigator.clipboard.writeText(queryText);
       } catch (clipboardErr) {
@@ -86,9 +97,24 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
         console.warn('Clipboard API 失败，尝试降级方案:', clipboardErr);
         fallbackCopyText(queryText);
       }
+      
+      // 打开确认对话框
+      setConfirmDialogOpen(true);
+      
     } catch (err) {
       console.error('操作失败:', err);
+      toast({
+        title: '❌ 复制失败',
+        description: '复制提示词失败，请手动复制',
+        variant: 'destructive',
+      });
     }
+  };
+
+  // 确认跳转到DeepSeek
+  const handleConfirmJump = () => {
+    setConfirmDialogOpen(false);
+    window.open('https://chat.deepseek.com', '_blank');
   };
   
   const handleRoleSelect = (index: number, role: TeamRole) => {
@@ -281,7 +307,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
                           <button
                             onClick={handleQuerySalary}
                             className="text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
-                            title="在 DeepSeek 中查询市场薪资（自动复制问题）"
+                            title="复制提示词并跳转到 DeepSeek 查询市场薪资"
                           >
                             <DeepSeekIcon className="h-4 w-4" />
                           </button>
@@ -518,6 +544,24 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
         </ScrollArea>
       </SheetContent>
     </Sheet>
+
+    {/* 确认跳转对话框 */}
+    <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>✅ 提示词已复制</AlertDialogTitle>
+          <AlertDialogDescription>
+            提示词已复制到剪贴板，请粘贴到 DeepSeek 输入框中。点击"跳转到 DeepSeek"按钮将在新标签页打开 DeepSeek 网站。
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirmJump} className="bg-blue-600 hover:bg-blue-700">
+            跳转到 DeepSeek
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }

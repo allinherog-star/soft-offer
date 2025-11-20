@@ -173,6 +173,7 @@ export const INDUSTRY_OPTIONS = [
   { label: '社交', icon: 'Users' },
   { label: '汽车', icon: 'Car' },
   { label: '农业', icon: 'Sprout' },
+  { label: '足疗按摩', icon: 'Sparkles' },
   { label: '其他', icon: 'MoreHorizontal' }
 ] as const;
 
