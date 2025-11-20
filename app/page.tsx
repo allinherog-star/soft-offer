@@ -54,14 +54,14 @@ export default function Home() {
   const [history, setHistory] = useState<FunctionNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  // 计算实际总工期（考虑岗位数量，取70%）
+  // 计算实际总工期（考虑岗位数量，取50%）
   const calculateActualTotalDays = () => {
     const totalDays = estimate.teamWorkloads.reduce((sum, workload) => {
       const count = roleCounts[workload.role] || 1;
       const actualDays = workload.workDays / count;
       return sum + actualDays;
     }, 0);
-    return totalDays * 0.7; // 总工期为工期总和的70%
+    return totalDays * 0.5; // 总工期为工期总和的50%
   };
 
   // 计算工期压缩系数（当总工期超过期望进度时需要增加成本）
