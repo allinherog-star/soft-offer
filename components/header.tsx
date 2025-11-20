@@ -13,7 +13,7 @@ import {
   Globe, BadgeDollarSign, ShoppingCart, GraduationCap, Heart,
   Factory, Store, Truck, Home, Zap, Landmark, Radio, Tv,
   Plane, UtensilsCrossed, Briefcase, Gamepad2, Users, Car,
-  Sprout, MoreHorizontal, LucideIcon, FileText, Trash2, Save,
+  Sprout, Sparkles, MoreHorizontal, LucideIcon, FileText, Trash2, Save,
   RotateCcw, Download
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -40,6 +40,7 @@ const iconMap: Record<string, LucideIcon> = {
   'Users': Users,
   'Car': Car,
   'Sprout': Sprout,
+  'Sparkles': Sparkles,
   'MoreHorizontal': MoreHorizontal,
 };
 
