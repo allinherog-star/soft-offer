@@ -1003,15 +1003,15 @@ export default function Home() {
             </div>
 
             {/* 右侧：关键指标 */}
-            <div className="flex items-center gap-5 flex-wrap">
+            <div className="flex items-start gap-5 flex-wrap">
               {/* 总人力 */}
               <div className="flex items-start gap-2">
-                <div className="p-1.5 bg-purple-100 rounded-lg">
+                <div className="w-7 h-7 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-[2px]">
                   <Users2 className="h-4 w-4 text-purple-600" />
                 </div>
-                <div className="flex flex-col min-h-[48px]">
-                  <div className="text-xs text-gray-500 leading-tight h-[16px]">总人力</div>
-                  <div className="text-lg font-bold text-purple-600 leading-tight mt-0.5">
+                <div className="flex flex-col justify-start">
+                  <div className="text-xs text-gray-500 leading-[16px] h-4">总人力</div>
+                  <div className="text-lg font-bold text-purple-600 leading-tight mt-1">
                     {estimate.teamWorkloads.reduce((sum, w) => sum + w.workDays, 0).toFixed(1)}
                     <span className="text-xs font-normal ml-0.5">人天</span>
                   </div>
@@ -1022,17 +1022,17 @@ export default function Home() {
 
               {/* 总工期 */}
               <div className="flex items-start gap-2">
-                <div className="p-1.5 bg-blue-100 rounded-lg">
+                <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-[2px]">
                   <Clock className="h-4 w-4 text-blue-600" />
                 </div>
-                <div className="flex flex-col min-h-[48px]">
-                  <div className="text-xs text-gray-500 leading-tight h-[16px]">总工期</div>
-                  <div className="text-lg font-bold text-blue-600 leading-tight mt-0.5">
+                <div className="flex flex-col justify-start">
+                  <div className="text-xs text-gray-500 leading-[16px] h-4">总工期</div>
+                  <div className="text-lg font-bold text-blue-600 leading-tight mt-1">
                     {calculateActualTotalDays().toFixed(1)}
                     <span className="text-xs font-normal ml-0.5">天</span>
                   </div>
-                  <div className="text-[10px] text-gray-400 leading-tight mt-0.5">
-                    预计 {(() => {
+                  <div className="text-[10px] text-gray-400 leading-tight mt-1">
+                    预计交付：{(() => {
                       const totalDays = calculateActualTotalDays();
                       const deliveryDate = new Date();
                       deliveryDate.setDate(deliveryDate.getDate() + Math.ceil(totalDays));
@@ -1046,21 +1046,21 @@ export default function Home() {
 
               {/* 市场成本 */}
               <div className="flex items-start gap-2">
-                <div className="p-1.5 bg-red-100 rounded-lg flex items-center justify-center w-7 h-7">
+                <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-[2px]">
                   <span className="text-base font-bold text-red-600 leading-none">¥</span>
                 </div>
-                <div className="flex flex-col min-h-[48px]">
-                  <div className="text-xs text-gray-500 leading-tight h-[16px]">市场成本</div>
-                  <div className="text-lg font-bold text-red-600 leading-tight mt-0.5">
+                <div className="flex flex-col justify-start">
+                  <div className="text-xs text-gray-500 leading-[16px] h-4">市场成本</div>
+                  <div className="text-lg font-bold text-red-600 leading-tight mt-1">
                     {(estimate.baseCost / 10000).toFixed(2)}
                     <span className="text-xs font-normal ml-0.5">万</span>
                   </div>
                 </div>
               </div>
 
-              <div className="w-px h-10 bg-gray-300"></div>
+                <div className="w-px h-10 bg-gray-300"></div>
 
-              {/* 折扣选择 */}
+                {/* 折扣选择 */}
               <div className="flex items-start gap-2 print:hidden">
                 <div className="p-1.5 bg-orange-100 rounded-lg">
                   <TrendingDown className="h-4 w-4 text-orange-600" />
@@ -1107,12 +1107,12 @@ export default function Home() {
                     </Select>
                   </div>
                 </div>
-              </div>
+                </div>
 
-              <div className="w-px h-10 bg-gray-300 print:hidden"></div>
-              
+                <div className="w-px h-10 bg-gray-300 print:hidden"></div>
+                
               {/* 打印时显示折扣 */}
-              <div className="hidden print:flex items-start gap-2">
+                <div className="hidden print:flex items-start gap-2">
                 <div className="p-1.5 bg-orange-100 rounded-lg">
                   <TrendingDown className="h-4 w-4 text-orange-600" />
                 </div>
@@ -1122,12 +1122,12 @@ export default function Home() {
                     {(discount * 10).toFixed(0)}折
                   </div>
                 </div>
-              </div>
+                </div>
 
-              <div className="hidden print:block w-px h-10 bg-gray-300"></div>
+                <div className="hidden print:block w-px h-10 bg-gray-300"></div>
 
-              {/* 折后成本 + 运维成本 + 硬件费用 */}
-              <div className="flex items-start gap-2 bg-gradient-to-r from-red-50 to-orange-50 px-3 py-1.5 rounded-lg border-2 border-red-300">
+                {/* 折后成本 + 运维成本 + 硬件费用 */}
+                <div className="flex items-start gap-2 bg-gradient-to-r from-red-50 to-orange-50 px-3 py-1.5 rounded-lg border-2 border-red-300">
                 <div className="flex flex-col gap-1">
                   <div>
                     <div className="text-xs text-gray-600 font-medium leading-tight">折后成本</div>
@@ -1157,7 +1157,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
             </div>
           </div>
         </div>
