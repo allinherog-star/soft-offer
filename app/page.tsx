@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target } from 'lucide-react';
+import { Clock, DollarSign, TrendingDown, Sparkles, Tag, Ticket, BadgePercent, Zap, Users2, Wrench, Server, Layers, AlertCircle, CheckCircle2, Target, X } from 'lucide-react';
 
 export default function Home() {
   const { toast } = useToast();
@@ -1058,7 +1058,7 @@ export default function Home() {
                         return deliveryDate.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-');
                       })()}
                     </div>
-                    <div className="mt-1">
+                    <div className="mt-1 flex items-center gap-1">
                       <Select
                         value={expectedDuration?.toString() || ''}
                         onValueChange={(value) => setExpectedDuration(value ? parseInt(value) : null)}
@@ -1074,6 +1074,15 @@ export default function Home() {
                           <SelectItem value="12" className="text-[10px] !h-[22px] !min-h-[22px] !py-0 !leading-[22px] !pl-2 !pr-8">1年</SelectItem>
                         </SelectContent>
                       </Select>
+                      {expectedDuration && (
+                        <button
+                          onClick={() => setExpectedDuration(null)}
+                          className="h-[18px] w-[18px] flex items-center justify-center rounded hover:bg-gray-200 transition-colors"
+                          title="清空期望进度"
+                        >
+                          <X className="h-3 w-3 text-gray-500" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
