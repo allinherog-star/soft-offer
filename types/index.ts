@@ -53,7 +53,7 @@ export interface FunctionNode {
 // 工作经验类型
 export type WorkExperience = '一线大厂' | '二线中厂' | '三线小厂' | '新手上路';
 
-// 人力单位成本
+// 人力市场单位成本
 export interface RoleCost {
   role: TeamRole;
   experience: WorkExperience;  // 工作经验
@@ -61,7 +61,7 @@ export interface RoleCost {
   salary: number;              // 标准月薪（根据经验和年限自动推荐）
 }
 
-// 工期单位成本配置
+// 工期市场单位成本配置
 export interface WorkDurationConfig {
   complexity: Complexity;
   days: number;  // 基准工期（天）

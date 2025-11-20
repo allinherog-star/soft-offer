@@ -1255,7 +1255,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 单位成本设置侧拉面板 */}
+      {/* 市场单位成本设置侧拉面板 */}
       <CostSettingsSheet
         open={costSettingsOpen}
         onOpenChange={setCostSettingsOpen}

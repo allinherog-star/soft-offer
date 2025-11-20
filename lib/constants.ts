@@ -94,7 +94,7 @@ export const DEFAULT_ROLE_COSTS: RoleCost[] = [
   }
 ];
 
-// 工期单位成本（以天为单位，后端为基准）- 标准工期
+// 工期市场单位成本（以天为单位，后端为基准）- 标准工期
 export const DEFAULT_WORK_DURATION = {
   低: 0.25,
   中: 0.5,

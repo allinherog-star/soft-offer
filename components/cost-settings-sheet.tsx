@@ -257,7 +257,7 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-[700px] sm:w-[800px] sm:max-w-[800px] p-0">
-          <SheetTitle className="sr-only">单位成本配置</SheetTitle>
+          <SheetTitle className="sr-only">市场单位成本配置</SheetTitle>
           <ScrollArea className="h-full">
           <div className="space-y-0">
             {/* 人力成本分组 */}
