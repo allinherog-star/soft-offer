@@ -1197,7 +1197,7 @@ export default function Home() {
 
                 <div className="hidden print:block w-px h-10 bg-gray-300"></div>
 
-                {/* 折后成本 + 运维成本 + 硬件费用 */}
+                {/* 折后成本 + 运维成本 + 硬件成本 */}
                 <div className="flex items-start gap-2 bg-gradient-to-r from-red-50 to-orange-50 px-3 py-1.5 rounded-lg border-2 border-red-300">
                 <div className="flex flex-col gap-1">
                   <div>
