@@ -114,41 +114,32 @@ export function QuickEstimateDialog({
 - 提供详细的功能说明，便于后续开发理解`;
   }, [projectInfo]);
 
-  // 复制提示词到剪贴板
+  // 复制提示词到剪贴板（使用不需要权限的方法）
   const copyPromptToClipboard = useCallback(async () => {
     const prompt = generatePrompt();
     
     try {
-      await navigator.clipboard.writeText(prompt);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (error) {
-      // 使用降级方案
-      console.warn('Clipboard API 失败，尝试降级方案:', error);
+      const textArea = document.createElement('textarea');
+      textArea.value = prompt;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
       
-      try {
-        const textArea = document.createElement('textarea');
-        textArea.value = prompt;
-        textArea.style.position = 'fixed';
-        textArea.style.top = '0';
-        textArea.style.left = '0';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-          document.execCommand('copy');
-          setIsCopied(true);
-          setTimeout(() => setIsCopied(false), 2000);
-        } catch (err) {
-          console.error('降级复制也失败:', err);
-        }
-        
-        document.body.removeChild(textArea);
-      } catch (err) {
-        console.error('降级复制方案失败:', err);
+      const successful = document.execCommand('copy');
+      if (successful) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      } else {
+        console.error('复制命令执行失败');
       }
+      
+      document.body.removeChild(textArea);
+    } catch (err) {
+      console.error('复制方案失败:', err);
     }
   }, [generatePrompt]);
 

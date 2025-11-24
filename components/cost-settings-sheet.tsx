@@ -89,14 +89,8 @@ export function CostSettingsSheet({ open, onOpenChange, config, onConfigChange }
   // 复制查询文本到剪贴板
   const handleQuerySalary = async () => {
     try {
-      // 复制文本
-      try {
-        await navigator.clipboard.writeText(queryText);
-      } catch (clipboardErr) {
-        // 如果复制失败，尝试使用降级方案
-        console.warn('Clipboard API 失败，尝试降级方案:', clipboardErr);
-        fallbackCopyText(queryText);
-      }
+      // 直接使用不需要权限的复制方案
+      fallbackCopyText(queryText);
       
       // 打开确认对话框
       setConfirmDialogOpen(true);
