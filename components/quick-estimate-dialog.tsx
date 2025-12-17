@@ -114,34 +114,67 @@ export function QuickEstimateDialog({
 - 提供详细的功能说明，便于后续开发理解`;
   }, [projectInfo]);
 
-  // 复制提示词到剪贴板（使用不需要权限的方法）
+  // 复制提示词到剪贴板
   const copyPromptToClipboard = useCallback(async () => {
     const prompt = generatePrompt();
     
+    // 优先使用现代 Clipboard API
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      try {
+        await navigator.clipboard.writeText(prompt);
+        setIsCopied(true);
+        toast({
+          title: '复制成功 ✅',
+          description: '提示词已复制到剪贴板',
+        });
+        setTimeout(() => setIsCopied(false), 2000);
+        return;
+      } catch (err) {
+        console.warn('Clipboard API 失败，尝试降级方案:', err);
+      }
+    }
+    
+    // 降级方案：使用 document.execCommand
     try {
       const textArea = document.createElement('textarea');
       textArea.value = prompt;
       textArea.style.position = 'fixed';
       textArea.style.top = '0';
       textArea.style.left = '0';
+      textArea.style.width = '2em';
+      textArea.style.height = '2em';
+      textArea.style.padding = '0';
+      textArea.style.border = 'none';
+      textArea.style.outline = 'none';
+      textArea.style.boxShadow = 'none';
+      textArea.style.background = 'transparent';
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();
       
       const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
       if (successful) {
         setIsCopied(true);
+        toast({
+          title: '复制成功 ✅',
+          description: '提示词已复制到剪贴板',
+        });
         setTimeout(() => setIsCopied(false), 2000);
       } else {
-        console.error('复制命令执行失败');
+        throw new Error('execCommand 返回 false');
       }
-      
-      document.body.removeChild(textArea);
     } catch (err) {
-      console.error('复制方案失败:', err);
+      console.error('复制失败:', err);
+      toast({
+        title: '复制失败 ❌',
+        description: '请手动复制提示词',
+        variant: 'destructive',
+      });
     }
-  }, [generatePrompt]);
+  }, [generatePrompt, toast]);
 
   // 打开DeepSeek并进入输入阶段
   const handleOpenDeepSeek = useCallback(() => {
