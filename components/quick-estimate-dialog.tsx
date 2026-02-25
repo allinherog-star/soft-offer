@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { ProjectInfo, FunctionNode } from '@/types';
+import { ProjectInfo, FunctionNode, Complexity, Priority } from '@/types';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,21 @@ interface ParsedNode {
   children?: ParsedNode[];
   buttons?: ParsedButton[];
 }
+
+const VALID_COMPLEXITY: ReadonlySet<Complexity> = new Set(['低', '中', '高', '很高']);
+const VALID_PRIORITY: ReadonlySet<Priority> = new Set(['低', '中', '高', '很高']);
+
+const normalizeComplexity = (value: unknown, fallback: Complexity): Complexity => {
+  return typeof value === 'string' && VALID_COMPLEXITY.has(value as Complexity)
+    ? (value as Complexity)
+    : fallback;
+};
+
+const normalizePriority = (value: unknown, fallback: Priority): Priority => {
+  return typeof value === 'string' && VALID_PRIORITY.has(value as Priority)
+    ? (value as Priority)
+    : fallback;
+};
 
 export function QuickEstimateDialog({
   open,
@@ -262,16 +277,8 @@ export function QuickEstimateDialog({
             ? `${parentId}-${index}` 
             : `node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${index}`;
           
-          // 验证复杂度和优先级的有效性
-          const validComplexity = ['低', '中', '高', '很高'];
-          const validPriority = ['低', '中', '高', '很高'];
-          
-          const complexity = node.complexity && validComplexity.includes(node.complexity) 
-            ? node.complexity 
-            : '中';
-          const priority = node.priority && validPriority.includes(node.priority) 
-            ? node.priority 
-            : '中';
+          const complexity = normalizeComplexity(node.complexity, '中');
+          const priority = normalizePriority(node.priority, '中');
           
           // 处理 buttons 数组
           let buttons = undefined;
@@ -279,12 +286,8 @@ export function QuickEstimateDialog({
             buttons = node.buttons.map((btn: ParsedButton, btnIndex: number) => ({
               id: `btn-${id}-${btnIndex}`,
               name: btn.name || '操作',
-              complexity: btn.complexity && validComplexity.includes(btn.complexity) 
-                ? btn.complexity 
-                : '低',
-              priority: btn.priority && validPriority.includes(btn.priority) 
-                ? btn.priority 
-                : '中',
+              complexity: normalizeComplexity(btn.complexity, '低'),
+              priority: normalizePriority(btn.priority, '中'),
               isImportant: Boolean(btn.isImportant),
               remark: btn.remark || ''
             }));
