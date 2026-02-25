@@ -22,6 +22,24 @@ interface QuickEstimateDialogProps {
   onImport: (nodes: FunctionNode[]) => void;
 }
 
+interface ParsedButton {
+  name?: string;
+  complexity?: string;
+  priority?: string;
+  isImportant?: boolean;
+  remark?: string;
+}
+
+interface ParsedNode {
+  name?: string;
+  complexity?: string;
+  priority?: string;
+  isImportant?: boolean;
+  remark?: string;
+  children?: ParsedNode[];
+  buttons?: ParsedButton[];
+}
+
 export function QuickEstimateDialog({
   open,
   onOpenChange,
@@ -221,7 +239,7 @@ export function QuickEstimateDialog({
       }
 
       // 解析JSON
-      const parsedData = JSON.parse(jsonText);
+      const parsedData: unknown = JSON.parse(jsonText);
       
       // 验证数据格式
       if (!Array.isArray(parsedData)) {
@@ -233,7 +251,7 @@ export function QuickEstimateDialog({
       }
 
       // 为每个节点添加必需的ID和默认值
-      const addIds = (nodes: any[], parentId?: string): FunctionNode[] => {
+      const addIds = (nodes: ParsedNode[], parentId?: string): FunctionNode[] => {
         return nodes.map((node, index) => {
           // 验证节点必须有name字段
           if (!node.name) {
@@ -258,7 +276,7 @@ export function QuickEstimateDialog({
           // 处理 buttons 数组
           let buttons = undefined;
           if (node.buttons && Array.isArray(node.buttons) && node.buttons.length > 0) {
-            buttons = node.buttons.map((btn: any, btnIndex: number) => ({
+            buttons = node.buttons.map((btn: ParsedButton, btnIndex: number) => ({
               id: `btn-${id}-${btnIndex}`,
               name: btn.name || '操作',
               complexity: btn.complexity && validComplexity.includes(btn.complexity) 
@@ -288,7 +306,7 @@ export function QuickEstimateDialog({
         });
       };
 
-      const result = addIds(parsedData);
+      const result = addIds(parsedData as ParsedNode[]);
       
       // 验证结果
       if (result.length === 0) {
@@ -379,6 +397,10 @@ export function QuickEstimateDialog({
 
   // 倒计时和准备提示词
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     if (step === 'preparing' && countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
@@ -389,7 +411,7 @@ export function QuickEstimateDialog({
       copyPromptToClipboard();
       setStep('prompt');
     }
-  }, [step, countdown, copyPromptToClipboard]);
+  }, [open, step, countdown, copyPromptToClipboard]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -694,4 +716,3 @@ export function QuickEstimateDialog({
     </Dialog>
   );
 }
-
