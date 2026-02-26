@@ -75,15 +75,33 @@ export default function Home() {
     return ratio > 1 ? ratio : 1;
   };
 
+  // 计算管理成本系数（人数增加带来的沟通/协调成本）
+  const calculateManagementCostRatio = () => {
+    if (estimate.teamWorkloads.length === 0) return 1;
+
+    // 基准人数：每个岗位默认 1 人
+    const baseMembers = estimate.teamWorkloads.length;
+    const actualMembers = estimate.teamWorkloads.reduce((sum, workload) => {
+      const count = roleCounts[workload.role] || 1;
+      return sum + count;
+    }, 0);
+
+    const extraMembers = Math.max(0, actualMembers - baseMembers);
+    const perMemberIncrease = 0.02; // 每增加 1 人，管理成本 +2%
+    const maxIncrease = 0.25; // 管理成本上浮上限 25%
+    const increase = Math.min(extraMembers * perMemberIncrease, maxIncrease);
+
+    return 1 + increase;
+  };
+
   // 获取调整后的市场成本
   const getAdjustedBaseCost = () => {
-    // 市场成本只与总人天和岗位单价有关，不受岗位人数（并行度）影响
-    return estimate.baseCost;
+    return estimate.baseCost * calculateManagementCostRatio();
   };
 
   // 获取调整后的折后成本
   const getAdjustedFinalPrice = () => {
-    return estimate.finalPrice * calculateDurationRatio();
+    return estimate.finalPrice * calculateDurationRatio() * calculateManagementCostRatio();
   };
 
   // 统计子模块数量（有子节点的中间层节点，不包括顶层模块）
