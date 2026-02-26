@@ -111,11 +111,11 @@ export default function Home() {
     return count;
   };
 
-  // 统计功能菜单数量（叶子节点，不包含顶层模块）
+  // 统计功能模块数量（叶子节点，不包含顶层模块）
   const countFunctionMenus = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
       if (!node.children || node.children.length === 0) {
-        // 叶子节点：如果是顶层节点（需求模块），不统计；否则才是功能菜单
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则才是功能模块
         return count + (isTopLevel ? 0 : 1);
       }
       // 有子节点的是模块，继续递归（非顶层）
@@ -123,11 +123,11 @@ export default function Home() {
     }, 0);
   };
 
-  // 统计高优先级功能菜单数量（仅统计叶子节点，不包含顶层模块）
+  // 统计高优先级功能模块数量（仅统计叶子节点，不包含顶层模块）
   const countHighPriority = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
       if (!node.children || node.children.length === 0) {
-        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能菜单的高优先级
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能模块的高优先级
         if (isTopLevel) return count;
         return count + ((node.priority === '高' || node.priority === '很高') ? 1 : 0);
       }
@@ -136,11 +136,11 @@ export default function Home() {
     }, 0);
   };
 
-  // 统计重要功能菜单数量（仅统计叶子节点，不包含顶层模块）
+  // 统计重要功能模块数量（仅统计叶子节点，不包含顶层模块）
   const countImportant = (nodes: FunctionNode[], isTopLevel: boolean = true): number => {
     return nodes.reduce((count, node) => {
       if (!node.children || node.children.length === 0) {
-        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能菜单的重要标记
+        // 叶子节点：如果是顶层节点（需求模块），不统计；否则统计功能模块的重要标记
         if (isTopLevel) return count;
         return count + (node.isImportant ? 1 : 0);
       }
@@ -155,9 +155,9 @@ export default function Home() {
       let currentCount = 0;
       
       if (!node.children || node.children.length === 0) {
-        // 叶子节点：功能菜单，只统计其按钮数量
+        // 叶子节点：功能模块，只统计其按钮数量
         if (!isTopLevel) {
-          // 只统计该功能菜单的所有按钮数量
+          // 只统计该功能模块的所有按钮数量
           if (node.buttons && node.buttons.length > 0) {
             currentCount += node.buttons.length;
           }
@@ -858,7 +858,7 @@ export default function Home() {
                     <div className="text-sm font-bold text-cyan-600">{countSubModules(functionNodes)}</div>
                   </td>
                   <td className="py-2.5 px-3 text-center border-r border-gray-400">
-                    <div className="text-[10px] text-gray-600">功能菜单</div>
+                    <div className="text-[10px] text-gray-600">功能模块</div>
                     <div className="text-sm font-bold text-green-600">{countFunctionMenus(functionNodes)}</div>
                   </td>
                   <td className="py-2.5 px-3 text-center border-r border-gray-400">
@@ -984,7 +984,7 @@ export default function Home() {
                   
                   <div className="flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-xs text-gray-500">功能菜单</span>
+                    <span className="text-xs text-gray-500">功能模块</span>
                     <span className="text-sm font-bold text-green-600 ml-0.5">
                       {countFunctionMenus(functionNodes)}
                     </span>
@@ -1287,7 +1287,7 @@ export default function Home() {
           <AlertDialogHeader>
             <AlertDialogTitle>加载示例数据</AlertDialogTitle>
             <AlertDialogDescription>
-              将加载电商平台示例数据，包含10个需求模块、22个功能菜单和89个功能按钮。如果当前有数据将被覆盖，是否继续？
+              将加载电商平台示例数据，包含10个需求模块、22个功能模块和89个功能按钮。如果当前有数据将被覆盖，是否继续？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

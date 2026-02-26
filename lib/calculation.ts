@@ -85,13 +85,13 @@ function getWorkDays(complexity: Complexity | undefined, config: GlobalConfig): 
   return config.workDurationConfigs[complexity] || 0;
 }
 
-// 递归收集所有功能菜单节点（非顶层的叶子节点）和按钮操作
+// 递归收集所有功能模块节点（非顶层的叶子节点）和按钮操作
 function collectLeafNodes(node: FunctionNode, isTopLevel: boolean = false): Array<{complexity?: Complexity}> {
   const items: Array<{complexity?: Complexity}> = [];
   
   // 收集节点本身（如果是叶子节点且有复杂度，但不是顶层节点）
   if (node.complexity && (!node.children || node.children.length === 0)) {
-    // 只收集非顶层的叶子节点（功能菜单）
+    // 只收集非顶层的叶子节点（功能模块）
     if (!isTopLevel) {
       items.push(node);
     }
@@ -213,7 +213,7 @@ export function calculateEstimate(
   discount: number,
   roleCounts: Record<string, number> = {}
 ): EstimateResult {
-  // 收集所有功能菜单节点（非顶层的叶子节点），顶层节点标记为 isTopLevel = true
+  // 收集所有功能模块节点（非顶层的叶子节点），顶层节点标记为 isTopLevel = true
   const allLeafNodes = functionNodes.flatMap(node => collectLeafNodes(node, true));
   
   // 计算后端总工期（基准）

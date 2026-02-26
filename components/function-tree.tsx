@@ -414,12 +414,12 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     } else {
       // 叶子节点
-      nodeTypeLabel = '功能菜单';
+      nodeTypeLabel = '功能模块';
       nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
     }
 
     // 确定添加按钮的提示文本
-    // 所有非顶级节点下添加的都是功能菜单
+    // 所有非顶级节点下添加的都是功能模块
     const addButtonTitle = '添加需求';
 
     return (
@@ -461,7 +461,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                   if (e.key === 'Escape') cancelEdit();
                 }}
                 className="h-6 text-sm flex-1"
-                placeholder={nodeTypeLabel === '功能菜单' ? '需求名称' : '模块名称'}
+                placeholder={nodeTypeLabel === '功能模块' ? '需求名称' : '模块名称'}
                 autoFocus
               />
               <Button

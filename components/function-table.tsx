@@ -92,18 +92,18 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
         const level = 0;
         const hasChildren = node.children && node.children.length > 0;
         const isLeaf = !hasChildren;
-        const nodeType = level === 0 ? '模块' : (isLeaf ? '功能菜单' : '子模块');
+        const nodeType = level === 0 ? '模块' : (isLeaf ? '功能模块' : '子模块');
         
         // 递归计算实际的nodeType
         const getNodeType = (n: FunctionNode, l: number): string => {
           const hasChild = n.children && n.children.length > 0;
           const isLeafNode = !hasChild;
-          return l === 0 ? '模块' : (isLeafNode ? '功能菜单' : '子模块');
+          return l === 0 ? '模块' : (isLeafNode ? '功能模块' : '子模块');
         };
         
         const realNodeType = getNodeType(node, 0);
         
-        if (realNodeType === '功能菜单') {
+        if (realNodeType === '功能模块') {
           menuIds.push(node.id);
         }
         
@@ -111,7 +111,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
           const collectFromChildren = (children: FunctionNode[], currentLevel: number) => {
             children.forEach(child => {
               const childType = getNodeType(child, currentLevel);
-              if (childType === '功能菜单') {
+              if (childType === '功能模块') {
                 menuIds.push(child.id);
               }
               if (child.children) {
@@ -215,7 +215,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
         nodeType = '子模块';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       } else {
-        nodeType = '功能菜单';
+        nodeType = '功能模块';
         nodeTypeColor = 'text-gray-500 bg-gray-100 border border-gray-200';
       }
       
@@ -370,7 +370,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
     onNodesChange([...nodes]);
   };
 
-  // 批量为所有功能菜单节点添加标准功能
+  // 批量为所有功能模块节点添加标准功能
   const batchAddStandardButtons = () => {
     const standardButtons = [
       { name: '新增', isImportant: false, remark: '', complexity: '低', priority: '中' },
@@ -382,7 +382,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
     const processNode = (nodeList: FunctionNode[]): void => {
       nodeList.forEach(node => {
         const hasChildren = node.children && node.children.length > 0;
-        const isMenuNode = !hasChildren; // 叶子节点是功能菜单节点
+        const isMenuNode = !hasChildren; // 叶子节点是功能模块节点
         
         if (isMenuNode) {
           if (!node.buttons) node.buttons = [];
@@ -567,7 +567,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
             </thead>
             <tbody>
               {flatNodes.map((node) => {
-                const isMenu = node.nodeType === '功能菜单';
+                const isMenu = node.nodeType === '功能模块';
                 const hasButtons = node.buttons && node.buttons.length > 0;
                 const isExpanded = expandedMenus.has(node.id);
                 
@@ -979,7 +979,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
           </table>
           {flatNodes.length === 0 && (
             <div className="flex items-center justify-center h-32 text-gray-400 text-xs">
-              暂无功能，请在左侧添加需求模块和功能菜单
+              暂无功能，请在左侧添加需求模块和功能模块
             </div>
           )}
         </ScrollArea>

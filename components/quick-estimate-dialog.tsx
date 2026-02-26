@@ -83,8 +83,8 @@ export function QuickEstimateDialog({
 
 【输出要求】
 请按照以下JSON格式输出系统的需求清单，要求包含：
-1. 系统模块的层级结构（需求模块 → 子模块 → 功能菜单）
-2. 每个功能菜单必须包含完整的操作按钮（buttons数组：新增、编辑、删除、查询等）
+1. 系统模块的层级结构（需求模块 → 子模块 → 功能模块）
+2. 每个功能模块必须包含完整的操作按钮（buttons数组：新增、编辑、删除、查询等）
 3. 每个功能的复杂度评估（低、中、高、很高）
 4. 每个功能的优先级（低、中、高、很高）
 5. 重点功能标记（isImportant: true/false）
@@ -133,13 +133,13 @@ export function QuickEstimateDialog({
 \`\`\`
 
 【重要说明】
-1. 功能菜单（叶子节点）必须包含buttons数组，定义该功能的所有操作
+1. 功能模块（叶子节点）必须包含buttons数组，定义该功能的所有操作
 2. 常见操作包括：新增、编辑、删除、查询、导出、导入、审核、启用/禁用等
 3. 根据实际业务场景选择合适的操作，不要机械套用
 
 请务必：
 - 按照该行业的最佳实践进行功能模块划分
-- 每个功能菜单都要包含完整的操作按钮（buttons）
+- 每个功能模块都要包含完整的操作按钮（buttons）
 - 根据业务特点选择合适的操作类型（CRUD、审批、导入导出等）
 - 根据用户端特点考虑对应的技术实现
 - 合理评估每个功能和操作的复杂度、优先级
@@ -339,11 +339,11 @@ export function QuickEstimateDialog({
       return;
     }
 
-    // 统计功能菜单数量（叶子节点）
+    // 统计功能模块数量（叶子节点）
     const countFunctionMenus = (nodeList: FunctionNode[], isTopLevel: boolean = true): number => {
       return nodeList.reduce((count, node) => {
         if (!node.children || node.children.length === 0) {
-          // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能菜单
+          // 叶子节点：如果是顶层节点（需求模块），不统计；否则是功能模块
           return count + (isTopLevel ? 0 : 1);
         }
         // 有子节点的是模块，继续递归（非顶层）
@@ -357,9 +357,9 @@ export function QuickEstimateDialog({
         let currentCount = 0;
         
         if (!node.children || node.children.length === 0) {
-          // 叶子节点：功能菜单，只统计其按钮数量
+          // 叶子节点：功能模块，只统计其按钮数量
           if (!isTopLevel) {
-            // 只统计该功能菜单的所有按钮数量
+            // 只统计该功能模块的所有按钮数量
             if (node.buttons && node.buttons.length > 0) {
               currentCount += node.buttons.length;
             }
@@ -379,7 +379,7 @@ export function QuickEstimateDialog({
     onImport(nodes);
     toast({
       title: '导入成功 ✅',
-      description: `已成功导入 ${nodes.length} 个需求模块，包含 ${functionMenusCount} 个功能菜单、${functionPointsCount} 个功能点`,
+      description: `已成功导入 ${nodes.length} 个需求模块，包含 ${functionMenusCount} 个功能模块、${functionPointsCount} 个功能点`,
     });
     
     // 重置状态
