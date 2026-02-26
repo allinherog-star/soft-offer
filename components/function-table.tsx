@@ -534,7 +534,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
       <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
           <table className="w-full text-xs">
-            <thead className="sticky top-0 bg-gray-50 border-b z-10">
+            <thead className="sticky top-0 bg-gray-50 border-b z-10 print:static print:top-auto print:z-auto">
               <tr>
                 <th className="px-2 py-1.5 text-left font-medium text-gray-700 text-xs w-[280px]">
                   <div className="flex items-center gap-2">
@@ -1005,4 +1005,3 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
     </div>
   );
 }
-
