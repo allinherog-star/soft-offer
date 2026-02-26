@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ProjectInfo, Platform } from '@/types';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -95,9 +96,9 @@ export function Header({
           {/* 分隔线 */}
           <div className="h-8 w-px bg-gray-200"></div>
           
-          <div className="flex flex-col gap-0.5">
+          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
             {/* 第一行：系统名称 + 行业选择 + 用户端 */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               {/* 系统名称 - 固定宽度容器 */}
               <div className="w-[160px]">
                 {isEditingName ? (
@@ -211,29 +212,30 @@ export function Header({
             </div>
             
             {/* 第二行：系统描述（宽度对齐上面三个控件：160px + 8px + 128px + 8px + 平台框宽度）*/}
-            <div className="w-full">
+            <div className="w-full min-w-0">
               {isEditingDescription ? (
-                <Input
+                <Textarea
                   value={projectInfo.description || ''}
                   onChange={(e) => onProjectInfoChange({ ...projectInfo, description: e.target.value })}
                   onBlur={() => setIsEditingDescription(false)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') setIsEditingDescription(false);
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') setIsEditingDescription(false);
                     if (e.key === 'Escape') setIsEditingDescription(false);
                   }}
-                  className="h-5 w-full text-xs"
+                  rows={2}
+                  className="w-full min-h-[2.5rem] max-h-20 resize-y text-xs leading-4 py-1 whitespace-pre-wrap break-words"
                   placeholder="系统描述"
                   autoFocus
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingDescription(true)}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group h-5"
+                  className="flex items-start gap-1 px-2 py-0.5 rounded hover:bg-gray-100 cursor-pointer group min-h-[1.25rem]"
                 >
-                  <span className="text-xs text-gray-500 truncate flex-1">
+                  <span className="text-xs text-gray-500 flex-1 leading-4 whitespace-pre-wrap break-words max-h-10 overflow-hidden">
                     {projectInfo.description || '系统描述'}
                   </span>
-                  <Edit2 className="h-2.5 w-2.5 text-gray-300 group-hover:text-gray-500 shrink-0" />
+                  <Edit2 className="h-2.5 w-2.5 text-gray-300 group-hover:text-gray-500 shrink-0 mt-0.5" />
                 </div>
               )}
             </div>
@@ -315,5 +317,4 @@ export function Header({
     </div>
   );
 }
-
 
