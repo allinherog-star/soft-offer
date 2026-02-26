@@ -77,7 +77,8 @@ export default function Home() {
 
   // 获取调整后的市场成本
   const getAdjustedBaseCost = () => {
-    return estimate.baseCost * calculateDurationRatio();
+    // 市场成本只与总人天和岗位单价有关，不受岗位人数（并行度）影响
+    return estimate.baseCost;
   };
 
   // 获取调整后的折后成本
