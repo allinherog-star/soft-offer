@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FunctionNode, ProjectInfo } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,6 +63,8 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const [quickEstimateOpen, setQuickEstimateOpen] = useState(false);
   const [validationDialogOpen, setValidationDialogOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isEditingNameComposing, setIsEditingNameComposing] = useState(false);
+  const lastCompositionEndAtRef = useRef(0);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -124,6 +126,8 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
   const startEdit = (node: FunctionNode) => {
     setEditingId(node.id);
     setEditingName(node.name);
+    setIsEditingNameComposing(false);
+    lastCompositionEndAtRef.current = 0;
   };
 
   const saveEdit = () => {
@@ -132,11 +136,15 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
       onNodesChange([...nodes]);
     }
     setEditingId(null);
+    setIsEditingNameComposing(false);
+    lastCompositionEndAtRef.current = 0;
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditingName('');
+    setIsEditingNameComposing(false);
+    lastCompositionEndAtRef.current = 0;
   };
 
   const updateNodeName = (nodeList: FunctionNode[], id: string, newName: string): boolean => {
@@ -457,8 +465,14 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
               <Input
                 value={editingName}
                 onChange={(e) => setEditingName(e.target.value)}
+                onCompositionStart={() => setIsEditingNameComposing(true)}
+                onCompositionEnd={() => {
+                  setIsEditingNameComposing(false);
+                  lastCompositionEndAtRef.current = Date.now();
+                }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !isImeComposing(e)) saveEdit();
+                  const withinCompositionGuardWindow = Date.now() - lastCompositionEndAtRef.current < 80;
+                  if (e.key === 'Enter' && !isImeComposing(e) && !isEditingNameComposing && !withinCompositionGuardWindow) saveEdit();
                   if (e.key === 'Escape') cancelEdit();
                 }}
                 className="h-6 text-sm flex-1"
