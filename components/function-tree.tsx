@@ -430,6 +430,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     // 确定添加按钮的提示文本
     // 所有非顶级节点下添加的都是功能模块
     const addButtonTitle = '添加需求';
+    const dragProps = editingId ? {} : { ...dragAttributes, ...dragListeners };
 
     return (
       <div key={node.id}>
@@ -441,9 +442,10 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         >
           {/* 拖拽句柄 */}
           <div 
-            {...dragAttributes} 
-            {...dragListeners}
-            className="opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing"
+            {...dragProps}
+            className={editingId
+              ? 'opacity-0 pointer-events-none'
+              : 'opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing'}
           >
             <GripVertical className="h-2.5 w-2.5 text-gray-400" />
           </div>
@@ -470,6 +472,11 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                   setIsEditingNameComposing(false);
                   lastCompositionEndAtRef.current = Date.now();
                 }}
+                onBlur={(e) => {
+                  const next = e.relatedTarget as HTMLElement | null;
+                  if (next?.dataset?.treeEditAction) return;
+                  saveEdit();
+                }}
                 onKeyDown={(e) => {
                   const withinCompositionGuardWindow = Date.now() - lastCompositionEndAtRef.current < 80;
                   if (e.key === 'Enter' && !isImeComposing(e) && !isEditingNameComposing && !withinCompositionGuardWindow) saveEdit();
@@ -480,6 +487,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                 autoFocus
               />
               <Button
+                data-tree-edit-action="save"
                 onClick={saveEdit}
                 size="sm"
                 variant="ghost"
@@ -488,6 +496,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                 <Check className="h-2.5 w-2.5" />
               </Button>
               <Button
+                data-tree-edit-action="cancel"
                 onClick={cancelEdit}
                 size="sm"
                 variant="ghost"
@@ -559,22 +568,28 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         </div>
 
         {isExpanded && hasChildren && (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={(event) => handleDragEnd(event, node.id)}
-          >
-            <SortableContext
-              items={node.children!.map(child => child.id)}
-              strategy={verticalListSortingStrategy}
+          editingId ? (
+            <div>
+              {node.children!.map(child => renderNodeContent(child, level + 1))}
+            </div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(event) => handleDragEnd(event, node.id)}
             >
-              <div>
-                {node.children!.map(child => (
-                  <SortableTreeNode key={child.id} node={child} level={level + 1} />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={node.children!.map(child => child.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div>
+                  {node.children!.map(child => (
+                    <SortableTreeNode key={child.id} node={child} level={level + 1} />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )
         )}
       </div>
     );
@@ -629,20 +644,26 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
         {/* 树内容区域 - 可滚动 */}
         <div className="flex-1 overflow-hidden">
           <ScrollArea className="h-full">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={(event) => handleDragEnd(event)}
-            >
-              <SortableContext
-                items={nodes.map(node => node.id)}
-                strategy={verticalListSortingStrategy}
+            {editingId ? (
+              <div className="p-2">
+                {nodes.map(node => renderNodeContent(node, 0))}
+              </div>
+            ) : (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(event) => handleDragEnd(event)}
               >
-                <div className="p-2">
-                  {nodes.map(node => renderNode(node))}
-                </div>
-              </SortableContext>
-            </DndContext>
+                <SortableContext
+                  items={nodes.map(node => node.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="p-2">
+                    {nodes.map(node => renderNode(node))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+            )}
             <ScrollBar />
           </ScrollArea>
         </div>
