@@ -213,7 +213,7 @@ export function Header({
             </div>
             
             {/* 第二行：系统描述（宽度对齐上面三个控件：160px + 8px + 128px + 8px + 平台框宽度）*/}
-            <div className="w-full min-w-0">
+            <div className="w-[calc(100%-20px)] min-w-0">
               {isEditingDescription ? (
                 <Textarea
                   value={projectInfo.description || ''}
