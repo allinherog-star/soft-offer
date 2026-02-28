@@ -11,6 +11,7 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { formatCurrency, formatDays } from '@/lib/calculation';
 import { DISCOUNT_OPTIONS, SERVER_SPEC_PRICES, STORAGE_SPEC_PRICES, BANDWIDTH_SPEC_PRICES, DOMAIN_SPEC_PRICES, TRAFFIC_SPEC_PRICES, calculateRecommendedSalary } from '@/lib/constants';
+import { isImeComposing } from '@/lib/ime';
 import type { HardwareType, HardwareItem, ServerSpec, StorageSpec, BandwidthSpec, DomainSpec, TrafficSpec, WorkExperience } from '@/types';
 import { Pencil, Check, User, Users, Laptop, Palette, Code, Smartphone, TabletSmartphone, Server, HardDrive, Network, Video, Radio, Globe, FileText, Trophy, Medal, Award, Star, ExternalLink, Settings, UsersRound, MessageSquare, Shield, Database, Layers, Users2, UserPlus, Building2, TrendingUp, Clock, Headset, PhoneCall, CheckCircle2, AlertCircle, AlertTriangle, Sparkles, Lock, CreditCard, ShieldCheck, FolderClock, HardDriveDownload, Timer, Box, Grid3x3, Boxes, Component } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -558,7 +559,7 @@ export function EstimatePanel({
                             min="1"
                             max="99"
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEditCount(workload.role);
+                              if (e.key === 'Enter' && !isImeComposing(e)) saveEditCount(workload.role);
                               if (e.key === 'Escape') setEditingCountRole(null);
                             }}
                           />
@@ -604,7 +605,7 @@ export function EstimatePanel({
                             autoFocus
                             step="0.1"
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEditSalary(workload.role);
+                              if (e.key === 'Enter' && !isImeComposing(e)) saveEditSalary(workload.role);
                               if (e.key === 'Escape') setEditingRole(null);
                             }}
                           />
@@ -874,7 +875,7 @@ export function EstimatePanel({
                             className="h-6 w-12 text-xs text-right px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             autoFocus
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEditHardwareUnitPrice(item.id);
+                              if (e.key === 'Enter' && !isImeComposing(e)) saveEditHardwareUnitPrice(item.id);
                               if (e.key === 'Escape') setEditingHardwareUnitPrice(null);
                             }}
                           />
@@ -916,7 +917,7 @@ export function EstimatePanel({
                               autoFocus
                               min="0"
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') saveEditHardwareQuantity(item.id);
+                                if (e.key === 'Enter' && !isImeComposing(e)) saveEditHardwareQuantity(item.id);
                                 if (e.key === 'Escape') setEditingHardwareQuantity(null);
                               }}
                             />
@@ -976,7 +977,7 @@ export function EstimatePanel({
                             placeholder="备注"
                             autoFocus
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEditHardwareRemark(item.id);
+                              if (e.key === 'Enter' && !isImeComposing(e)) saveEditHardwareRemark(item.id);
                               if (e.key === 'Escape') setEditingHardwareRemark(null);
                             }}
                           />
@@ -1507,4 +1508,3 @@ export function EstimatePanel({
     </div>
   );
 }
-

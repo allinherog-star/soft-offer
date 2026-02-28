@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { QuickEstimateDialog } from '@/components/quick-estimate-dialog';
+import { isImeComposing } from '@/lib/ime';
 import { ChevronRight, ChevronDown, Plus, Trash2, Edit2, Check, X, Undo2, Redo2, GripVertical, ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import { DeepSeekIcon } from '@/components/ui/deepseek-icon';
 import {
@@ -457,7 +458,7 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
                 value={editingName}
                 onChange={(e) => setEditingName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') saveEdit();
+                  if (e.key === 'Enter' && !isImeComposing(e)) saveEdit();
                   if (e.key === 'Escape') cancelEdit();
                 }}
                 className="h-6 text-sm flex-1"
@@ -781,4 +782,3 @@ export function FunctionTree({ nodes, selectedNode, onNodesChange, onSelectNode,
     </TooltipProvider>
   );
 }
-

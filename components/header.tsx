@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { PLATFORM_OPTIONS, INDUSTRY_OPTIONS } from '@/lib/constants';
+import { isImeComposing } from '@/lib/ime';
 import { 
   Calculator, Edit2, Check, ChevronsUpDown, Building2,
   Globe, BadgeDollarSign, ShoppingCart, GraduationCap, Heart,
@@ -107,7 +108,7 @@ export function Header({
                     onChange={(e) => onProjectInfoChange({ ...projectInfo, name: e.target.value })}
                     onBlur={() => setIsEditingName(false)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') setIsEditingName(false);
+                      if (e.key === 'Enter' && !isImeComposing(e)) setIsEditingName(false);
                       if (e.key === 'Escape') setIsEditingName(false);
                     }}
                     className="h-6 w-full text-sm"
@@ -219,7 +220,7 @@ export function Header({
                   onChange={(e) => onProjectInfoChange({ ...projectInfo, description: e.target.value })}
                   onBlur={() => setIsEditingDescription(false)}
                   onKeyDown={(e) => {
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') setIsEditingDescription(false);
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isImeComposing(e)) setIsEditingDescription(false);
                     if (e.key === 'Escape') setIsEditingDescription(false);
                   }}
                   rows={2}
@@ -317,4 +318,3 @@ export function Header({
     </div>
   );
 }
-

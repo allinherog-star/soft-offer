@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { COMPLEXITY_OPTIONS, PRIORITY_OPTIONS } from '@/lib/constants';
+import { isImeComposing } from '@/lib/ime';
 import { Flag, ChevronRight, ChevronDown, Plus, Trash2, Check, X, ListChecks, Sparkles, Download, Upload, ChevronsDown, ChevronsUp, Wand2, AlertTriangle, Minus, Flame, ArrowDown, ArrowUp, Circle, AlertCircle, Equal, TrendingUp, Zap, Pencil } from 'lucide-react';
 
 interface FunctionTableProps {
@@ -740,7 +741,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
                             value={remarkText}
                             onChange={(e) => setRemarkText(e.target.value)}
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') saveEditNodeRemark(node.id);
+                              if (e.key === 'Enter' && !isImeComposing(e)) saveEditNodeRemark(node.id);
                               if (e.key === 'Escape') cancelEditRemark();
                             }}
                             placeholder="输入说明..."
@@ -792,7 +793,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
                               value={editingName}
                               onChange={(e) => setEditingName(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') saveEditButton(node.id, button.id);
+                                if (e.key === 'Enter' && !isImeComposing(e)) saveEditButton(node.id, button.id);
                                 if (e.key === 'Escape') cancelEditButton();
                               }}
                               className="h-5 text-xs min-h-5 max-h-5 w-32"
@@ -934,7 +935,7 @@ export function FunctionTable({ nodes, selectedNode, onNodesChange, autoExpandTr
                               value={remarkText}
                               onChange={(e) => setRemarkText(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') saveEditButtonRemark(node.id, button.id);
+                                if (e.key === 'Enter' && !isImeComposing(e)) saveEditButtonRemark(node.id, button.id);
                                 if (e.key === 'Escape') cancelEditRemark();
                               }}
                               placeholder="输入说明..."
